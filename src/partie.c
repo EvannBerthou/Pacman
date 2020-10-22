@@ -22,12 +22,12 @@ Partie charge_plan(char *fichier)
         printf("Impossible d'ouvrir '%s'\n",fichier);
         exit(0);
         }
-    
+
 /* Lecture des dimensions du plan en en-tête                                  */
     res = fscanf(f,"%d %d\n",&p.L,&p.C); // Lecture de deux entiers
 
 // Si on n'a pas pu lire deux entiers ou s'ils sont incorrects
-    if(res !=2 || p.C<2 || p.L<2 || p.C >800 || p.L>600) 
+    if(res !=2 || p.C<2 || p.L<2 || p.C >800 || p.L>600)
         {
         printf("Dimensions du tableau lues dans '%s' incorrectes\n",fichier);
         fclose(f);
@@ -44,7 +44,7 @@ Partie charge_plan(char *fichier)
         fclose(f);
         exit(0);
         }
-    
+
 /* Allocation des tableaux de *C caractères                                   */
     for(l=0;l!=p.L;l++)
         {
@@ -56,7 +56,7 @@ Partie charge_plan(char *fichier)
             exit(0);
             }
         }
-    
+
 
 /* LECTURE DES LIGNES DU PLAN                                                 */
     l = 0;
@@ -71,14 +71,14 @@ Partie charge_plan(char *fichier)
             res = fscanf(f,"%c",&ch); // Lecture d'un caractère
             if (res == EOF) // Si fin de fichier
                 break; // Quittons la boucle interne
-    
+
             if(c>p.C) // Si trop de colonnes...
                 {
                 printf("Ligne %d colonne %d: trop de colonnes\n",l,c);
                 fclose(f);
                 exit(0);
                 }
-    
+
             if(c==p.C) // Si fin de ligne supposée...
                 {
                 if(ch=='\n') // Si fin de ligne réelle, on quitte la boucle
@@ -100,11 +100,11 @@ Partie charge_plan(char *fichier)
                     printf("Ligne %d: trop peu de caractères\n",l);
                 else
                     printf("Ligne %d: caractère '%c' incorrect\n",l,ch);
-    
+
                 fclose(f);
                 exit(0);
                 }
-            
+
             if(ch=='P')
                 {
                 p.pacman.l = l;
@@ -126,14 +126,14 @@ Partie charge_plan(char *fichier)
                 nbb++;
 
             p.plateau[l][c] = ch; // Ecriture dans le plan
-    
+
             c++; // caractère suivant
             }
         l++; // ligne suivante
         }
-    
+
     fclose(f); // Fermeture du flux de lecture du fichier
-    
+
 /* Si à la lecture de EOF on n'est pas sur la *V+1 ème ligne...               */
     if(l != p.L+1)
         {
@@ -157,7 +157,15 @@ Partie charge_plan(char *fichier)
         exit(0);
         }
     p.nbbonus = nbb;
-    
+
     return p;
     }
 
+
+void actualiser_partie(Partie *p) {
+    (void)p;
+}
+void dessiner_partie(Partie *p) {
+    (void)p;
+    actualiser();
+}

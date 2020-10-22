@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../lib/libgraphique.h"
+
 #define NBFANTOMES  1 // nombres de fantômes dans les plateaux chargés
 
 // STRUCTURES
@@ -31,5 +33,7 @@ typedef struct partie {
 /* charge_plan : lit un fichier contenant un plateau de jeu et le charge
                     en mémoire, dans le champ 'plateau' d'une Partie */
 Partie charge_plan(char *fichier);
+void actualiser_partie(Partie *p);
+void dessiner_partie(Partie *p);
 
 #endif
