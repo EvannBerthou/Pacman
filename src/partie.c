@@ -166,6 +166,9 @@ void actualiser_partie(Partie *p) {
     (void)p;
 }
 void dessiner_partie(Partie *p) {
-    (void)p;
+    // TODO: Déterminer la position sur le plateau
+    Point pacman = {p->pacman.l, p->pacman.c};
+    dessiner_cercle(pacman, 5, jaune);
+
     actualiser();
 }
