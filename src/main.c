@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
 /* A PARTIR D'ICI...C'EST A VOUS DE JOUER!                                    */
 /******************************************************************************/
 
-    ouvrir_fenetre(800,600);
+    ouvrir_fenetre(420, 540);
 
     while(1) {
         actualiser_partie(&p);

@@ -158,6 +158,9 @@ Partie charge_plan(char *fichier)
         }
     p.nbbonus = nbb;
 
+    p.taille_case[0] = 420 / p.C;
+    p.taille_case[1] = 540 / p.L;
+
     return p;
     }
 
@@ -165,7 +168,39 @@ Partie charge_plan(char *fichier)
 void actualiser_partie(Partie *p) {
     (void)p;
 }
+
+void dessiner_grille(Partie *p) {
+    int cx = p->taille_case[0];
+    int cy = p->taille_case[1];
+    for (int i = 0; i < p->L; i++) {
+        for (int j = 0; j < p->C; j++) {
+            Point pos = {j * cx, i * cy};
+            char type = p->plateau[i][j];
+            // Mur
+            if (type == '*')
+                dessiner_rectangle(pos, cx, cy, rouge);
+            // Pacman
+            else if (type == 'P')
+                dessiner_rectangle(pos, cx, cy, jaune);
+            // Bonbon
+            else if (type == '.')
+                dessiner_rectangle(pos, cx, cy, gris);
+            // Bonus
+            else if (type == 'B')
+                dessiner_rectangle(pos, cx, cy, orange);
+            // Fantôme
+            else if (type == 'F')
+                dessiner_rectangle(pos, cx, cy, bleu);
+        }
+    }
+}
+
 void dessiner_partie(Partie *p) {
-    (void)p;
+    // TODO: Déterminer la position sur le plateau
+    //Point pacman = {p->pacman.l, p->pacman.c};
+    //dessiner_cercle(pacman, 5, jaune);
+
+    dessiner_grille(p);
+
     actualiser();
 }
