@@ -3,6 +3,7 @@
 /******************************************************************************/
 #include "./main.h"
 #include "../lib/libgraphique.h"
+#include "timer.h"
 
 /******************************************************************************/
 /* MAIN                                                                       */
@@ -42,30 +43,17 @@ int main(int argc, char **argv) {
 /******************************************************************************/
 
     ouvrir_fenetre(420, 540);
-
-#ifdef FPS
-#define FPS_INTERVAL 1000 // En ms
-    Uint32 LAST = SDL_GetTicks();
-    Uint32 CURRENT = 0;
-	Uint32 passed_frames = 0;
-#endif
-
+	Timer timer = nouveau_timer();
     while(1) {
+		tick_timer(&timer);
+#ifdef DEBUG
+		print_fps(&timer);
+#endif
         traiter_evenements();
         actualiser_partie(&p);
         reinitialiser_evenements();
         dessiner_partie(&p);
 
-#ifdef FPS
-		passed_frames++;
-		if (LAST < SDL_GetTicks() - FPS_INTERVAL) {
-			LAST = SDL_GetTicks();
-			CURRENT = passed_frames;
-			passed_frames = 0;
-			if (CURRENT > 1)
-				printf("FPS : %d\n", CURRENT);
-		}
-#endif
     }
     return 0;
 }
