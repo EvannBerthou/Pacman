@@ -53,7 +53,6 @@ int main(int argc, char **argv) {
         actualiser_partie(&p, &timer);
         reinitialiser_evenements();
         dessiner_partie(&p);
-
     }
     return 0;
 }

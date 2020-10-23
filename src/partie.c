@@ -5,6 +5,7 @@
 #include "./partie.h"
 #include "entite.h"
 #include "pacman.h"
+#include "fantome.h"
 
 /******************************************************************************/
 /* CHARGE PLAN                                                                */
@@ -166,6 +167,18 @@ Partie charge_plan(char *fichier)
     return p;
     }
 
+// Renvoie le type de case dans vers laquelle se déplace l'entitée
+char case_direction(Partie *p, Entite *e, int sens) {
+    Pos pos = e->pos;
+    switch(sens) {
+    case 1: return p->plateau[pos.l-1][pos.c];
+    case 2: return p->plateau[pos.l+1][pos.c];
+    case 3: return p->plateau[pos.l][pos.c-1];
+    case 4: return p->plateau[pos.l][pos.c+1];
+    }
+    return '*';
+}
+
 int mouvement_clavier(int sens){
     if (touche_a_ete_pressee(SDLK_UP)){//fleche du haut pressé
         return 1;
@@ -210,8 +223,12 @@ void maj_etat(Partie *p){
 void actualiser_partie(Partie *p, Timer *timer) {
     p->pacman.etat.prochain_sens = mouvement_clavier(p->pacman.etat.prochain_sens);
     p->pacman.delai_deplacement -= timer->dt;
+    for (int i = 0; i < NBFANTOMES; i++) {
+        p->fantomes[i].delai_deplacement -= timer->dt;
+    }
 
     bouger_pacman(p);
+    bouger_fantomes(p);
     maj_etat(p);
 }
 

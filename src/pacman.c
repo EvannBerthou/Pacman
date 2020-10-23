@@ -1,25 +1,15 @@
 #include "pacman.h"
-
-static char case_direction(Partie *p, int sens) {
-    Pos pos = p->pacman.pos;
-    switch(sens) {
-    case 1: return p->plateau[pos.l-1][pos.c];
-    case 2: return p->plateau[pos.l+1][pos.c];
-    case 3: return p->plateau[pos.l][pos.c-1];
-    case 4: return p->plateau[pos.l][pos.c+1];
-    }
-    return '*';
-}
+#include "partie.h"
 
 //modification de L et C de pacman en fonction de l'environemen et des touche préssées
 void bouger_pacman(Partie *p) {
-    if (p->pacman.etat.sens == 0 || case_direction(p, p->pacman.etat.prochain_sens) != '*') {
+    if (p->pacman.etat.sens == 0 || case_direction(p, &p->pacman, p->pacman.etat.prochain_sens) != '*') {
         p->pacman.etat.sens = p->pacman.etat.prochain_sens;
         p->pacman.etat.prochain_sens = 0;
     }
 
     if (p->pacman.delai_deplacement > 0) return;
-    if (case_direction(p, p->pacman.etat.sens) == '*') return; // Si pacman se dirige vers un mur
+    if (case_direction(p, &p->pacman, p->pacman.etat.sens) == '*') return; // Si pacman se dirige vers un mur
 
     // Supprime l'ancienne position de pacman
     p->plateau[p->pacman.pos.l][p->pacman.pos.c] = ' ';

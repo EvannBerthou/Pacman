@@ -30,6 +30,7 @@ typedef struct partie {
 /* charge_plan : lit un fichier contenant un plateau de jeu et le charge
                     en mémoire, dans le champ 'plateau' d'une Partie */
 Partie charge_plan(char *fichier);
+char case_direction(Partie *p, Entite *e, int sens);
 void actualiser_partie(Partie *p, Timer *timer);
 void dessiner_partie(Partie *p);
 

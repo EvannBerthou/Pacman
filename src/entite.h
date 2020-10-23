@@ -7,7 +7,6 @@ typedef struct pos {
     int     c;
 } Pos;
 
-
 typedef enum {
     ENTITE_PACMAN = 0,
     ENTITE_FANTOME
