@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 		print_fps(&timer);
 #endif
         traiter_evenements();
-        actualiser_partie(&p);
+        actualiser_partie(&p, &timer);
         reinitialiser_evenements();
         dessiner_partie(&p);
 

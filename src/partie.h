@@ -7,8 +7,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../lib/libgraphique.h"
+#include "timer.h"
 
 #define NBFANTOMES  1 // nombres de fantômes dans les plateaux chargés
+#define PACMAN_DELAY 100
 
 // STRUCTURES
 /* Structure element permet de stocker le sens de deplacement le score de pacman et mode chase des fantome et la position des billes manger */
@@ -39,13 +41,14 @@ typedef struct partie {
     int     nbbonus; // le nombre de bonus restants à manger
     // ...et vous pouvez ajouter tout ce dont vous avez besoin
     int taille_case[2];
+	int delai_pacman;
     } Partie;
 
 // PROTOTYPES
 /* charge_plan : lit un fichier contenant un plateau de jeu et le charge
                     en mémoire, dans le champ 'plateau' d'une Partie */
 Partie charge_plan(char *fichier);
-void actualiser_partie(Partie *p);
+void actualiser_partie(Partie *p, Timer *timer);
 void dessiner_partie(Partie *p);
 
 #endif
