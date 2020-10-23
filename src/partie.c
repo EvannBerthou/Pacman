@@ -1,6 +1,7 @@
 /******************************************************************************/
 /* CHARGEMENT.c                                                               */
 /******************************************************************************/
+#include <assert.h>
 #include "./partie.h"
 
 
@@ -112,6 +113,8 @@ Partie charge_plan(char *fichier)
                 p.pacman.element.score=0;
                 p.pacman.element.nb_vie=3;
                 p.pacman.element.fuite=0;
+                p.pacman.element.sens = 0;
+                p.pacman.element.prochain_sens = 0;
 
                 }
             else if(ch=='F')
@@ -165,13 +168,12 @@ Partie charge_plan(char *fichier)
     p.taille_case[0] = 420 / p.C;
     p.taille_case[1] = 540 / p.L;
 
-	p.delai_pacman = PACMAN_DELAY;
+    p.delai_pacman = PACMAN_DELAY;
 
     return p;
     }
 
 int mouvement_clavier(int sens){
-    
     if (touche_a_ete_pressee(SDLK_UP)){//fleche du haut pressé
         return 1;
     }    
@@ -189,41 +191,30 @@ int mouvement_clavier(int sens){
     }
 }
 
+static char case_direction(Partie *p, int sens) {
+    switch(sens) {
+    case 1: return p->plateau[p->pacman.l-1][p->pacman.c];
+    case 2: return p->plateau[p->pacman.l+1][p->pacman.c];
+    case 3: return p->plateau[p->pacman.l][p->pacman.c-1];
+    case 4: return p->plateau[p->pacman.l][p->pacman.c+1];
+    }
+    return '*';
+}
+
 void mod_pos_pacman(Partie *p){//modification de L et C de pacman en fonction de l'environemen et des touche préssées
-	if (p->delai_pacman > 0) return;
+    if (p->pacman.element.sens == 0 || case_direction(p, p->pacman.element.prochain_sens) != '*') {
+        p->pacman.element.sens = p->pacman.element.prochain_sens;
+        p->pacman.element.prochain_sens = 0;
+    }
+
+    if (p->delai_pacman > 0) return;
+    if (case_direction(p, p->pacman.element.sens) == '*') return; // Si pacman se dirige vers un mur
+
     switch (p->pacman.element.sens){
-        case 1:
-            if (p->plateau[p->pacman.l-1][p->pacman.c]!='*'){ //check upper
-                p->pacman.l-=1;
-            }
-            else{
-                p->pacman.element.sens=0;
-            }
-            break;
-        case 2:
-            if (p->plateau[p->pacman.l+1][p->pacman.c]!='*'){ //check lower
-                p->pacman.l+=1;
-            }
-            else{
-                p->pacman.element.sens=0;
-            }
-            break;
-        case 3:
-            if (p->plateau[p->pacman.l][p->pacman.c-1]!='*'){//check left 
-                p->pacman.c-=1;
-            }
-            else{
-                p->pacman.element.sens=0;
-            }
-            break;
-        case 4:
-            if (p->plateau[p->pacman.l][p->pacman.c+1]!='*'){//check right 
-                p->pacman.c+=1;
-            }
-            else{
-                p->pacman.element.sens=0;
-            }
-             break;
+        case 1: p->pacman.l-=1; break;
+        case 2: p->pacman.l+=1; break;
+        case 3: p->pacman.c-=1; break;
+        case 4: p->pacman.c+=1; break;
     }
     // le cas ou il sort par la droite et revien par la gauche 
     if (p->pacman.c>20 && p->pacman.element.sens==4){
@@ -233,7 +224,6 @@ void mod_pos_pacman(Partie *p){//modification de L et C de pacman en fonction de
     else  if (p->pacman.c<0 && p->pacman.element.sens==3){
         p->pacman.c=20;
     }
-
 }
 
 void maj_plateau(Partie *p,char caractere){
@@ -270,17 +260,17 @@ void maj_element(Partie *p){
 
 
 void actualiser_partie(Partie *p, Timer *timer) {
-    p->pacman.element.sens=mouvement_clavier(p->pacman.element.sens);
-	p->delai_pacman -= timer->dt;
+    p->pacman.element.prochain_sens = mouvement_clavier(p->pacman.element.prochain_sens);
+    p->delai_pacman -= timer->dt;
 
     maj_plateau(p,' ');
     mod_pos_pacman(p);
     maj_element(p);
     maj_plateau(p,'P');
 
-	if (p->delai_pacman < 0) {
-		p->delai_pacman = PACMAN_DELAY;
-	}
+    if (p->delai_pacman < 0) {
+        p->delai_pacman = PACMAN_DELAY;
+    }
 }
 
 void dessiner_grille(Partie *p) {
@@ -305,8 +295,8 @@ void dessiner_grille(Partie *p) {
             // Fantôme
             else if (type == 'F')
                 dessiner_rectangle(pos, cx, cy, bleu);
-			// Vide
-			else if (type == ' ')
+            // Vide
+            else if (type == ' ')
                 dessiner_rectangle(pos, cx, cy, blanc);
         }
     }

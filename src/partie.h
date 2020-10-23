@@ -1,5 +1,5 @@
 /******************************************************************************/
-/* CHARGEMENT.h                                                               */
+/* CHARGEMENT.h                                                              */
 /******************************************************************************/
 #ifndef CHARGEMENT_H
 #define CHARGEMENT_H
@@ -10,12 +10,13 @@
 #include "timer.h"
 
 #define NBFANTOMES  1 // nombres de fantômes dans les plateaux chargés
-#define PACMAN_DELAY 100
+#define PACMAN_DELAY 125
 
 // STRUCTURES
 /* Structure element permet de stocker le sens de deplacement le score de pacman et mode chase des fantome et la position des billes manger */
 typedef struct element{
     int sens;
+    int prochain_sens;
     int score;
     int fuite;
     int nb_vie;
@@ -41,7 +42,7 @@ typedef struct partie {
     int     nbbonus; // le nombre de bonus restants à manger
     // ...et vous pouvez ajouter tout ce dont vous avez besoin
     int taille_case[2];
-	int delai_pacman;
+    int delai_pacman;
     } Partie;
 
 // PROTOTYPES
