@@ -3,7 +3,8 @@
 /******************************************************************************/
 #include <assert.h>
 #include "./partie.h"
-
+#include "entite.h"
+#include "pacman.h"
 
 /******************************************************************************/
 /* CHARGE PLAN                                                                */
@@ -108,14 +109,7 @@ Partie charge_plan(char *fichier)
 
             if(ch=='P')
                 {
-                p.pacman.l = l;
-                p.pacman.c = c;
-                p.pacman.element.score=0;
-                p.pacman.element.nb_vie=3;
-                p.pacman.element.fuite=0;
-                p.pacman.element.sens = 0;
-                p.pacman.element.prochain_sens = 0;
-
+                    p.pacman = nouvelle_entite((Pos){l,c}, ENTITE_PACMAN);
                 }
             else if(ch=='F')
                 {
@@ -125,8 +119,7 @@ Partie charge_plan(char *fichier)
                     fclose(f);
                     exit(0);
                     }
-                p.fantomes[nbf].l = l;
-                p.fantomes[nbf].c = c;
+                p.fantomes[nbf] = nouvelle_entite((Pos){l,c}, ENTITE_FANTOME);
                 nbf++;
                 }
             else if(ch=='B')
@@ -165,10 +158,10 @@ Partie charge_plan(char *fichier)
         }
     p.nbbonus = nbb;
 
+    // TODO: Ne pas avoir une taille fixe
+    // Cette taille ne marche que pour le plateau test.txt (27x21)
     p.taille_case[0] = 420 / p.C;
     p.taille_case[1] = 540 / p.L;
-
-    p.delai_pacman = PACMAN_DELAY;
 
     return p;
     }
@@ -176,14 +169,14 @@ Partie charge_plan(char *fichier)
 int mouvement_clavier(int sens){
     if (touche_a_ete_pressee(SDLK_UP)){//fleche du haut pressé
         return 1;
-    }    
-    else if (touche_a_ete_pressee(SDLK_DOWN)){//fleche du bas pressé 
+    }
+    else if (touche_a_ete_pressee(SDLK_DOWN)){//fleche du bas pressé
         return 2;
-    }        
-    else if (touche_a_ete_pressee(SDLK_LEFT)){//fleche de gauche pressé 
+    }
+    else if (touche_a_ete_pressee(SDLK_LEFT)){//fleche de gauche pressé
         return 3;
     }
-    else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé 
+    else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé
         return 4;
     }
     else {
@@ -191,86 +184,35 @@ int mouvement_clavier(int sens){
     }
 }
 
-static char case_direction(Partie *p, int sens) {
-    switch(sens) {
-    case 1: return p->plateau[p->pacman.l-1][p->pacman.c];
-    case 2: return p->plateau[p->pacman.l+1][p->pacman.c];
-    case 3: return p->plateau[p->pacman.l][p->pacman.c-1];
-    case 4: return p->plateau[p->pacman.l][p->pacman.c+1];
+void maj_etat(Partie *p){
+    if (p->plateau[p->pacman.pos.l][p->pacman.pos.c]=='.'){
+        p->pacman.etat.score+=1;
     }
-    return '*';
-}
-
-void mod_pos_pacman(Partie *p){//modification de L et C de pacman en fonction de l'environemen et des touche préssées
-    if (p->pacman.element.sens == 0 || case_direction(p, p->pacman.element.prochain_sens) != '*') {
-        p->pacman.element.sens = p->pacman.element.prochain_sens;
-        p->pacman.element.prochain_sens = 0;
-    }
-
-    if (p->delai_pacman > 0) return;
-    if (case_direction(p, p->pacman.element.sens) == '*') return; // Si pacman se dirige vers un mur
-
-    switch (p->pacman.element.sens){
-        case 1: p->pacman.l-=1; break;
-        case 2: p->pacman.l+=1; break;
-        case 3: p->pacman.c-=1; break;
-        case 4: p->pacman.c+=1; break;
-    }
-    // le cas ou il sort par la droite et revien par la gauche 
-    if (p->pacman.c>20 && p->pacman.element.sens==4){
-        p->pacman.c=0;
-    }
-    // le cas ou il sort par la gauche et revien par la droite
-    else  if (p->pacman.c<0 && p->pacman.element.sens==3){
-        p->pacman.c=20;
-    }
-}
-
-void maj_plateau(Partie *p,char caractere){
-    p->plateau[p->pacman.l][p->pacman.c]=caractere;
-}
-
-void maj_element(Partie *p){
-    if (p->plateau[p->pacman.l][p->pacman.c]=='.'){
-        p->pacman.element.score+=1;
-
-    }
-    else if (p->plateau[p->pacman.l][p->pacman.c]=='B') {
-        p->pacman.element.score+=50;
-        p->pacman.element.fuite=1;
+    else if (p->plateau[p->pacman.pos.l][p->pacman.pos.c]=='B') {
+        p->pacman.etat.score+=50;
+        p->pacman.etat.fuite=1;
         //metre compteur de temps a 0
     }
-    
     /*
-
-    ajout de temps ecouler a la structure partie 
+    ajout de temps ecouler a la structure partie
     else if (temps ecouler > x ){
-        p->pacman.element.fuite=0;
+        p->pacman.etat.fuite=0;
     }*/
     for (int i =0;i!=NBFANTOMES;i++){
-        if ((p->pacman.l == p->fantomes[i].l) && (p->pacman.c == p->fantomes[i].c)){
-            p->pacman.element.nb_vie-=1;
-            p->pacman.l=10;
-            p->pacman.c=0;
+        if ((p->pacman.pos.l == p->fantomes[i].pos.l) && (p->pacman.pos.c == p->fantomes[i].pos.c)){
+            p->pacman.etat.nb_vie-=1;
+            p->pacman.pos = (Pos){10, 0};
         }
     }
-    
-
 }
 
 
 void actualiser_partie(Partie *p, Timer *timer) {
-    p->pacman.element.prochain_sens = mouvement_clavier(p->pacman.element.prochain_sens);
-    p->delai_pacman -= timer->dt;
+    p->pacman.etat.prochain_sens = mouvement_clavier(p->pacman.etat.prochain_sens);
+    p->pacman.delai_deplacement -= timer->dt;
 
-    maj_plateau(p,' ');
-    mod_pos_pacman(p);
-    maj_element(p);
-    maj_plateau(p,'P');
-
-    if (p->delai_pacman < 0) {
-        p->delai_pacman = PACMAN_DELAY;
-    }
+    bouger_pacman(p);
+    maj_etat(p);
 }
 
 void dessiner_grille(Partie *p) {
