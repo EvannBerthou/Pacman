@@ -230,13 +230,10 @@ char ** maj_plateau(Pos pacman, char** plateau,char caractere){
 
 
 void actualiser_partie(Partie *p) {
-   
     p->pacman.element.sens=mouvement_clavier(p->pacman.element.sens);
-    printf("bob %d\n",p->pacman.element.sens);
     p->plateau=maj_plateau(p->pacman,p->plateau,' ');
     p->pacman=mod_pos_pacman(p->pacman,p->plateau);
     p->plateau=maj_plateau(p->pacman,p->plateau,'P');
-    //(void)p;
 }
 
 void dessiner_grille(Partie *p) {
