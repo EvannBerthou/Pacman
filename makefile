@@ -6,24 +6,28 @@ SOURCES = $(shell find $(SRCDIR) -name *.c)
 OBJ = $(subst $(SRCDIR),$(OBJDIR),$(SOURCES:.c=.o))
 OUTPUT = resultat
 LIB = -lm -lSDL -lSDL_ttf
-OPT = -Wall -DFPS
+OPT = -Wall 
 SDL_CFLAGS = $(shell sdl-config --cflags)
 SDL_LDFLAGS = $(shell sdl-config --libs)
 VERBOSE = TRUE
 
-all: $(OUTPUT)
+all: release
 
 clean: 
 	$(RM) $(OUTPUT) $(OBJDIR)/*.o $(LIBGRDIR)/*.o 
 
-$(OUTPUT): $(LIBGRDIR)/libgraphique.o $(OBJ)
-	gcc $^  -o $(OUTPUT)  $(SDL_CFLAGS) $(SDL_LDFLAGS) $(LIB)
+release: $(LIBGRDIR)/libgraphique.o $(OBJ)
+	gcc $^ -o $(OUTPUT)  $(SDL_CFLAGS) $(SDL_LDFLAGS) $(LIB)
+
+debug: $(wildcard src/*.c) $(wildcard src/*.h) $(LIBGRDIR)/libgraphique.o
+	@echo "Compilation en mode debug"
+	gcc -DDEBUG -DFPS $^ -o $(OUTPUT) $(SDL_CFLAGS) $(SDL_LDFLAGS) $(LIB)
 
 $(LIBGRDIR)/libgraphique.o: $(LIBGRDIR)/libgraphique.c
 	gcc   -c $(LIBGRDIR)/libgraphique.c -o $(LIBGRDIR)/libgraphique.o 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/%.h
-	gcc $(OPT) -c $<  -o $@
+	gcc  $(OPT) -c $<  -o $@
 
 
 
