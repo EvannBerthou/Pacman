@@ -9,8 +9,16 @@ typedef struct pos {
 
 typedef enum {
     ENTITE_PACMAN = 0,
-    ENTITE_FANTOME
+    ENTITE_FANTOME,
 } TypeEntite;
+
+typedef enum {
+    DIR_INCONNUE = 0,
+    DIR_HAUT,
+    DIR_BAS,
+    DIR_GAUCHE,
+    DIR_DROITE
+} DirEntite;
 
 /* Structure element permet de stocker le sens de deplacement le score de pacman et mode chase des fantome */
 typedef struct {

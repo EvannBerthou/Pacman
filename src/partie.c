@@ -171,26 +171,26 @@ Partie charge_plan(char *fichier)
 char case_direction(Partie *p, Entite *e, int sens) {
     Pos pos = e->pos;
     switch(sens) {
-    case 1: return p->plateau[pos.l-1][pos.c];
-    case 2: return p->plateau[pos.l+1][pos.c];
-    case 3: return p->plateau[pos.l][pos.c-1];
-    case 4: return p->plateau[pos.l][pos.c+1];
+    case DIR_HAUT: return p->plateau[pos.l-1][pos.c];
+    case DIR_BAS: return p->plateau[pos.l+1][pos.c];
+    case DIR_GAUCHE: return p->plateau[pos.l][pos.c-1];
+    case DIR_DROITE: return p->plateau[pos.l][pos.c+1];
     }
     return '*';
 }
 
 int mouvement_clavier(int sens){
     if (touche_a_ete_pressee(SDLK_UP)){//fleche du haut pressé
-        return 1;
+        return DIR_HAUT;
     }
     else if (touche_a_ete_pressee(SDLK_DOWN)){//fleche du bas pressé
-        return 2;
+        return DIR_BAS;
     }
     else if (touche_a_ete_pressee(SDLK_LEFT)){//fleche de gauche pressé
-        return 3;
+        return DIR_GAUCHE;
     }
     else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé
-        return 4;
+        return DIR_DROITE;
     }
     else {
         return sens;

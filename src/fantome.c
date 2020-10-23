@@ -8,16 +8,16 @@ void bouger_fantomes(Partie *p) {
         if (fantome->delai_deplacement > 0) return;
         p->plateau[fantome->pos.l][fantome->pos.c] = ' ';
 
-        if (fantome->pos.l > pacman.l && case_direction(p, fantome, 1) != '*') {
+        if (fantome->pos.l > pacman.l && case_direction(p, fantome, DIR_HAUT) != '*') {
             fantome->pos.l--;
         }
-        else if (fantome->pos.l < pacman.l && case_direction(p, fantome, 2) != '*') {
+        else if (fantome->pos.l < pacman.l && case_direction(p, fantome, DIR_BAS) != '*') {
             fantome->pos.l++;
         }
-        else if (fantome->pos.c > pacman.c && case_direction(p, fantome, 3) != '*') {
+        else if (fantome->pos.c > pacman.c && case_direction(p, fantome, DIR_GAUCHE) != '*') {
             fantome->pos.c--;
         }
-        else if (fantome->pos.c < pacman.c && case_direction(p, fantome, 4) != '*') {
+        else if (fantome->pos.c < pacman.c && case_direction(p, fantome, DIR_DROITE) != '*') {
             fantome->pos.c++;
         }
         p->plateau[fantome->pos.l][fantome->pos.c] = 'F';
