@@ -183,57 +183,55 @@ int mouvement_clavier(int sens){
     }
 }
 
-Pos mod_pos_pacman(Pos pacman, char ** plateau){//modification de L et C de pacman en fonction de l'environemen et des touche préssées
-    switch (pacman.element.sens){
+void mod_pos_pacman(Partie *p){//modification de L et C de pacman en fonction de l'environemen et des touche préssées
+    switch (p->pacman.element.sens){
         case 1:
-            if (plateau[pacman.l-1][pacman.c]!='*'){ //check upper
-                pacman.l-=1;
+            if (p->plateau[p->pacman.l-1][p->pacman.c]!='*'){ //check upper
+                p->pacman.l-=1;
             }
             else{
-                pacman.element.sens=0;
+                p->pacman.element.sens=0;
             }
             break;
         case 2:
-            if (plateau[pacman.l+1][pacman.c]!='*'){ //check lower
-                pacman.l+=1;
+            if (p->plateau[p->pacman.l+1][p->pacman.c]!='*'){ //check lower
+                p->pacman.l+=1;
             }
             else{
-                pacman.element.sens=0;
+                p->pacman.element.sens=0;
             }
             break;
         case 3:
-            if (plateau[pacman.l][pacman.c-1]!='*'){//check left 
-                pacman.c-=1;
+            if (p->plateau[p->pacman.l][p->pacman.c-1]!='*'){//check left 
+                p->pacman.c-=1;
             }
             else{
-                pacman.element.sens=0;
+                p->pacman.element.sens=0;
             }
             break;
         case 4:
-            if (plateau[pacman.l][pacman.c+1]!='*'){//check right 
-                pacman.c+=1;
+            if (p->plateau[p->pacman.l][p->pacman.c+1]!='*'){//check right 
+                p->pacman.c+=1;
             }
             else{
-                pacman.element.sens=0;
+                p->pacman.element.sens=0;
             }
              break;
     }
-    return pacman;
 
 }
 
-char ** maj_plateau(Pos pacman, char** plateau,char caractere){
-    plateau[pacman.l][pacman.c]=caractere;
-    return plateau;
+void maj_plateau(Partie *p,char caractere){
+    p->plateau[p->pacman.l][p->pacman.c]=caractere;
 }
 
 
 
 void actualiser_partie(Partie *p) {
     p->pacman.element.sens=mouvement_clavier(p->pacman.element.sens);
-    p->plateau=maj_plateau(p->pacman,p->plateau,' ');
-    p->pacman=mod_pos_pacman(p->pacman,p->plateau);
-    p->plateau=maj_plateau(p->pacman,p->plateau,'P');
+    maj_plateau(p,' ');
+    mod_pos_pacman(p);
+    maj_plateau(p,'P');
 }
 
 void dessiner_grille(Partie *p) {
