@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "../lib/libgraphique.h"
 
 #define NBFANTOMES  1 // nombres de fantômes dans les plateaux chargés
@@ -16,8 +15,8 @@
 typedef struct element{
     int sens;
     int score;
-    int chase;
-    int pos_bonus_eaten[228][2];
+    int fuite;
+    int nb_vie;
 } elem;
 
 
