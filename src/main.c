@@ -11,7 +11,6 @@ int main(int argc, char **argv) {
 /* argc indique le nombre d'arguments,
    argv est un tableau de mots contenant ces arguments. */
     Partie  p;      // la structure contenant les données d'une partie
-    int i,j;
 
     /** Traitement des arguments **************************************************/
     if(argc!=2) { // Si le nombre d'arguments est différent de 2
@@ -27,8 +26,9 @@ int main(int argc, char **argv) {
     if(p.plateau == NULL)
         return 1;
 
-#if DEBUG==1 //Ceci est un drapeau à activer/désactiver dans main.h
+#ifdef DEBUG
     /* Affichage du plan lu                                                       */
+    int i,j;
     printf("Affichage du plan...\n");
     for(i=0;i!=p.L;i++) {
         for(j=0;j!=p.C;j++)
