@@ -89,7 +89,7 @@ Partie charge_plan(char *fichier)
                     {
                     printf("Ligne %d: trop de caractères\n",l);
                     fclose(f);
-                    exit(0);
+                    //exit(0);
                     }
                 }
 /* ...sinon, nous ne sommes pas à la fin de la ligne.                         */
@@ -164,9 +164,79 @@ Partie charge_plan(char *fichier)
     return p;
     }
 
+int mouvement_clavier(int sens){
+    
+    if (touche_a_ete_pressee(SDLK_UP)){//fleche du haut pressé
+        return 1;
+    }    
+    else if (touche_a_ete_pressee(SDLK_DOWN)){//fleche du bas pressé 
+        return 2;
+    }        
+    else if (touche_a_ete_pressee(SDLK_LEFT)){//fleche de gauche pressé 
+        return 3;
+    }
+    else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé 
+        return 4;
+    }
+    else {
+        return sens;
+    }
+}
+
+Pos mod_pos_pacman(Pos pacman, char ** plateau){//modification de L et C de pacman en fonction de l'environemen et des touche préssées
+    switch (pacman.element.sens){
+        case 1:
+            if (plateau[pacman.l-1][pacman.c]!='*'){ //check upper
+                pacman.l-=1;
+            }
+            else{
+                pacman.element.sens=0;
+            }
+            break;
+        case 2:
+            if (plateau[pacman.l+1][pacman.c]!='*'){ //check lower
+                pacman.l+=1;
+            }
+            else{
+                pacman.element.sens=0;
+            }
+            break;
+        case 3:
+            if (plateau[pacman.l][pacman.c-1]!='*'){//check left 
+                pacman.c-=1;
+            }
+            else{
+                pacman.element.sens=0;
+            }
+            break;
+        case 4:
+            if (plateau[pacman.l][pacman.c+1]!='*'){//check right 
+                pacman.c+=1;
+            }
+            else{
+                pacman.element.sens=0;
+            }
+             break;
+    }
+    return pacman;
+
+}
+
+char ** maj_plateau(Pos pacman, char** plateau,char caractere){
+    plateau[pacman.l][pacman.c]=caractere;
+    return plateau;
+}
+
+
 
 void actualiser_partie(Partie *p) {
-    (void)p;
+   
+    p->pacman.element.sens=mouvement_clavier(p->pacman.element.sens);
+    printf("bob %d\n",p->pacman.element.sens);
+    p->plateau=maj_plateau(p->pacman,p->plateau,' ');
+    p->pacman=mod_pos_pacman(p->pacman,p->plateau);
+    p->plateau=maj_plateau(p->pacman,p->plateau,'P');
+    //(void)p;
 }
 
 void dessiner_grille(Partie *p) {
@@ -181,9 +251,9 @@ void dessiner_grille(Partie *p) {
                 dessiner_rectangle(pos, cx, cy, rouge);
             // Pacman
             else if (type == 'P')
-                dessiner_rectangle(pos, cx, cy, jaune);
+                dessiner_rectangle(pos, cx, cy, vert);
             // Bonbon
-            else if (type == '.')
+            else if (type == '.'|| type == ' ')
                 dessiner_rectangle(pos, cx, cy, gris);
             // Bonus
             else if (type == 'B')
@@ -198,9 +268,14 @@ void dessiner_grille(Partie *p) {
 void dessiner_partie(Partie *p) {
     // TODO: Déterminer la position sur le plateau
     //Point pacman = {p->pacman.l, p->pacman.c};
+    //char pacman sens N/W/S/
+
+
+
+
+
     //dessiner_cercle(pacman, 5, jaune);
 
     dessiner_grille(p);
-
     actualiser();
 }

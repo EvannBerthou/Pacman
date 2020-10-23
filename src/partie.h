@@ -12,10 +12,22 @@
 #define NBFANTOMES  1 // nombres de fantômes dans les plateaux chargés
 
 // STRUCTURES
+/* Structure element permet de stocker le sens de deplacement le score de pacman et mode chase des fantome et la position des billes manger */
+typedef struct element{
+    int sens;
+    int score;
+    int chase;
+    int pos_bonus_eaten[228][2];
+} elem;
+
+
+
 /* Structure Pos: permet de stocker un couple ligne/colonne                   */
 typedef struct pos {
     int     l;
     int     c;
+    //int list_pos[2000][2];
+    elem   element;
     } Pos;
 
 /* Structure Partie:  permet de stocker les paramètres d'une partie           */

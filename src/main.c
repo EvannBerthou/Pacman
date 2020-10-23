@@ -42,9 +42,11 @@ int main(int argc, char **argv) {
 /******************************************************************************/
 
     ouvrir_fenetre(420, 540);
-
+    //printf("nb bille %d",p.nbbonus);
     while(1) {
+        traiter_evenements();
         actualiser_partie(&p);
+        reinitialiser_evenements();
         dessiner_partie(&p);
     }
     return 0;
