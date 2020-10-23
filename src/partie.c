@@ -165,6 +165,8 @@ Partie charge_plan(char *fichier)
     p.taille_case[0] = 420 / p.C;
     p.taille_case[1] = 540 / p.L;
 
+	p.delai_pacman = PACMAN_DELAY;
+
     return p;
     }
 
@@ -188,6 +190,7 @@ int mouvement_clavier(int sens){
 }
 
 void mod_pos_pacman(Partie *p){//modification de L et C de pacman en fonction de l'environemen et des touche préssées
+	if (p->delai_pacman > 0) return;
     switch (p->pacman.element.sens){
         case 1:
             if (p->plateau[p->pacman.l-1][p->pacman.c]!='*'){ //check upper
@@ -266,13 +269,18 @@ void maj_element(Partie *p){
 }
 
 
-void actualiser_partie(Partie *p) {
+void actualiser_partie(Partie *p, Timer *timer) {
     p->pacman.element.sens=mouvement_clavier(p->pacman.element.sens);
-    
+	p->delai_pacman -= timer->dt;
+
     maj_plateau(p,' ');
     mod_pos_pacman(p);
     maj_element(p);
     maj_plateau(p,'P');
+
+	if (p->delai_pacman < 0) {
+		p->delai_pacman = PACMAN_DELAY;
+	}
 }
 
 void dessiner_grille(Partie *p) {
@@ -289,7 +297,7 @@ void dessiner_grille(Partie *p) {
             else if (type == 'P')
                 dessiner_rectangle(pos, cx, cy, vert);
             // Bonbon
-            else if (type == '.'|| type == ' ')
+            else if (type == '.')
                 dessiner_rectangle(pos, cx, cy, gris);
             // Bonus
             else if (type == 'B')
@@ -297,21 +305,14 @@ void dessiner_grille(Partie *p) {
             // Fantôme
             else if (type == 'F')
                 dessiner_rectangle(pos, cx, cy, bleu);
+			// Vide
+			else if (type == ' ')
+                dessiner_rectangle(pos, cx, cy, blanc);
         }
     }
 }
 
 void dessiner_partie(Partie *p) {
-    // TODO: Déterminer la position sur le plateau
-    //Point pacman = {p->pacman.l, p->pacman.c};
-    //char pacman sens N/W/S/
-
-
-
-
-
-    //dessiner_cercle(pacman, 5, jaune);
-
     dessiner_grille(p);
     actualiser();
 }
