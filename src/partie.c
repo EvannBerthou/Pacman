@@ -109,6 +109,10 @@ Partie charge_plan(char *fichier)
                 {
                 p.pacman.l = l;
                 p.pacman.c = c;
+                p.pacman.element.score=0;
+                p.pacman.element.nb_vie=3;
+                p.pacman.element.fuite=0;
+
                 }
             else if(ch=='F')
                 {
@@ -218,6 +222,14 @@ void mod_pos_pacman(Partie *p){//modification de L et C de pacman en fonction de
             }
              break;
     }
+    // le cas ou il sort par la droite et revien par la gauche 
+    if (p->pacman.c>20 && p->pacman.element.sens==4){
+        p->pacman.c=0;
+    }
+    // le cas ou il sort par la gauche et revien par la droite
+    else  if (p->pacman.c<0 && p->pacman.element.sens==3){
+        p->pacman.c=20;
+    }
 
 }
 
@@ -225,12 +237,41 @@ void maj_plateau(Partie *p,char caractere){
     p->plateau[p->pacman.l][p->pacman.c]=caractere;
 }
 
+void maj_element(Partie *p){
+    if (p->plateau[p->pacman.l][p->pacman.c]=='.'){
+        p->pacman.element.score+=1;
+
+    }
+    else if (p->plateau[p->pacman.l][p->pacman.c]=='B') {
+        p->pacman.element.score+=50;
+        p->pacman.element.fuite=1;
+        //metre compteur de temps a 0
+    }
+    
+    /*
+
+    ajout de temps ecouler a la structure partie 
+    else if (temps ecouler > x ){
+        p->pacman.element.fuite=0;
+    }*/
+    for (int i =0;i!=NBFANTOMES;i++){
+        if ((p->pacman.l == p->fantomes[i].l) && (p->pacman.c == p->fantomes[i].c)){
+            p->pacman.element.nb_vie-=1;
+            p->pacman.l=10;
+            p->pacman.c=0;
+        }
+    }
+    
+
+}
 
 
 void actualiser_partie(Partie *p) {
     p->pacman.element.sens=mouvement_clavier(p->pacman.element.sens);
+    
     maj_plateau(p,' ');
     mod_pos_pacman(p);
+    maj_element(p);
     maj_plateau(p,'P');
 }
 
