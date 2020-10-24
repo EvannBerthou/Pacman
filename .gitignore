@@ -50,5 +50,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# CUSTOM
 resultat
 tags
+
+*.swp
+*.swo
