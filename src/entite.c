@@ -11,7 +11,9 @@ Entite nouvelle_entite(Pos pos, TypeEntite type) {
     Entite result = {
         .pos = pos,
         .type = type,
-        .etat = etat
+        .etat = etat,
+        .delai_deplacement = 0,
+        .contre_mur = 0
     };
     return result;
 }

@@ -34,6 +34,7 @@ typedef struct {
     TypeEntite type;
     Etat etat;
     int delai_deplacement; // le temps restant avant que l'entité se déplace
+    int contre_mur;
 } Entite;
 
 Entite nouvelle_entite(Pos pos, TypeEntite type);

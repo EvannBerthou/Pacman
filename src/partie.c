@@ -242,9 +242,6 @@ void dessiner_grille(Partie *p) {
             // Mur
             if (type == '*')
                 dessiner_rectangle(pos, cx, cy, rouge);
-            // Pacman
-            else if (type == 'P')
-                dessiner_rectangle(pos, cx, cy, vert);
             // Bonbon
             else if (type == '.')
                 dessiner_rectangle(pos, cx, cy, gris);
@@ -263,5 +260,6 @@ void dessiner_grille(Partie *p) {
 
 void dessiner_partie(Partie *p) {
     dessiner_grille(p);
+    dessiner_pacman(p);
     actualiser();
 }

@@ -5,5 +5,6 @@
 
 void nouveau_pacman();
 void bouger_pacman(Partie *p);
+void dessiner_pacman(Partie *p);
 
 #endif
