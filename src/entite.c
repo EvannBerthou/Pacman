@@ -12,8 +12,15 @@ Entite nouvelle_entite(Pos pos, TypeEntite type) {
         .pos = pos,
         .type = type,
         .etat = etat,
-        .delai_deplacement = 0,
         .contre_mur = 0
     };
     return result;
+}
+
+
+Pos ecran_vers_grille(Pos pos, Pos taille) {
+    return (Pos) {
+        pos.l  / taille.l,
+        pos.c  / taille.c,
+    };
 }

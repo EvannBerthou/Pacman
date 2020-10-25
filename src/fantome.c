@@ -5,26 +5,24 @@ void bouger_fantomes(Partie *p) {
     Pos pacman = p->pacman.pos;
     for (int i = 0; i < NBFANTOMES; i++) {
         Entite *fantome = &p->fantomes[i];
-        if (fantome->delai_deplacement > 0) return;
-        p->plateau[fantome->pos.l][fantome->pos.c] = ' ';
+        Pos grille = ecran_vers_grille(fantome->pos, (Pos){p->tc.x, p->tc.y});
+        p->plateau[grille.l][grille.c] = ' ';
 
         if (fantome->pos.l > pacman.l && case_direction(p, fantome, DIR_HAUT) != '*') {
-            fantome->pos.l--;
+            fantome->pos.l -= p->tc.x;
         }
         else if (fantome->pos.l < pacman.l && case_direction(p, fantome, DIR_BAS) != '*') {
-            fantome->pos.l++;
+            fantome->pos.l += p->tc.x;
         }
         else if (fantome->pos.c > pacman.c && case_direction(p, fantome, DIR_GAUCHE) != '*') {
-            fantome->pos.c--;
+            fantome->pos.c -= p->tc.y;
         }
         else if (fantome->pos.c < pacman.c && case_direction(p, fantome, DIR_DROITE) != '*') {
-            fantome->pos.c++;
+            fantome->pos.c += p->tc.y;
         }
-        p->plateau[fantome->pos.l][fantome->pos.c] = 'F';
 
-        if (fantome->delai_deplacement < 0) {
-            fantome->delai_deplacement = PACMAN_DELAY;
-        }
+        grille = ecran_vers_grille(fantome->pos, (Pos){p->tc.x, p->tc.y});
+        p->plateau[grille.l][grille.c] = 'F';
     }
 
     return;

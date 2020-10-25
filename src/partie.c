@@ -38,6 +38,10 @@ Partie charge_plan(char *fichier)
         }
     printf("Dimensions lues: %d x %d\n",p.L,p.C);
 
+    // TODO: Ne pas avoir une taille fixe
+    // Cette taille ne marche que pour le plateau test.txt (27x21)
+    p.tc = (Point){420 / p.C, 540 / p.L};
+
 /* ALLOCATION DYNAMIQUE                                                       */
 /* Allocation du tableau de *L pointeurs sur lignes                           */
     p.plateau = (char **) malloc(p.L * sizeof(char *));
@@ -110,7 +114,7 @@ Partie charge_plan(char *fichier)
 
             if(ch=='P')
                 {
-                    p.pacman = nouvelle_entite((Pos){l,c}, ENTITE_PACMAN);
+                    p.pacman = nouvelle_entite((Pos){l * p.tc.x,c*p.tc.y}, ENTITE_PACMAN);
                 }
             else if(ch=='F')
                 {
@@ -120,7 +124,7 @@ Partie charge_plan(char *fichier)
                     fclose(f);
                     exit(0);
                     }
-                p.fantomes[nbf] = nouvelle_entite((Pos){l,c}, ENTITE_FANTOME);
+                p.fantomes[nbf] = nouvelle_entite((Pos){l*p.tc.x,c*p.tc.y}, ENTITE_FANTOME);
                 nbf++;
                 }
             else if(ch=='B')
@@ -159,17 +163,12 @@ Partie charge_plan(char *fichier)
         }
     p.nbbonus = nbb;
 
-    // TODO: Ne pas avoir une taille fixe
-    // Cette taille ne marche que pour le plateau test.txt (27x21)
-    p.taille_case[0] = 420 / p.C;
-    p.taille_case[1] = 540 / p.L;
-
     return p;
     }
 
-// Renvoie le type de case dans vers laquelle se déplace l'entitée
+// Renvoie le type de case vers laquelle se déplace l'entitée
 char case_direction(Partie *p, Entite *e, int sens) {
-    Pos pos = e->pos;
+    Pos pos = ecran_vers_grille(e->pos, (Pos){p->tc.x, p->tc.y});
     switch(sens) {
     case DIR_HAUT: return p->plateau[pos.l-1][pos.c];
     case DIR_BAS: return p->plateau[pos.l+1][pos.c];
@@ -198,10 +197,11 @@ int mouvement_clavier(int sens){
 }
 
 void maj_etat(Partie *p){
-    if (p->plateau[p->pacman.pos.l][p->pacman.pos.c]=='.'){
+    Pos pos = ecran_vers_grille(p->pacman.pos, (Pos){p->tc.x, p->tc.y});
+    if (p->plateau[pos.l][pos.c]=='.'){
         p->pacman.etat.score+=1;
     }
-    else if (p->plateau[p->pacman.pos.l][p->pacman.pos.c]=='B') {
+    else if (p->plateau[pos.l][pos.c]=='B') {
         p->pacman.etat.score+=50;
         p->pacman.etat.fuite=1;
         //metre compteur de temps a 0
@@ -222,19 +222,17 @@ void maj_etat(Partie *p){
 
 void actualiser_partie(Partie *p, Timer *timer) {
     p->pacman.etat.prochain_sens = mouvement_clavier(p->pacman.etat.prochain_sens);
-    p->pacman.delai_deplacement -= timer->dt;
-    for (int i = 0; i < NBFANTOMES; i++) {
-        p->fantomes[i].delai_deplacement -= timer->dt;
-    }
 
-    bouger_pacman(p);
+    bouger_pacman(p, timer->dt);
     bouger_fantomes(p);
     maj_etat(p);
 }
 
+// TODO: Artéfact graphique sur la case où se trouve pacman, se problème sera réglé 
+// quand on passera aux sprites au lieu de juste dessiner des couleurs
 void dessiner_grille(Partie *p) {
-    int cx = p->taille_case[0];
-    int cy = p->taille_case[1];
+    int cx = p->tc.x;
+    int cy = p->tc.y;
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
             Point pos = {j * cx, i * cy};
@@ -252,13 +250,15 @@ void dessiner_grille(Partie *p) {
             else if (type == 'F')
                 dessiner_rectangle(pos, cx, cy, bleu);
             // Vide
-            else if (type == ' ')
+            else
                 dessiner_rectangle(pos, cx, cy, blanc);
         }
     }
 }
 
 void dessiner_partie(Partie *p) {
+    // Efface l'écran
+    dessiner_rectangle((Point){0,0}, 420, 540, noir);
     dessiner_grille(p);
     dessiner_pacman(p);
     actualiser();
