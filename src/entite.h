@@ -7,6 +7,10 @@ typedef struct pos {
     int     c;
 } Pos;
 
+typedef struct posf {
+    float x,y;
+} Posf;
+
 typedef enum {
     ENTITE_PACMAN = 0,
     ENTITE_FANTOME,
@@ -33,10 +37,10 @@ typedef struct {
     Pos pos;
     TypeEntite type;
     Etat etat;
-    int delai_deplacement; // le temps restant avant que l'entité se déplace
     int contre_mur;
 } Entite;
 
 Entite nouvelle_entite(Pos pos, TypeEntite type);
+Pos ecran_vers_grille(Pos pos, Pos taille);
 
 #endif

@@ -4,7 +4,7 @@
 #include "partie.h"
 
 void nouveau_pacman();
-void bouger_pacman(Partie *p);
+void bouger_pacman(Partie *p, float dt);
 void dessiner_pacman(Partie *p);
 
 #endif
