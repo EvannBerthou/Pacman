@@ -24,9 +24,9 @@ typedef enum {
     DIR_DROITE
 } DirEntite;
 
-/* Structure element permet de stocker le sens de deplacement le score de pacman et mode chase des fantome */
+/* Structure element permet de stocker la direction de deplacement, le score de pacman et mode chase des fantome */
 typedef struct {
-    int sens;
+    int direction;
     int prochain_sens;
     int score;
     int fuite;
@@ -37,7 +37,6 @@ typedef struct {
     Pos pos;
     TypeEntite type;
     Etat etat;
-    int contre_mur;
 } Entite;
 
 Entite nouvelle_entite(Pos pos, TypeEntite type);

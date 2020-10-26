@@ -2,7 +2,7 @@
 
 Entite nouvelle_entite(Pos pos, TypeEntite type) {
     Etat etat = {
-        .sens = 0, //TODO: Donner un sens de départ aux entités
+        .direction = 0, //TODO: Donner une direction de départ aux entités
         .prochain_sens = 0,
         .score = 0,
         .fuite = 0,
@@ -12,11 +12,9 @@ Entite nouvelle_entite(Pos pos, TypeEntite type) {
         .pos = pos,
         .type = type,
         .etat = etat,
-        .contre_mur = 0
     };
     return result;
 }
-
 
 Pos ecran_vers_grille(Pos pos, Pos taille) {
     return (Pos) {
