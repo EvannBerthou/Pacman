@@ -224,7 +224,7 @@ void actualiser_partie(Partie *p, Timer *timer) {
     p->pacman.etat.prochain_sens = mouvement_clavier(p->pacman.etat.prochain_sens);
 
     bouger_pacman(p, timer->dt);
-    bouger_fantomes(p);
+    //bouger_fantomes(p);
     maj_etat(p);
 }
 
@@ -241,17 +241,20 @@ void dessiner_grille(Partie *p) {
             if (type == '*')
                 dessiner_rectangle(pos, cx, cy, rouge);
             // Bonbon
-            else if (type == '.')
-                dessiner_rectangle(pos, cx, cy, gris);
+            else if (type == '.') {
+                int w = cx * .5f, h = cy * .5f;
+                Point centre = {pos.x + (w/2), pos.y + (h/2)};
+                dessiner_rectangle(centre, w, h, wheat);
+            }
             // Bonus
-            else if (type == 'B')
-                dessiner_rectangle(pos, cx, cy, orange);
+            else if (type == 'B') {
+                int w = cx * .5f, h = cy * .5f;
+                Point centre = {pos.x + (w/2), pos.y + (h/2)};
+                dessiner_rectangle(centre, w, h, orange);
+            }
             // Fantôme
             else if (type == 'F')
                 dessiner_rectangle(pos, cx, cy, bleu);
-            // Vide
-            else
-                dessiner_rectangle(pos, cx, cy, blanc);
         }
     }
 }
