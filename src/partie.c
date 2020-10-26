@@ -167,9 +167,9 @@ Partie charge_plan(char *fichier)
     }
 
 // Renvoie le type de case vers laquelle se déplace l'entitée
-char case_direction(Partie *p, Entite *e, int sens) {
+char case_direction(Partie *p, Entite *e, int direction) {
     Pos pos = ecran_vers_grille(e->pos, p->tc);
-    switch(sens) {
+    switch(direction) {
     case DIR_HAUT: return p->plateau[pos.l-1][pos.c];
     case DIR_BAS: return p->plateau[pos.l+1][pos.c];
     case DIR_GAUCHE: return p->plateau[pos.l][pos.c-1];
@@ -178,7 +178,7 @@ char case_direction(Partie *p, Entite *e, int sens) {
     return '*';
 }
 
-int mouvement_clavier(int sens){
+int mouvement_clavier(int direction){
     if (touche_a_ete_pressee(SDLK_UP)){//fleche du haut pressé
         return DIR_HAUT;
     }
@@ -192,7 +192,7 @@ int mouvement_clavier(int sens){
         return DIR_DROITE;
     }
     else {
-        return sens;
+        return direction;
     }
 }
 
@@ -214,6 +214,7 @@ void maj_etat(Partie *p){
     for (int i =0;i!=NBFANTOMES;i++){
         if ((p->pacman.pos.l == p->fantomes[i].pos.l) && (p->pacman.pos.c == p->fantomes[i].pos.c)){
             p->pacman.etat.nb_vie-=1;
+            // TODO: Retourner à la case départ au lieu
             p->pacman.pos = (Pos){10, 0};
         }
     }
@@ -223,7 +224,7 @@ void maj_etat(Partie *p){
 void actualiser_partie(Partie *p, Timer *timer) {
     p->pacman.etat.prochain_sens = mouvement_clavier(p->pacman.etat.prochain_sens);
 
-    bouger_pacman(p, timer->dt);
+    bouger_pacman(p);
     bouger_fantomes(p);
     maj_etat(p);
 }
@@ -252,9 +253,6 @@ void dessiner_grille(Partie *p) {
                 Point centre = {pos.x + (w/2), pos.y + (h/2)};
                 dessiner_rectangle(centre, w, h, orange);
             }
-            // Fantôme
-            else if (type == 'F')
-                dessiner_rectangle(pos, cx, cy, bleu);
         }
     }
 }
@@ -264,5 +262,6 @@ void dessiner_partie(Partie *p) {
     dessiner_rectangle((Point){0,0}, 420, 540, noir);
     dessiner_grille(p);
     dessiner_pacman(p);
+    dessiner_fantomes(p);
     actualiser();
 }

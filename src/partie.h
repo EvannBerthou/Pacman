@@ -20,18 +20,17 @@ typedef struct partie {
     int     L; // le nb de lignes du plateau de jeu
     int     C; // le nb de colonne du plateau de jeu
     Entite  pacman; // l'entité pacman
-    Entite     fantomes[NBFANTOMES]; // les positions de chaque fantôme
+    Entite  fantomes[NBFANTOMES]; // Liste des entités fantomes
     int     nbbonus; // le nombre de bonus restants à manger
     // ...et vous pouvez ajouter tout ce dont vous avez besoin
-    // Tc : taille des cases
-    Pos tc;
+    Pos tc; // taille des cases
 } Partie;
 
 // PROTOTYPES
 /* charge_plan : lit un fichier contenant un plateau de jeu et le charge
                     en mémoire, dans le champ 'plateau' d'une Partie */
 Partie charge_plan(char *fichier);
-char case_direction(Partie *p, Entite *e, int sens);
+char case_direction(Partie *p, Entite *e, int direction);
 void actualiser_partie(Partie *p, Timer *timer);
 void dessiner_partie(Partie *p);
 
