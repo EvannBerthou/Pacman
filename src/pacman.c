@@ -7,6 +7,21 @@ static int aligne_grille(Partie *p) {
     return (p->pacman.pos.l % p->tc.x == 0 && p->pacman.pos.c % p->tc.y == 0);
 }
 
+static int centre_case(Partie *p) {
+    int demi_x = p->tc.x / 2;
+    int demi_y = p->tc.y / 2;
+
+// Necessaire pour les cas spécials dans les coins
+// TODO: Sûrement une meilleure solution disponible
+    switch (p->pacman.etat.sens){
+        case DIR_HAUT:
+        case DIR_GAUCHE: return (p->pacman.pos.l + demi_x) % p->tc.x > demi_x || (p->pacman.pos.c + demi_y) % p->tc.y > demi_y;
+        case DIR_BAS:    return (p->pacman.pos.l + demi_x) % p->tc.x > demi_x || (p->pacman.pos.c + demi_y) % p->tc.y >= demi_y;
+        case DIR_DROITE: return (p->pacman.pos.l + demi_x) % p->tc.x >= demi_x || (p->pacman.pos.c + demi_y) % p->tc.y > demi_y;
+    }
+    return 0;
+}
+
 //modification de la positon de pacman en fonction de l'environnement et des touches pressés
 void bouger_pacman(Partie *p, float dt) {
     // Si pacman ne se déplace dans aucune direciton 
@@ -20,11 +35,16 @@ void bouger_pacman(Partie *p, float dt) {
     
     // Si pacman est contre un mur alors ne pas bouger
     if (aligne_grille(p) && case_direction(p, &p->pacman, p->pacman.etat.sens) == '*') {
-            return;
+        return;
     }
 
-    Pos grille = ecran_vers_grille(p->pacman.pos, (Pos){p->tc.x, p->tc.y});
-    p->plateau[grille.l][grille.c] = ' ';
+    int manger = centre_case(p);
+
+    if (manger) {
+        Pos grille = ecran_vers_grille(p->pacman.pos, (Pos){p->tc.x, p->tc.y});
+        p->plateau[grille.l][grille.c] = ' ';
+    }
+
 
     switch (p->pacman.etat.sens){
         case DIR_HAUT: p->pacman.pos.l-=1; break;
@@ -33,8 +53,10 @@ void bouger_pacman(Partie *p, float dt) {
         case DIR_DROITE: p->pacman.pos.c+=1; break;
     }
 
-    grille = ecran_vers_grille(p->pacman.pos, (Pos){p->tc.x, p->tc.y});
-    p->plateau[grille.l][grille.c] = 'P';
+    if (manger) {
+        Pos grille = ecran_vers_grille(p->pacman.pos, (Pos){p->tc.x, p->tc.y});
+        p->plateau[grille.l][grille.c] = 'P';
+    }
 }
 
 void dessiner_pacman(Partie *p) {
