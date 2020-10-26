@@ -40,7 +40,7 @@ Partie charge_plan(char *fichier)
 
     // TODO: Ne pas avoir une taille fixe
     // Cette taille ne marche que pour le plateau test.txt (27x21)
-    p.tc = (Point){420 / p.C, 540 / p.L};
+    p.tc = (Pos){420 / p.C, 540 / p.L};
 
 /* ALLOCATION DYNAMIQUE                                                       */
 /* Allocation du tableau de *L pointeurs sur lignes                           */
@@ -114,7 +114,7 @@ Partie charge_plan(char *fichier)
 
             if(ch=='P')
                 {
-                    p.pacman = nouvelle_entite((Pos){l * p.tc.x,c*p.tc.y}, ENTITE_PACMAN);
+                    p.pacman = nouvelle_entite((Pos){l * p.tc.l, c * p.tc.c}, ENTITE_PACMAN);
                 }
             else if(ch=='F')
                 {
@@ -124,7 +124,7 @@ Partie charge_plan(char *fichier)
                     fclose(f);
                     exit(0);
                     }
-                p.fantomes[nbf] = nouvelle_entite((Pos){l*p.tc.x,c*p.tc.y}, ENTITE_FANTOME);
+                p.fantomes[nbf] = nouvelle_entite((Pos){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME);
                 nbf++;
                 }
             else if(ch=='B')
@@ -168,7 +168,7 @@ Partie charge_plan(char *fichier)
 
 // Renvoie le type de case vers laquelle se déplace l'entitée
 char case_direction(Partie *p, Entite *e, int sens) {
-    Pos pos = ecran_vers_grille(e->pos, (Pos){p->tc.x, p->tc.y});
+    Pos pos = ecran_vers_grille(e->pos, p->tc);
     switch(sens) {
     case DIR_HAUT: return p->plateau[pos.l-1][pos.c];
     case DIR_BAS: return p->plateau[pos.l+1][pos.c];
@@ -197,7 +197,7 @@ int mouvement_clavier(int sens){
 }
 
 void maj_etat(Partie *p){
-    Pos pos = ecran_vers_grille(p->pacman.pos, (Pos){p->tc.x, p->tc.y});
+    Pos pos = ecran_vers_grille(p->pacman.pos, p->tc);
     if (p->plateau[pos.l][pos.c]=='.'){
         p->pacman.etat.score+=1;
     }
@@ -224,15 +224,15 @@ void actualiser_partie(Partie *p, Timer *timer) {
     p->pacman.etat.prochain_sens = mouvement_clavier(p->pacman.etat.prochain_sens);
 
     bouger_pacman(p, timer->dt);
-    //bouger_fantomes(p);
+    bouger_fantomes(p);
     maj_etat(p);
 }
 
 // TODO: Artéfact graphique sur la case où se trouve pacman, se problème sera réglé 
 // quand on passera aux sprites au lieu de juste dessiner des couleurs
 void dessiner_grille(Partie *p) {
-    int cx = p->tc.x;
-    int cy = p->tc.y;
+    int cx = p->tc.l;
+    int cy = p->tc.c;
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
             Point pos = {j * cx, i * cy};

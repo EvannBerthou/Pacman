@@ -24,7 +24,7 @@ typedef struct partie {
     int     nbbonus; // le nombre de bonus restants à manger
     // ...et vous pouvez ajouter tout ce dont vous avez besoin
     // Tc : taille des cases
-    Point tc;
+    Pos tc;
 } Partie;
 
 // PROTOTYPES

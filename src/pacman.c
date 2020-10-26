@@ -4,20 +4,20 @@
 // Renvoie 1 si pacman est aligné à la grille et donc pas en transition
 // Pacman est aligné sur la grille ssi ces coordonés sont des multiples de la taille d'une case
 static int aligne_grille(Partie *p) {
-    return (p->pacman.pos.l % p->tc.x == 0 && p->pacman.pos.c % p->tc.y == 0);
+    return (p->pacman.pos.l % p->tc.l == 0 && p->pacman.pos.c % p->tc.c == 0);
 }
 
 static int centre_case(Partie *p) {
-    int demi_x = p->tc.x / 2;
-    int demi_y = p->tc.y / 2;
+    int demi_x = p->tc.l / 2;
+    int demi_y = p->tc.c / 2;
 
 // Necessaire pour les cas spécials dans les coins
 // TODO: Sûrement une meilleure solution disponible
     switch (p->pacman.etat.sens){
         case DIR_HAUT:
-        case DIR_GAUCHE: return (p->pacman.pos.l + demi_x) % p->tc.x > demi_x || (p->pacman.pos.c + demi_y) % p->tc.y > demi_y;
-        case DIR_BAS:    return (p->pacman.pos.l + demi_x) % p->tc.x > demi_x || (p->pacman.pos.c + demi_y) % p->tc.y >= demi_y;
-        case DIR_DROITE: return (p->pacman.pos.l + demi_x) % p->tc.x >= demi_x || (p->pacman.pos.c + demi_y) % p->tc.y > demi_y;
+        case DIR_GAUCHE: return (p->pacman.pos.l + demi_x) % p->tc.l > demi_x || (p->pacman.pos.c + demi_y) % p->tc.c > demi_y;
+        case DIR_BAS:    return (p->pacman.pos.l + demi_x) % p->tc.l > demi_x || (p->pacman.pos.c + demi_y) % p->tc.c >= demi_y;
+        case DIR_DROITE: return (p->pacman.pos.l + demi_x) % p->tc.l >= demi_x || (p->pacman.pos.c + demi_y) % p->tc.c > demi_y;
     }
     return 0;
 }
@@ -41,7 +41,7 @@ void bouger_pacman(Partie *p, float dt) {
     int manger = centre_case(p);
 
     if (manger) {
-        Pos grille = ecran_vers_grille(p->pacman.pos, (Pos){p->tc.x, p->tc.y});
+        Pos grille = ecran_vers_grille(p->pacman.pos, p->tc);
         p->plateau[grille.l][grille.c] = ' ';
     }
 
@@ -54,12 +54,12 @@ void bouger_pacman(Partie *p, float dt) {
     }
 
     if (manger) {
-        Pos grille = ecran_vers_grille(p->pacman.pos, (Pos){p->tc.x, p->tc.y});
+        Pos grille = ecran_vers_grille(p->pacman.pos, p->tc);
         p->plateau[grille.l][grille.c] = 'P';
     }
 }
 
 void dessiner_pacman(Partie *p) {
     Point pos = {p->pacman.pos.c, p->pacman.pos.l};
-    dessiner_rectangle(pos, p->tc.x, p->tc.y, jaune);
+    dessiner_rectangle(pos, p->tc.l, p->tc.c, jaune);
 }
