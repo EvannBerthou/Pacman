@@ -38,14 +38,6 @@ void bouger_pacman(Partie *p) {
         return;
     }
 
-    // Vérifie si pacman est en collision avec un bonbon
-    int manger = centre_case(p);
-
-    if (manger) {
-        Pos grille = ecran_vers_grille(p->pacman.pos, p->tc);
-        p->plateau[grille.l][grille.c] = ' ';
-    }
-
     switch (p->pacman.etat.direction){
         case DIR_HAUT: p->pacman.pos.l-=1; break;
         case DIR_BAS: p->pacman.pos.l+=1; break;
@@ -53,13 +45,22 @@ void bouger_pacman(Partie *p) {
         case DIR_DROITE: p->pacman.pos.c+=1; break;
     }
 
-    if (manger) {
+    // Vérifie si pacman est en collision avec un bonbon
+    if (centre_case(p)) {
         Pos grille = ecran_vers_grille(p->pacman.pos, p->tc);
+        if (p->plateau[grille.l][grille.c]=='.'){
+            p->pacman.etat.score+=1;
+        }
+        else if (p->plateau[grille.l][grille.c]=='B') {
+            p->pacman.etat.score+=50;
+            p->pacman.etat.fuite=1;
+            //metre compteur de temps a 0
+        }
         p->plateau[grille.l][grille.c] = 'P';
     }
 }
 
 void dessiner_pacman(Partie *p) {
     Point pos = {p->pacman.pos.c, p->pacman.pos.l};
-    dessiner_rectangle(pos, p->tc.l, p->tc.c, bleu);
+    dessiner_rectangle(pos, p->tc.l, p->tc.c, jaune);
 }

@@ -197,15 +197,6 @@ int mouvement_clavier(int direction){
 }
 
 void maj_etat(Partie *p){
-    Pos pos = ecran_vers_grille(p->pacman.pos, p->tc);
-    if (p->plateau[pos.l][pos.c]=='.'){
-        p->pacman.etat.score+=1;
-    }
-    else if (p->plateau[pos.l][pos.c]=='B') {
-        p->pacman.etat.score+=50;
-        p->pacman.etat.fuite=1;
-        //metre compteur de temps a 0
-    }
     /*
     ajout de temps ecouler a la structure partie
     else if (temps ecouler > x ){
@@ -266,7 +257,7 @@ void dessiner_texte(Partie *p) {
     // Score
     point_affichage.y += 26 + padding; // Descend la positon de la taille du texte + padding pour avoir de l'espace entre les textes
     char score[6];
-    sprintf(score, "%05d", p->pacman.etat.nb_vie); // Converties le score de pacman de int à string
+    sprintf(score, "%05d", p->pacman.etat.score); // Converties le score de pacman de int à string
     afficher_texte(score, 26, point_affichage, blanc);
 
     // Titre vies
