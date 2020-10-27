@@ -14,3 +14,6 @@ Git du projet pacman
 - [ ] IA des fantômes
 
 # Idées originales
+- [ ] Editeur de niveaux
+- [ ] Ecran d'accueil
+- [ ] Liste des meilleurs scores
