@@ -229,8 +229,6 @@ void actualiser_partie(Partie *p, Timer *timer) {
     maj_etat(p);
 }
 
-// TODO: Artéfact graphique sur la case où se trouve pacman, se problème sera réglé 
-// quand on passera aux sprites au lieu de juste dessiner des couleurs
 void dessiner_grille(Partie *p) {
     int cx = p->tc.l;
     int cy = p->tc.c;
@@ -258,11 +256,33 @@ void dessiner_grille(Partie *p) {
 }
 
 void dessiner_texte(Partie *p) {
+    // Espace entre les éléments
+    const int padding = 5;
+
+    Point point_affichage = {p->tc.c * p->C + padding, 0}; // Origine des texte (en haut à droite du plateau)
+    // Titre score
+    afficher_texte("Score", 26, point_affichage, rouge);
+
+    // Score
+    point_affichage.y += 26 + padding; // Descend la positon de la taille du texte + padding pour avoir de l'espace entre les textes
+    char score[6];
+    sprintf(score, "%05d", p->pacman.etat.nb_vie); // Converties le score de pacman de int à string
+    afficher_texte(score, 26, point_affichage, blanc);
+
+    // Titre vies
+    point_affichage.y += (26 + padding) * 2; // Grand espace entre les deux sections
+    afficher_texte("Vies", 26, point_affichage, rouge);
+
+    // Vies
+    point_affichage.y += 26 + padding;
+    char vies[2];
+    sprintf(vies, "%d", p->pacman.etat.nb_vie); // Converties les vies de pacman de int à string
+    afficher_texte(vies, 26, point_affichage, blanc);
 }
 
 void dessiner_partie(Partie *p) {
     // Efface l'écran
-    dessiner_rectangle((Point){0,0}, 420, 540, noir);
+    dessiner_rectangle((Point){0,0}, 600, 540, noir);
     dessiner_grille(p);
     dessiner_texte(p);
     dessiner_pacman(p);
