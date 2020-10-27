@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 /* A PARTIR D'ICI...C'EST A VOUS DE JOUER!                                    */
 /******************************************************************************/
 
-    ouvrir_fenetre(420, 540);
+    ouvrir_fenetre(600, 540);
 	Timer timer = nouveau_timer();
     while(1) {
 		tick_timer(&timer);
