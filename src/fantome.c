@@ -38,6 +38,6 @@ void dessiner_fantomes(Partie *p) {
     for (int i = 0; i < NBFANTOMES; i++) {
         Entite *fantome = &p->fantomes[i];
         Point pos = {fantome->pos.c, fantome->pos.l};
-        dessiner_rectangle(pos, p->tc.l, p->tc.c, jaune);
+        dessiner_rectangle(pos, p->tc.l, p->tc.c, bleu);
     }
 }
