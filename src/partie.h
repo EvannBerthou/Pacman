@@ -32,6 +32,7 @@ typedef struct partie {
 Partie charge_plan(char *fichier);
 char case_direction(Partie *p, Entite *e, int direction);
 void actualiser_partie(Partie *p, Timer *timer);
+void dessiner_texte(Partie *p);
 void dessiner_partie(Partie *p);
 
 #endif

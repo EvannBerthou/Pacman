@@ -257,10 +257,14 @@ void dessiner_grille(Partie *p) {
     }
 }
 
+void dessiner_texte(Partie *p) {
+}
+
 void dessiner_partie(Partie *p) {
     // Efface l'écran
     dessiner_rectangle((Point){0,0}, 420, 540, noir);
     dessiner_grille(p);
+    dessiner_texte(p);
     dessiner_pacman(p);
     dessiner_fantomes(p);
     actualiser();
