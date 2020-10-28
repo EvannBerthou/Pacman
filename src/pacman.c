@@ -7,6 +7,17 @@ static int aligne_grille(Partie *p) {
     return (p->pacman.pos.l % p->tc.l == 0 && p->pacman.pos.c % p->tc.c == 0);
 }
 
+static int direction_opposee(Partie *p) {
+    int curr = p->pacman.etat.direction;
+    int next = p->pacman.etat.prochaine_direction;
+    
+    if (curr == DIR_HAUT   && next == DIR_BAS)    return 1;
+    if (curr == DIR_BAS    && next == DIR_HAUT)   return 1;
+    if (curr == DIR_GAUCHE && next == DIR_DROITE) return 1;
+    if (curr == DIR_DROITE && next == DIR_GAUCHE) return 1;
+    return 0;
+}
+
 static int centre_case(Partie *p) {
     int demi_x = p->tc.l / 2;
     int demi_y = p->tc.c / 2;
@@ -26,11 +37,13 @@ static int centre_case(Partie *p) {
 void bouger_pacman(Partie *p) {
     // Si pacman ne se déplace dans aucune direciton 
     // Ou qu'il a une direction en attente et qu'il atteint une intersection
+    // Ou qu'il part dans dans la direction opposée
     // Alors il change de direction
     if (p->pacman.etat.direction == 0 
-        || (aligne_grille(p) && case_direction(p, &p->pacman, p->pacman.etat.prochain_sens) != '*')) {
-        p->pacman.etat.direction = p->pacman.etat.prochain_sens;
-        p->pacman.etat.prochain_sens = 0;
+        || ((aligne_grille(p) || direction_opposee(p))
+        && case_direction(p, &p->pacman, p->pacman.etat.prochaine_direction) != '*')) {
+        p->pacman.etat.direction = p->pacman.etat.prochaine_direction;
+        p->pacman.etat.prochaine_direction = 0;
     }
     
     // Si pacman est contre un mur alors ne pas bouger

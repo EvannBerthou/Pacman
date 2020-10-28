@@ -18,16 +18,16 @@ typedef enum {
 
 typedef enum {
     DIR_INCONNUE = 0,
-    DIR_HAUT,
-    DIR_BAS,
-    DIR_GAUCHE,
-    DIR_DROITE
+    DIR_HAUT,    // 1
+    DIR_BAS,     // 2
+    DIR_GAUCHE,  // 3
+    DIR_DROITE   // 4
 } DirEntite;
 
 /* Structure element permet de stocker la direction de deplacement, le score de pacman et mode chase des fantome */
 typedef struct {
     int direction;
-    int prochain_sens;
+    int prochaine_direction;
     int score;
     int fuite;
     int nb_vie;

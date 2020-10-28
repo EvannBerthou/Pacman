@@ -3,7 +3,7 @@
 Entite nouvelle_entite(Pos pos, TypeEntite type) {
     Etat etat = {
         .direction = 0, //TODO: Donner une direction de départ aux entités
-        .prochain_sens = 0,
+        .prochaine_direction = 0,
         .score = 0,
         .fuite = 0,
         .nb_vie = 3,
