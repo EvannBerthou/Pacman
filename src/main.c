@@ -43,11 +43,11 @@ int main(int argc, char **argv) {
 /******************************************************************************/
 
     ouvrir_fenetre(600, 540);
-	Timer timer = nouveau_timer();
+    Timer timer = nouveau_timer();
     while(1) {
-		tick_timer(&timer);
+        tick_timer(&timer);
 #ifdef DEBUG
-		print_fps(&timer);
+        print_fps(&timer);
 #endif
         traiter_evenements();
         actualiser_partie(&p, &timer);
