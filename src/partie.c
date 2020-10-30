@@ -229,18 +229,16 @@ void dessiner_grille(Partie *p) {
             char type = p->plateau[i][j];
             // Mur
             if (type == '*')
-                dessiner_rectangle(pos, cx, cy, rouge);
+                dessiner_rectangle(pos, cx, cy, bleu);
             // Bonbon
             else if (type == '.') {
-                int w = cx * .5f, h = cy * .5f;
-                Point centre = {pos.x + (w/2), pos.y + (h/2)};
-                dessiner_rectangle(centre, w, h, wheat);
+                Point centre = {pos.x + cx / 2, pos.y + cy / 2}; // Calcul le centre
+                dessiner_disque(centre, 3, wheat);
             }
             // Bonus
             else if (type == 'B') {
-                int w = cx * .5f, h = cy * .5f;
-                Point centre = {pos.x + (w/2), pos.y + (h/2)};
-                dessiner_rectangle(centre, w, h, orange);
+                Point centre = {pos.x + cx / 2, pos.y + cy / 2}; // Calcul le centre
+                dessiner_disque(centre, 5, orange);
             }
         }
     }
