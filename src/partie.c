@@ -127,7 +127,7 @@ Partie charge_plan(char *fichier)
                 p.fantomes[nbf] = nouvelle_entite((Pos){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME);
                 nbf++;
                 }
-            else if(ch=='B')
+            else if(ch=='B' || ch == '.')
                 nbb++;
 
             p.plateau[l][c] = ch; // Ecriture dans le plan
@@ -218,6 +218,11 @@ void actualiser_partie(Partie *p, Timer *timer) {
     bouger_pacman(p);
     bouger_fantomes(p);
     maj_etat(p);
+
+    if (p->nbbonus == 0) {
+        printf("Niveau terminé, chargement du niveau suivant\n");
+        *p = charge_plan("data/test.txt");
+    }
 }
 
 void dessiner_grille(Partie *p) {

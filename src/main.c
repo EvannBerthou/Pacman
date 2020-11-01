@@ -36,6 +36,7 @@ int main(int argc, char **argv) {
             printf("%c",p.plateau[i][j]);
         printf("\n");
     }
+    printf("Bonbons et bonus : %d\n", p.nbbonus);
 #endif
 
 /******************************************************************************/
