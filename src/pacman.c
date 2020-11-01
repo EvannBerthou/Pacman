@@ -58,6 +58,25 @@ void bouger_pacman(Partie *p) {
         case DIR_DROITE: p->pacman.pos.c+=1; break;
     }
 
+    // Wrapping de pacman sur les bords
+    // Droite
+    if (p->pacman.pos.c > (p->C - 1) * p->tc.c + p->tc.c && p->pacman.etat.direction == DIR_DROITE) { 
+        p->pacman.pos.c = -(p->tc.c * 2);
+    }
+    // Gauche
+    else if (p->pacman.pos.c < -p->tc.c && p->pacman.etat.direction == DIR_GAUCHE) { 
+        p->pacman.pos.c = (p->C - 1) * p->tc.c + p->tc.c * 2;
+    }
+    // TODO: Segfault quand on sors du plateau par en bas
+    // Bas
+    else if (p->pacman.pos.c > (p->C - 1) + p->tc.l * p->tc.c && p->pacman.etat.direction == DIR_BAS) { 
+        p->pacman.pos.l = -(p->tc.l * 2);
+    }
+    // Haut
+    else if (p->pacman.pos.l < -p->tc.l && p->pacman.etat.direction == DIR_HAUT) { 
+        p->pacman.pos.l = (p->C - 1) * p->tc.l + p->tc.l * 2;
+    }
+
     // Vérifie si pacman est en collision avec un bonbon
     if (centre_case(p)) {
         Pos grille = ecran_vers_grille(p->pacman.pos, p->tc);
