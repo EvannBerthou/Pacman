@@ -226,6 +226,8 @@ void actualiser_partie(Partie *p, Timer *timer) {
 }
 
 void dessiner_grille(Partie *p) {
+    // Efface la grille pour la redessiner de 0
+    dessiner_rectangle((Point){0,0}, 420, 540, noir);
     int cx = p->tc.l;
     int cy = p->tc.c;
     for (int i = 0; i < p->L; i++) {
@@ -250,6 +252,12 @@ void dessiner_grille(Partie *p) {
 }
 
 void dessiner_texte(Partie *p) {
+    // efface le texte précédent
+    // Remarque : on fait ça pour tricher un peu, lorsque pacman arrive sur la droite du plateau, il est dessiné
+    // au dessus de la zone de texte. En faisant ça, on efface les pixels de pacman qui sont en dehors du plateau
+    // ce qui donne une impression de transition
+    dessiner_rectangle((Point){p->tc.c * p->C, 0}, 200, 540, noir);
+
     // Espace entre les éléments
     const int padding = 5;
 
@@ -276,10 +284,9 @@ void dessiner_texte(Partie *p) {
 
 void dessiner_partie(Partie *p) {
     // Efface l'écran
-    dessiner_rectangle((Point){0,0}, 600, 540, noir);
     dessiner_grille(p);
-    dessiner_texte(p);
     dessiner_pacman(p);
     dessiner_fantomes(p);
+    dessiner_texte(p);
     actualiser();
 }
