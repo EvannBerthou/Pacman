@@ -62,12 +62,20 @@ void bouger_pacman(Partie *p) {
     if (centre_case(p)) {
         Pos grille = ecran_vers_grille(p->pacman.pos, p->tc);
         if (p->plateau[grille.l][grille.c]=='.'){
-            p->pacman.etat.score+=1;
+            p->pacman.etat.score++;
+            p->nbbonus--;
+            #if DEBUG 
+            printf("bonbons : %d\n", p->nbbonus);
+            #endif
         }
         else if (p->plateau[grille.l][grille.c]=='B') {
             p->pacman.etat.score+=50;
             p->pacman.etat.fuite=1;
+            p->nbbonus--;
             //metre compteur de temps a 0
+            #if DEBUG 
+            printf("bonbons : %d\n", p->nbbonus);
+            #endif
         }
         p->plateau[grille.l][grille.c] = 'P';
     }
