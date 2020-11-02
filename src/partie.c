@@ -206,10 +206,10 @@ void maj_etat(Partie *p){
         if ((p->pacman.pos.l == p->fantomes[i].pos.l) && (p->pacman.pos.c == p->fantomes[i].pos.c)){
             p->pacman.etat.nb_vie-=1;
             // TODO: Retourner à la case départ au lieu
-            // /debug\ printf("l:  %d  c:   %d\n",p->pacman.pos.l,p->pacman.pos.c );
-            
             p->pacman.pos = p->pacman.pos_init;
-            p->fantomes[i].pos=p->fantomes[i].pos_init;
+            for (int b =0;b!=NBFANTOMES;b++ ){
+                p->fantomes[b].pos=p->fantomes[b].pos_init;
+            }
         }
     }
 }
