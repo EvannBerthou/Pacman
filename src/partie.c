@@ -114,7 +114,7 @@ Partie charge_plan(char *fichier)
 
             if(ch=='P')
                 {
-                    p.pacman = nouvelle_entite((Pos){l * p.tc.l, c * p.tc.c}, ENTITE_PACMAN);
+                    p.pacman = nouvelle_entite((Pos){l * p.tc.l, c * p.tc.c},(Pos){l * p.tc.l, c * p.tc.c}, ENTITE_PACMAN);
                 }
             else if(ch=='F')
                 {
@@ -124,7 +124,7 @@ Partie charge_plan(char *fichier)
                     fclose(f);
                     exit(0);
                     }
-                p.fantomes[nbf] = nouvelle_entite((Pos){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME);
+                p.fantomes[nbf] = nouvelle_entite((Pos){l * p.tc.l, c * p.tc.c},(Pos){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME);
                 nbf++;
                 }
             else if(ch=='B' || ch == '.')
@@ -206,7 +206,10 @@ void maj_etat(Partie *p){
         if ((p->pacman.pos.l == p->fantomes[i].pos.l) && (p->pacman.pos.c == p->fantomes[i].pos.c)){
             p->pacman.etat.nb_vie-=1;
             // TODO: Retourner à la case départ au lieu
-            p->pacman.pos = (Pos){10, 0};
+            p->pacman.pos = p->pacman.pos_init;
+            for (int b =0;b!=NBFANTOMES;b++ ){
+                p->fantomes[b].pos=p->fantomes[b].pos_init;
+            }
         }
     }
 }

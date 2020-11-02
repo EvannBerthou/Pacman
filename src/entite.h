@@ -35,11 +35,12 @@ typedef struct {
 
 typedef struct {
     Pos pos;
+    Pos pos_init;
     TypeEntite type;
     Etat etat;
 } Entite;
 
-Entite nouvelle_entite(Pos pos, TypeEntite type);
+Entite nouvelle_entite(Pos pos,Pos pos_init ,TypeEntite type);
 Pos ecran_vers_grille(Pos pos, Pos taille);
 
 #endif
