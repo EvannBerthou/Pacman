@@ -1,6 +1,6 @@
 #include "entite.h"
 
-Entite nouvelle_entite(Pos pos, TypeEntite type) {
+Entite nouvelle_entite(Pos pos,Pos pos_init, TypeEntite type) {
     Etat etat = {
         .direction = 0, //TODO: Donner une direction de départ aux entités
         .prochaine_direction = 0,
@@ -10,6 +10,7 @@ Entite nouvelle_entite(Pos pos, TypeEntite type) {
     };
     Entite result = {
         .pos = pos,
+        .pos_init = pos_init,
         .type = type,
         .etat = etat,
     };
