@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
         return 1;
     if (charger_sprites() == -1)
         return 1;
+    calculer_voisins(&p);
 
 #ifdef DEBUG
     /* Affichage du plan lu                                                       */
@@ -45,6 +46,7 @@ int main(int argc, char **argv) {
 /* A PARTIR D'ICI...C'EST A VOUS DE JOUER!                                    */
 /******************************************************************************/
 
+    printf("%ld %ld\n", sizeof(int), sizeof(short));
     ouvrir_fenetre(600, 540);
     Timer timer = nouveau_timer();
     while(1) {

@@ -19,10 +19,10 @@ typedef enum {
 } TypeEntite;
 
 typedef enum {
-    DIR_HAUT,     // 1
-    DIR_BAS,      // 2
-    DIR_GAUCHE,   // 3
-    DIR_DROITE,   // 4
+    DIR_HAUT,     // 1 = 0b0001
+    DIR_BAS,      // 2 = 0b0010
+    DIR_GAUCHE,   // 3 = 0b0100
+    DIR_DROITE,   // 4 = 0b1000
     DIR_INCONNUE
 } DirEntite;
 
