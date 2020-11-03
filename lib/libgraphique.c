@@ -250,6 +250,16 @@ void afficher_image(char *nom, Point coin){
     SDL_BlitSurface(img,NULL,ecran,&position_img);
 }
 
+// INFO : On a dû ajouté cette fonction cat la fonction afficher_image
+// de base charge l'image à chaque appel ce qui est ultra lent
+// Ici la fonction ne fait qu'afficher une image déjà chargée
+void afficher_surface(SDL_Surface *surface, Point coin) {
+    SDL_Rect position_img ;
+    position_img.x = coin.x;
+    position_img.y = coin.y;
+    SDL_BlitSurface(surface,NULL,ecran,&position_img);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // 3. Gestion des événements

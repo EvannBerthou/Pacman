@@ -38,7 +38,6 @@ typedef struct {
 // Déclaration des fonctions
 ////////////////////////////////////////////////////////////////////////////////
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // 1. Ouvrir et fermer une fenêtre
 
@@ -81,6 +80,7 @@ void dessiner_cercle(Point centre, int rayon, Couleur couleur);
 // nom est une chaine de caracteres qui est le nom (complet) du fichier image
 // coin est le coin haut, gauche voulu pour l'image à afficher dans l'ecran
 void afficher_image(char *nom, Point coin);
+void afficher_surface(SDL_Surface *surface, Point coin);
 
 ////////////////////////////////////////////////////////////////////////////////
 // 3. Gestion des événements

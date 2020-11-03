@@ -38,6 +38,9 @@ void dessiner_fantomes(Partie *p) {
     for (int i = 0; i < NBFANTOMES; i++) {
         Entite *fantome = &p->fantomes[i];
         Point pos = {fantome->pos.c, fantome->pos.l};
-        dessiner_rectangle(pos, p->tc.l, p->tc.c, pink);
+        if (fantome->etat.direction == DIR_INCONNUE) 
+            afficher_surface(fantome->sprite[1], pos);
+        else
+            afficher_surface(fantome->sprite[fantome->etat.direction], pos);
     }
 }

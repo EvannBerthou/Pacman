@@ -7,6 +7,28 @@
 #include "pacman.h"
 #include "fantome.h"
 
+#define SPRITE_COUNT 17
+const char *sprites_paths[SPRITE_COUNT] = {
+    "data/sprites/bille.bmp",
+    "data/sprites/bonbon.bmp",
+    "data/sprites/mur1.bmp",
+    "data/sprites/mur2.bmp",
+    "data/sprites/mur3.bmp",
+    "data/sprites/mur4.bmp",
+    "data/sprites/mur5.bmp",
+    "data/sprites/mur6.bmp",
+    "data/sprites/mur7.bmp",
+    "data/sprites/mur8.bmp",
+    "data/sprites/mur9.bmp",
+    "data/sprites/mur10.bmp",
+    "data/sprites/mur11.bmp",
+    "data/sprites/mur12.bmp",
+    "data/sprites/mur13.bmp",
+    "data/sprites/mur14.bmp",
+    "data/sprites/mur15.bmp",
+};
+SDL_Surface* sprites[SPRITE_COUNT];
+
 /******************************************************************************/
 /* CHARGE PLAN                                                                */
 /******************************************************************************/
@@ -166,6 +188,64 @@ Partie charge_plan(char *fichier)
     return p;
     }
 
+
+int charger_sprites() {
+    for (int i = 0; i < SPRITE_COUNT; i++) {
+        SDL_Surface *sprite = SDL_LoadBMP(sprites_paths[i]);
+        if (sprite == NULL) {
+            fprintf(stderr, "Erreur lors du chargement du sprite %s\n", sprites_paths[i]);
+            return -1;
+        }
+        sprites[i] = sprite;
+    }
+    return 0;
+}
+
+// Calculer un nombre pour déterminer le nombre de voisins puis le stocker dans le meme ordre
+// que le plateau
+short voisins_murs[27 * 21] = {};
+// Renvoie le bon sprite 
+static SDL_Surface *sprite_at(Point pos) {
+    // Convertis les coordonnés 2d en index pour un array 1d
+    int index = 21 * pos.y + pos.x;
+    // Le 2 correspond à l'offset pour avoir les sprites des murs
+    //return sprites[2 + voisins_murs[index]];
+    return sprites[1 + voisins_murs[index]];
+}
+
+static char on_grid(Partie *p, int i, int j) {
+    if (i >= 0 && j >= 0 && i < p->L && j < p->C) 
+        return p->plateau[i][j];
+    return ' ';
+}
+
+void calculer_voisins(Partie *p) {
+    for (int i = 0; i < p->L; i++) {
+        for (int j = 0; j < p->C; j++) {
+            short voisins = 0;
+            /* 
+             Ici on encode les voisins mais au lieu de stocker si un mur a des voisins 
+             dans 4 variables pour chaque direction, on stocke tous les voisins dans une seule variable
+             Cela permet d'économiser beaucoup de mémoire
+             Un int est encodé sur 4 bytes (du moins sur ma machine), ce qui donne :
+             27 * 21 * 4 (int) * 4 (voisins) = 9,072 bytes 
+             En utilisant d'un seul short de 2 bytes, ça donne
+             27 * 21 * 2 (short) * 1 (une seule variable) = 1,134 bytes
+            */
+            if (on_grid(p, i - 1, j) == '*')
+                voisins |= 0b0001;
+            if (on_grid(p, i + 1, j) == '*')
+                voisins |= 0b0010;
+            if (on_grid(p, i, j - 1) == '*')
+                voisins |= 0b0100;
+            if (on_grid(p, i, j + 1) == '*')
+                voisins |= 0b1000;
+            voisins_murs[21 * i + j] = voisins;
+        }
+    }
+}
+
+
 // Renvoie le type de case vers laquelle se déplace l'entitée
 char case_direction(Partie *p, Entite *e, int direction) {
     Pos pos = ecran_vers_grille(e->pos, p->tc);
@@ -238,17 +318,16 @@ void dessiner_grille(Partie *p) {
             Point pos = {j * cx, i * cy};
             char type = p->plateau[i][j];
             // Mur
-            if (type == '*')
-                dessiner_rectangle(pos, cx, cy, bleu);
+            if (type == '*') {
+                afficher_surface(sprite_at((Point){j,i}), pos);
+            }
             // Bonbon
             else if (type == '.') {
-                Point centre = {pos.x + cx / 2, pos.y + cy / 2}; // Calcul le centre
-                dessiner_disque(centre, 3, wheat);
+                afficher_surface(sprites[0], pos);
             }
             // Bonus
             else if (type == 'B') {
-                Point centre = {pos.x + cx / 2, pos.y + cy / 2}; // Calcul le centre
-                dessiner_disque(centre, 5, orange);
+                afficher_surface(sprites[1], pos);
             }
         }
     }

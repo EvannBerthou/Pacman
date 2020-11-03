@@ -39,11 +39,11 @@ void bouger_pacman(Partie *p) {
     // Ou qu'il a une direction en attente et qu'il atteint une intersection
     // Ou qu'il part dans dans la direction opposée
     // Alors il change de direction
-    if (p->pacman.etat.direction == 0 
+    if (p->pacman.etat.direction == DIR_INCONNUE
         || ((aligne_grille(p) || direction_opposee(p))
         && case_direction(p, &p->pacman, p->pacman.etat.prochaine_direction) != '*')) {
         p->pacman.etat.direction = p->pacman.etat.prochaine_direction;
-        p->pacman.etat.prochaine_direction = 0;
+        p->pacman.etat.prochaine_direction = DIR_INCONNUE;
     }
     
     // Si pacman est contre un mur alors ne pas bouger
@@ -101,6 +101,6 @@ void bouger_pacman(Partie *p) {
 }
 
 void dessiner_pacman(Partie *p) {
-    Point pos = {p->pacman.pos.c + p->tc.c / 2, p->pacman.pos.l + p->tc.l / 2};
-    dessiner_disque(pos, 8, jaune);
+    Point pos = {p->pacman.pos.c, p->pacman.pos.l};
+    afficher_surface(p->pacman.sprite[p->pacman.etat.direction], pos);
 }

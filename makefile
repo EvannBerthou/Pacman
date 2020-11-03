@@ -21,7 +21,7 @@ release: $(LIBGRDIR)/libgraphique.o $(OBJ)
 
 debug: $(wildcard src/*.c) $(wildcard src/*.h) $(LIBGRDIR)/libgraphique.o
 	@echo "Compilation en mode debug"
-	gcc -DDEBUG $^ -o $(OUTPUT) $(SDL_CFLAGS) $(SDL_LDFLAGS) $(LIB)
+	gcc -g -DDEBUG $^ -o $(OUTPUT) $(SDL_CFLAGS) $(SDL_LDFLAGS) $(LIB)
 
 $(LIBGRDIR)/libgraphique.o: $(LIBGRDIR)/libgraphique.c
 	gcc   -c $(LIBGRDIR)/libgraphique.c -o $(LIBGRDIR)/libgraphique.o 
