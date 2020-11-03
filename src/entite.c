@@ -53,7 +53,7 @@ SDL_Surface *charger_sprite(TypeEntite type, int dir, int frame) {
         exit(1);
     }
     // Transparence noire
-    SDL_SetColorKey(img, SDL_SRCCOLORKEY, 0xFFFFFF);
+    SDL_SetColorKey(img, SDL_SRCCOLORKEY, 0x000000);
     return img;
 }
 
