@@ -298,7 +298,7 @@ void maj_etat(Partie *p){
 void actualiser_partie(Partie *p, Timer *timer) {
     p->pacman.etat.prochaine_direction = mouvement_clavier(p->pacman.etat.prochaine_direction);
 
-    bouger_pacman(p);
+    bouger_pacman(p, timer->dt / 1000.f);
     bouger_fantomes(p);
     maj_etat(p);
 

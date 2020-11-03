@@ -13,33 +13,43 @@ Entite nouvelle_entite(Pos pos,Pos pos_init, TypeEntite type) {
         .pos_init = pos_init,
         .type = type,
         .etat = etat,
+        .animation_time = 0,
     };
+
+    if (type == ENTITE_FANTOME)
+        result.nombre_frames = 1;
+    else 
+        result.nombre_frames = 2;
+
     for (int i = 0; i < 4; i++) {
-        result.sprite[i] = charger_sprite(type, i);
+        for (int j = 0; j < result.nombre_frames; j++) {
+            result.sprite[i][j] = charger_sprite(type, i, j);
+        }
     }
     return result;
 }
 
-// Dans le meme ordre que l'enum TypeEntite
-const char *entites_sprites_path[][4] = {
+// Premier tableau correspond au type de l'entité, deuxiemes aux sprites des directions et troisiemes aux
+// frames de l'animation (seul pacman a une animation mais cela rend le jeu plus extensible facilement)
+const char *entites_sprites_path[][4][2] = {
     {
-        "data/sprites/pacman0.bmp",
-        "data/sprites/pacman1.bmp",
-        "data/sprites/pacman2.bmp",
-        "data/sprites/pacman3.bmp",
+        {"data/sprites/pacman00.bmp", "data/sprites/pacman01.bmp"},
+        {"data/sprites/pacman10.bmp", "data/sprites/pacman11.bmp"},
+        {"data/sprites/pacman20.bmp", "data/sprites/pacman21.bmp"},
+        {"data/sprites/pacman30.bmp", "data/sprites/pacman31.bmp"},
     },
     {
-        "data/sprites/fantome0.bmp",
-        "data/sprites/fantome1.bmp",
-        "data/sprites/fantome2.bmp",
-        "data/sprites/fantome3.bmp",
+        {"data/sprites/fantome0.bmp"},
+        {"data/sprites/fantome1.bmp"},
+        {"data/sprites/fantome2.bmp"},
+        {"data/sprites/fantome3.bmp"},
     }
 };
 
-SDL_Surface *charger_sprite(TypeEntite type, int dir) {
-    SDL_Surface *img = SDL_LoadBMP(entites_sprites_path[type][dir]);
+SDL_Surface *charger_sprite(TypeEntite type, int dir, int frame) {
+    SDL_Surface *img = SDL_LoadBMP(entites_sprites_path[type][dir][frame]);
     if (img == NULL) {
-        fprintf(stderr, "Erreur lors du chargement du sprite %s\n", entites_sprites_path[type][dir]);
+        fprintf(stderr, "Erreur lors du chargement du sprite %s\n", entites_sprites_path[type][dir][frame]);
         exit(1);
     }
     // Transparence noire
