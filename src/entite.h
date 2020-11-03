@@ -1,6 +1,8 @@
 #ifndef ENTITE_H
 #define ENTITE_H
 
+#include <SDL/SDL.h>
+
 /* Structure Pos: permet de stocker un couple ligne/colonne                   */
 typedef struct pos {
     int     l;
@@ -38,9 +40,11 @@ typedef struct {
     Pos pos_init;
     TypeEntite type;
     Etat etat;
+    SDL_Surface *sprite;
 } Entite;
 
 Entite nouvelle_entite(Pos pos,Pos pos_init ,TypeEntite type);
+SDL_Surface *charger_sprite(TypeEntite type);
 Pos ecran_vers_grille(Pos pos, Pos taille);
 
 #endif

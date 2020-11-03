@@ -101,6 +101,6 @@ void bouger_pacman(Partie *p) {
 }
 
 void dessiner_pacman(Partie *p) {
-    Point pos = {p->pacman.pos.c + p->tc.c / 2, p->pacman.pos.l + p->tc.l / 2};
-    dessiner_disque(pos, 8, jaune);
+    Point pos = {p->pacman.pos.c, p->pacman.pos.l};
+    afficher_surface(p->pacman.sprite, pos);
 }
