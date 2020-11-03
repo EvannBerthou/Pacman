@@ -6,12 +6,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <SDL/SDL.h>
 #include "../lib/libgraphique.h"
 #include "timer.h"
 #include "entite.h"
 
 #define NBFANTOMES  1 // nombres de fantômes dans les plateaux chargés
-#define PACMAN_DELAY 125
+
 
 // STRUCTURES
 /* Structure Partie:  permet de stocker les paramètres d'une partie           */
@@ -30,6 +31,7 @@ typedef struct partie {
 /* charge_plan : lit un fichier contenant un plateau de jeu et le charge
                     en mémoire, dans le champ 'plateau' d'une Partie */
 Partie charge_plan(char *fichier);
+int charger_sprites();
 char case_direction(Partie *p, Entite *e, int direction);
 void actualiser_partie(Partie *p, Timer *timer);
 void dessiner_texte(Partie *p);

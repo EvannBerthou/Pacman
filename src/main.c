@@ -26,6 +26,8 @@ int main(int argc, char **argv) {
     /* Si problème lors du chargement du plan...                                  */
     if(p.plateau == NULL)
         return 1;
+    if (charger_sprites() == -1)
+        return 1;
 
 #ifdef DEBUG
     /* Affichage du plan lu                                                       */

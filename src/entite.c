@@ -21,7 +21,7 @@ Entite nouvelle_entite(Pos pos,Pos pos_init, TypeEntite type) {
 }
 
 // Dans le meme ordre que l'enum TypeEntite
-const char *sprites_path[][4] = {
+const char *entites_sprites_path[][4] = {
     {
         "data/sprites/pacman0.bmp",
         "data/sprites/pacman1.bmp",
@@ -37,9 +37,9 @@ const char *sprites_path[][4] = {
 };
 
 SDL_Surface *charger_sprite(TypeEntite type, int dir) {
-    SDL_Surface *img = SDL_LoadBMP(sprites_path[type][dir]);
+    SDL_Surface *img = SDL_LoadBMP(entites_sprites_path[type][dir]);
     if (img == NULL) {
-        fprintf(stderr, "Erreur lors du chargement du sprite %s\n", sprites_path[type][dir]);
+        fprintf(stderr, "Erreur lors du chargement du sprite %s\n", entites_sprites_path[type][dir]);
         exit(1);
     }
     // Transparence noire

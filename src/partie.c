@@ -7,6 +7,13 @@
 #include "pacman.h"
 #include "fantome.h"
 
+#define SPRITE_COUNT 2
+const char *sprites_paths[SPRITE_COUNT] = {
+    "data/sprites/bille.bmp",
+    "data/sprites/bonbon.bmp"
+};
+SDL_Surface* sprites[SPRITE_COUNT];
+
 /******************************************************************************/
 /* CHARGE PLAN                                                                */
 /******************************************************************************/
@@ -166,6 +173,20 @@ Partie charge_plan(char *fichier)
     return p;
     }
 
+
+int charger_sprites() {
+    for (int i = 0; i < SPRITE_COUNT; i++) {
+        SDL_Surface *sprite = SDL_LoadBMP(sprites_paths[i]);
+        if (sprite == NULL) {
+            fprintf(stderr, "Erreur lors du chargement du sprite %s\n", sprites_paths[i]);
+            return -1;
+        }
+        sprites[i] = sprite;
+    }
+    return 0;
+}
+
+
 // Renvoie le type de case vers laquelle se déplace l'entitée
 char case_direction(Partie *p, Entite *e, int direction) {
     Pos pos = ecran_vers_grille(e->pos, p->tc);
@@ -242,13 +263,11 @@ void dessiner_grille(Partie *p) {
                 dessiner_rectangle(pos, cx, cy, bleu);
             // Bonbon
             else if (type == '.') {
-                Point centre = {pos.x + cx / 2, pos.y + cy / 2}; // Calcul le centre
-                dessiner_disque(centre, 3, wheat);
+                afficher_surface(sprites[0], pos);
             }
             // Bonus
             else if (type == 'B') {
-                Point centre = {pos.x + cx / 2, pos.y + cy / 2}; // Calcul le centre
-                dessiner_disque(centre, 5, orange);
+                afficher_surface(sprites[1], pos);
             }
         }
     }
