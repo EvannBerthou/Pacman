@@ -17,3 +17,8 @@ Git du projet pacman
 - [ ] Editeur de niveaux
 - [ ] Ecran d'accueil
 - [ ] Liste des meilleurs scores
+
+
+# Credits
+
+- [Sprites](https://www.spriters-resource.com/arcade/pacman/)
