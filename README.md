@@ -4,8 +4,8 @@ Git du projet pacman
 # Tâches
 - [x] Afficher le niveau en mode graphique
 - [x] Afficher pacman et les fantômes
-- [ ] Gérer les déplacements de pacman/fantômes en temps réel
-- [ ] Bonbons/bonus
+- [x] Gérer les déplacements de pacman/fantômes en temps réel
+- [x] Bonbons/bonus
 - [ ] Différents niveaux
 - [x] Tunnels pour passer d'un côté du plateau à l'autre
 - [ ] Fantômes fuient quand pacman a mangé un bonus
