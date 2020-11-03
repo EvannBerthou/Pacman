@@ -43,11 +43,13 @@ typedef struct {
     // Liste des sprites de l'entité
     // 4 sprite pour chacune des 4 directions
     // L'ordre correspond à l'odre de DirEntite
-    SDL_Surface *sprite[4];
+    SDL_Surface *sprite[4][2];
+    int nombre_frames;
+    float animation_time;
 } Entite;
 
 Entite nouvelle_entite(Pos pos,Pos pos_init ,TypeEntite type);
-SDL_Surface *charger_sprite(TypeEntite type, int dir);
+SDL_Surface *charger_sprite(TypeEntite type, int dir, int frame);
 Pos ecran_vers_grille(Pos pos, Pos taille);
 
 #endif

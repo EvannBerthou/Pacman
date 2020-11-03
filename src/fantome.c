@@ -39,8 +39,8 @@ void dessiner_fantomes(Partie *p) {
         Entite *fantome = &p->fantomes[i];
         Point pos = {fantome->pos.c, fantome->pos.l};
         if (fantome->etat.direction == DIR_INCONNUE) 
-            afficher_surface(fantome->sprite[1], pos);
+            afficher_surface(fantome->sprite[1][0], pos);
         else
-            afficher_surface(fantome->sprite[fantome->etat.direction], pos);
+            afficher_surface(fantome->sprite[fantome->etat.direction][0], pos);
     }
 }

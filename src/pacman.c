@@ -1,6 +1,8 @@
 #include "pacman.h"
 #include "partie.h"
 
+#define VITESSE_ANIMATION 7
+
 // Renvoie 1 si pacman est aligné à la grille et donc pas en transition
 // Pacman est aligné sur la grille ssi ces coordonés sont des multiples de la taille d'une case
 static int aligne_grille(Partie *p) {
@@ -34,7 +36,7 @@ static int centre_case(Partie *p) {
 }
 
 //modification de la positon de pacman en fonction de l'environnement et des touches pressés
-void bouger_pacman(Partie *p) {
+void bouger_pacman(Partie *p, float dt) {
     // Si pacman ne se déplace dans aucune direciton 
     // Ou qu'il a une direction en attente et qu'il atteint une intersection
     // Ou qu'il part dans dans la direction opposée
@@ -57,6 +59,10 @@ void bouger_pacman(Partie *p) {
         case DIR_GAUCHE: p->pacman.pos.c-=1; break;
         case DIR_DROITE: p->pacman.pos.c+=1; break;
     }
+
+    p->pacman.animation_time += dt * VITESSE_ANIMATION;
+    if (p->pacman.animation_time >= p->pacman.nombre_frames)
+        p->pacman.animation_time = 0;
 
     // Wrapping de pacman sur les bords
     // Droite
@@ -102,5 +108,5 @@ void bouger_pacman(Partie *p) {
 
 void dessiner_pacman(Partie *p) {
     Point pos = {p->pacman.pos.c, p->pacman.pos.l};
-    afficher_surface(p->pacman.sprite[p->pacman.etat.direction], pos);
+    afficher_surface(p->pacman.sprite[p->pacman.etat.direction][(int)p->pacman.animation_time], pos);
 }
