@@ -22,3 +22,4 @@ Git du projet pacman
 # Credits
 
 - [Sprites](https://www.spriters-resource.com/arcade/pacman/)
+- [Ia des fantomes](https://gameinternals.com/understanding-pac-man-ghost-behavior)
