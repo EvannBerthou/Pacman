@@ -370,5 +370,6 @@ void dessiner_partie(Partie *p) {
     dessiner_pacman(p);
     dessiner_fantomes(p);
     dessiner_texte(p);
+    afficher_surface(p->pacman.sprite[0][0], (Point){5,5});
     actualiser();
 }
