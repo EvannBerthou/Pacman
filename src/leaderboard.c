@@ -9,7 +9,9 @@
 // Fonctions d'aide pour gérer les erreurs
 static int err(int result, const char *msg) {
     if (result < 0) {
+#ifdef DEBUG
         fprintf(stderr, "%s\n", msg);
+#endif
         exit(1);
     }
     return result;
@@ -17,7 +19,9 @@ static int err(int result, const char *msg) {
 
 static void * errp(void *p, const char *msg) {
     if (p == NULL) {
+#ifdef DEBUG
         fprintf(stderr, "%s\n", msg);
+#endif
         exit(1);
     }
     return p;
