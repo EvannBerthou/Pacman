@@ -17,9 +17,11 @@ Git du projet pacman
 - [ ] Editeur de niveaux
 - [ ] Ecran d'accueil
 - [ ] Liste des meilleurs scores
+- [ ] Leaderboard en ligne (fait des requêtes à un serveur)
 
 
 # Credits
 
-- [Sprites](https://www.spriters-resource.com/arcade/pacman/)
-- [Ia des fantomes](https://gameinternals.com/understanding-pac-man-ghost-behavior)
+- [Sprites fantomes et pacman](https://www.spriters-resource.com/arcade/pacman/)
+- Sprites des murs faits à la main
+- [IA des fantomes](https://gameinternals.com/understanding-pac-man-ghost-behavior)
