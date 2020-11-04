@@ -29,8 +29,9 @@ Entite nouvelle_entite(Pos pos,Pos pos_init, TypeEntite type) {
     return result;
 }
 
-// Premier tableau correspond au type de l'entité, deuxiemes aux sprites des directions et troisiemes aux
-// frames de l'animation (seul pacman a une animation mais cela rend le jeu plus extensible facilement)
+// Premier tableau correspond au type de l'entité, 
+// Deuxiemes aux sprites des directions,
+// troisiemes aux frames de l'animation (seul pacman a une animation mais cela rend le jeu plus extensible facilement)
 const char *entites_sprites_path[][4][2] = {
     {
         {"data/sprites/pacman00.bmp", "data/sprites/pacman01.bmp"},

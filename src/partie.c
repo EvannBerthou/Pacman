@@ -6,6 +6,7 @@
 #include "entite.h"
 #include "pacman.h"
 #include "fantome.h"
+#include "leaderboard.h"
 
 #define SPRITE_COUNT 17
 const char *sprites_paths[SPRITE_COUNT] = {
@@ -285,7 +286,11 @@ void maj_etat(Partie *p){
     for (int i =0;i!=NBFANTOMES;i++){
         if ((p->pacman.pos.l == p->fantomes[i].pos.l) && (p->pacman.pos.c == p->fantomes[i].pos.c)){
             p->pacman.etat.nb_vie-=1;
-            // TODO: Retourner à la case départ au lieu
+            if (p->pacman.etat.nb_vie == 0) {
+                terminer_partie(p);
+                return;
+            }
+          
             p->pacman.pos = p->pacman.pos_init;
             for (int b =0;b!=NBFANTOMES;b++ ){
                 p->fantomes[b].pos=p->fantomes[b].pos_init;
@@ -370,6 +375,28 @@ void dessiner_partie(Partie *p) {
     dessiner_pacman(p);
     dessiner_fantomes(p);
     dessiner_texte(p);
-    afficher_surface(p->pacman.sprite[0][0], (Point){5,5});
     actualiser();
+}
+
+
+void terminer_partie(Partie *p) {
+    const char *post_req = 
+        "POST / HTTP/1.0\r\n"
+        "Host: pacman-leaderboard.herokuapp.com\r\n"
+        "Content-Type: application/x-www-form-urlencoded\r\n"
+        "Content-Length: %d\r\n\r\n"
+        "%s\r\n";
+    const char post_params[] = "joueur=%s&points=%d";
+    char params[64] = {};
+    sprintf(params, post_params, "joueur1", p->pacman.etat.score);
+    char req[2048] = {};
+    sprintf(req, post_req, strlen(params), params);
+
+    char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, req);
+#ifdef DEBUG
+    printf("Envoyé : %s\nReçu : %s\n", req, reponse);
+#endif
+    free(reponse);
+
+    // TODO: Retour à l'écran d'accueil
 }
