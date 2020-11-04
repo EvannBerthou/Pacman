@@ -16,7 +16,6 @@ Git du projet pacman
 # Idées originales
 - [ ] Editeur de niveaux
 - [ ] Ecran d'accueil
-- [ ] Liste des meilleurs scores
 - [ ] Leaderboard en ligne (fait des requêtes à un serveur)
 
 
