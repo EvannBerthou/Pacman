@@ -382,6 +382,7 @@ void dessiner_partie(Partie *p) {
 void terminer_partie(Partie *p) {
     const char *post_req = 
         "POST / HTTP/1.0\r\n"
+        "Host: pacman-leaderboard.herokuapp.com\r\n"
         "Content-Type: application/x-www-form-urlencoded\r\n"
         "Content-Length: %d\r\n\r\n"
         "%s\r\n";
@@ -391,7 +392,7 @@ void terminer_partie(Partie *p) {
     char req[2048] = {};
     sprintf(req, post_req, strlen(params), params);
 
-    char *reponse = envoyer_requete("localhost", 3000, req);
+    char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, req);
 #ifdef DEBUG
     printf("Envoyé : %s\nReçu : %s\n", req, reponse);
 #endif

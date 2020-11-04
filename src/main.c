@@ -4,6 +4,7 @@
 #include "./main.h"
 #include "../lib/libgraphique.h"
 #include "timer.h"
+#include "leaderboard.h"
 
 /******************************************************************************/
 /* MAIN                                                                       */
@@ -46,7 +47,9 @@ int main(int argc, char **argv) {
 /* A PARTIR D'ICI...C'EST A VOUS DE JOUER!                                    */
 /******************************************************************************/
 
-    printf("%ld %ld\n", sizeof(int), sizeof(short));
+    // TODO: Devra être affiché sur l'écran d'accueil
+    afficher_leaderboard();
+
     ouvrir_fenetre(600, 540);
     Timer timer = nouveau_timer();
     while(1) {

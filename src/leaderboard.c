@@ -38,7 +38,7 @@ char *envoyer_requete(const char *host, int port, const char *req) {
     struct sockaddr_in addr;
     memset(&addr,0,sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(3000);
+    addr.sin_port = htons(port);
     memcpy(&addr.sin_addr.s_addr,server->h_addr,server->h_length);
 
     // Connection au serveur
@@ -68,4 +68,30 @@ char *envoyer_requete(const char *host, int port, const char *req) {
     close(sockfd);
 
     return reponse;
+}
+
+void afficher_leaderboard() {
+    const char *get_req = 
+            "GET / HTTP/1.0\r\n"
+            "Host: pacman-leaderboard.herokuapp.com\r\n"
+            "Content-Type: application/x-www-form-urlencoded\r\n"
+            "Content-Length: %d\r\n\r\n"
+            "%s\r\n";
+
+    char req[2048];
+    const char get_params[] = "joueur=c";
+    sprintf(req, get_req, strlen(get_params), get_params);
+
+    char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, req);
+    char *body = strstr(reponse, "\r\n\r\n");
+    char *state;
+    char *line = strtok_r(body, "\r\n", &state);
+    while (line != NULL) {
+        char *partie;
+        const char *joueur = strtok_r(line, ":", &partie);
+        const char *points = strtok_r(NULL, ":", &partie);
+        printf("joueur : %s Points : %s\n", joueur, points);
+        line = strtok_r(NULL, "\r\n", &state);
+    }
+    free(reponse);
 }
