@@ -89,6 +89,11 @@ char *envoyer_requete(const char *host, int port, const char *req) {
     return reponse;
 }
 
+Point centrer_texte(char *texte, Point centre, int taille) {
+    Point t = taille_texte(texte, taille);
+    return (Point) {centre.x - (t.x / 2), centre.y};
+}
+
 void afficher_leaderboard() {
     const char *get_req = 
             "GET / HTTP/1.0\r\n"
@@ -104,30 +109,38 @@ void afficher_leaderboard() {
         return;
     }
 
+    // Récupère que le corps de la réponse sans l'en-tête
     char *body = strstr(reponse, "\r\n\r\n");
+
+    // Efface l'écran
+    dessiner_rectangle((Point){0,0}, 600, 600, noir);
+
+    afficher_texte("Joueur", 46, centrer_texte("Joueur", (Point){600 / 4, 10}, 46), blanc);
+    afficher_texte("Score", 46, centrer_texte("Score", (Point){600 / 2 + 300 / 2, 10}, 46), blanc);
+    // Point de départ du tableau du classement
+    int y = 75;
+    // Sépare chaque ligne du corps
     char *state;
     char *line = strtok_r(body, "\r\n", &state);
-
-    Point point_dessin = {0,0};
     while (line != NULL) {
         char *partie;
+        // Sépare le nom du joueur et son score
         char *joueur = strtok_r(line, ":", &partie);
         char *points = strtok_r(NULL, ":", &partie);
-        afficher_ligne(joueur, points, &point_dessin);
+        // Affiche la ligne
+        afficher_ligne(joueur, points, y);
         line = strtok_r(NULL, "\r\n", &state);
+        y += 45;
     }
+    actualiser();
+    attendre_clic();
     free(reponse);
 }
 
-void afficher_ligne(char *joueur, char *score, Point *point_dessin) {
+void afficher_ligne(char *joueur, char *score, int y) {
 #ifdef DEBUG
     printf("joueur : %s score : %s\n", joueur, score);
 #endif
-    afficher_texte(joueur, 26, *point_dessin, blanc);
-    point_dessin->x += 150;
-    afficher_texte(score, 26, *point_dessin, blanc);
-    point_dessin->y += 20;
-    point_dessin->x = 0;
-    actualiser();
-    attendre_clic();
+    afficher_texte(joueur, 26, centrer_texte(joueur, (Point){600 / 4, y}, 26), blanc);
+    afficher_texte(score, 26, centrer_texte(score, (Point){600 / 2 + 300 / 2, y}, 26), blanc);
 }
