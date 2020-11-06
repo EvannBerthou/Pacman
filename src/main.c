@@ -16,17 +16,64 @@ SCENE scene_active = SCENE_ACCUEIL;
 #define NOMBRE_BOUTONS 3
 BoutonAccueil boutons[NOMBRE_BOUTONS];
 int bouton_selectionne = 0;
+int musique = 1;
+
+static Uint8 *audio_pos; // global pointer to the audio buffer to be played
+static Uint32 audio_len; // remaining length of the sample we have to play
+
+void my_audio_callback(void *userdata, Uint8 *stream, int len) {
+
+	if (audio_len ==0)
+		return;
+
+	len = ( len > audio_len ? audio_len : len );
+	//SDL_memcpy (stream, audio_pos, len); 					// simply copy from one buffer into the other
+	SDL_MixAudio(stream, audio_pos, len, SDL_MIX_MAXVOLUME);// mix from one buffer into another
+
+	audio_pos += len;
+	audio_len -= len;
+}
 
 int main(int argc, char **argv) {
-    if (charger_sprites() == -1)
-        return 1;
+    ouvrir_fenetre(600, 540);
+	// local variables
+	static Uint32 wav_length; // length of our sample
+	static Uint8 *wav_buffer; // buffer containing our audio file
+	static SDL_AudioSpec wav_spec; // the specs of our piece of music
+
+	/* Load the WAV */
+	// the specs, length and buffer of our wav are filled
+	if( SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) == NULL ){
+      musique = 0;
+      SDL_CloseAudio();
+	  return 1;
+	}
+    if (musique) {
+        // set the callback function
+        wav_spec.callback = my_audio_callback;
+        wav_spec.userdata = NULL;
+        // set our global static variables
+        audio_pos = wav_buffer; // copy sound buffer
+        audio_len = wav_length; // copy file length
+
+        /* Open the audio device */
+        if ( SDL_OpenAudio(&wav_spec, NULL) < 0 ){
+          fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
+          exit(-1);
+        }
+
+        /* Start playing */
+        SDL_PauseAudio(0);
+    }
 
     // Création des boutons
     boutons[0] = nouveau_bouton((Point){600 / 2, 200}, blanc, "Jouer", 26);
     boutons[1] = nouveau_bouton((Point){600 / 2, 250}, blanc, "Classement", 26);
     boutons[2] = nouveau_bouton((Point){600 / 2, 300}, blanc, "Quitter", 26);
 
-    ouvrir_fenetre(600, 540);
+    if (charger_sprites() == -1)
+        return 1;
+
     Timer timer = nouveau_timer();
     Partie p;
     while(1) {
@@ -39,6 +86,13 @@ int main(int argc, char **argv) {
         dessiner_jeu(&p);
         reinitialiser_evenements();
     }
+
+    if (musique) {
+        // shut everything down
+        SDL_CloseAudio();
+        SDL_FreeWAV(wav_buffer);
+    }
+
     return 0;
 }
 
@@ -97,6 +151,8 @@ void activer_bouton(Partie *p, Timer *t) {
         }
         scene_active = SCENE_NIVEAU;
         actualiser_jeu(p, t);
+        if (musique)
+            SDL_CloseAudio();
         break;
     case 1: afficher_leaderboard(); break;
     case 2: exit(0); break;

@@ -12,7 +12,7 @@ static int aligne_grille(Partie *p) {
 static int direction_opposee(Partie *p) {
     int curr = p->pacman.etat.direction;
     int next = p->pacman.etat.prochaine_direction;
-    
+
     if (curr == DIR_HAUT   && next == DIR_BAS)    return 1;
     if (curr == DIR_BAS    && next == DIR_HAUT)   return 1;
     if (curr == DIR_GAUCHE && next == DIR_DROITE) return 1;
@@ -37,21 +37,23 @@ static int centre_case(Partie *p) {
 
 //modification de la positon de pacman en fonction de l'environnement et des touches pressés
 void bouger_pacman(Partie *p, float dt) {
-    // Si pacman ne se déplace dans aucune direciton 
+    // Si pacman ne se déplace dans aucune direciton
     // Ou qu'il a une direction en attente et qu'il atteint une intersection
     // Ou qu'il part dans dans la direction opposée
     // Alors il change de direction
     if (p->pacman.etat.direction == DIR_INCONNUE
         || ((aligne_grille(p) || direction_opposee(p))
         && case_direction(p, &p->pacman, p->pacman.etat.prochaine_direction) != '*')) {
+        printf("bouger\n");
         p->pacman.etat.direction = p->pacman.etat.prochaine_direction;
         p->pacman.etat.prochaine_direction = DIR_INCONNUE;
     }
-    
+
     // Si pacman est contre un mur alors ne pas bouger
     if (aligne_grille(p) && case_direction(p, &p->pacman, p->pacman.etat.direction) == '*') {
         return;
     }
+
 
     switch (p->pacman.etat.direction){
         case DIR_HAUT: p->pacman.pos.l-=1; break;
@@ -66,20 +68,20 @@ void bouger_pacman(Partie *p, float dt) {
 
     // Wrapping de pacman sur les bords
     // Droite
-    if (p->pacman.pos.c > (p->C - 1) * p->tc.c + p->tc.c && p->pacman.etat.direction == DIR_DROITE) { 
+    if (p->pacman.pos.c > (p->C - 1) * p->tc.c + p->tc.c && p->pacman.etat.direction == DIR_DROITE) {
         p->pacman.pos.c = -(p->tc.c * 2);
     }
     // Gauche
-    else if (p->pacman.pos.c < -p->tc.c && p->pacman.etat.direction == DIR_GAUCHE) { 
+    else if (p->pacman.pos.c < -p->tc.c && p->pacman.etat.direction == DIR_GAUCHE) {
         p->pacman.pos.c = (p->C - 1) * p->tc.c + p->tc.c * 2;
     }
     // TODO: Segfault quand on sors du plateau par en bas
     // Bas
-    else if (p->pacman.pos.c > (p->C - 1) + p->tc.l * p->tc.c && p->pacman.etat.direction == DIR_BAS) { 
+    else if (p->pacman.pos.c > (p->C - 1) + p->tc.l * p->tc.c && p->pacman.etat.direction == DIR_BAS) {
         p->pacman.pos.l = -(p->tc.l * 2);
     }
     // Haut
-    else if (p->pacman.pos.l < -p->tc.l && p->pacman.etat.direction == DIR_HAUT) { 
+    else if (p->pacman.pos.l < -p->tc.l && p->pacman.etat.direction == DIR_HAUT) {
         p->pacman.pos.l = (p->C - 1) * p->tc.l + p->tc.l * 2;
     }
 
@@ -89,7 +91,7 @@ void bouger_pacman(Partie *p, float dt) {
         if (p->plateau[grille.l][grille.c]=='.'){
             p->pacman.etat.score++;
             p->nbbonus--;
-            #if DEBUG 
+            #if DEBUG
             printf("bonbons : %d\n", p->nbbonus);
             #endif
         }
@@ -98,7 +100,7 @@ void bouger_pacman(Partie *p, float dt) {
             p->pacman.etat.fuite=1;
             p->nbbonus--;
             //metre compteur de temps a 0
-            #if DEBUG 
+            #if DEBUG
             printf("bonbons : %d\n", p->nbbonus);
             #endif
         }

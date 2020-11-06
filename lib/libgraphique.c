@@ -50,8 +50,8 @@ void ouvrir_fenetre(int largeur, int hauteur){
         }
     fclose(f);
 
-    SDL_Init(SDL_INIT_VIDEO); 
-    ecran = SDL_SetVideoMode(largeur, hauteur, 32, SDL_HWSURFACE|SDL_DOUBLEBUF ); 
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+    ecran = SDL_SetVideoMode(largeur, hauteur, 32, SDL_HWSURFACE|SDL_DOUBLEBUF );
 
     //initialisation des variables globales
     LARGEUR = largeur ;
@@ -74,9 +74,9 @@ void fermer_fenetre(){
 
 // teste si la fin du programme a été demandée et le termine si nécessaire
 void _test_arret() {
-    if ((lastevent.type == SDL_QUIT) || 
+    if ((lastevent.type == SDL_QUIT) ||
             ( (lastevent.type == SDL_KEYDOWN )
-              && (lastevent.key.keysym.sym == SDLK_ESCAPE)) 
+              && (lastevent.key.keysym.sym == SDLK_ESCAPE))
        )
         fermer_fenetre() ;
 }
@@ -139,20 +139,20 @@ void dessiner_ligne(Point p1, Point p2, Couleur couleur)
         dy = 0 ;
 
     // valeur absolue pente
-    float pente_abs ; 
+    float pente_abs ;
 
     float erreur = 0;
     Point p ; // point courant
 
     //lignes horizontales et verticales : plus rapide
-    if (dy == 0) 
+    if (dy == 0)
     {
         p.y = p1.y ;
         for(p.x = p1.x ; p.x != p2.x ; p.x += dx)
             changer_pixel(p,couleur);
     }
     else if (dx == 0)
-    {  
+    {
         p.x = p1.x ;
         for(p.y = p1.y ; p.y != p2.y ; p.y += dy)
             changer_pixel(p,couleur);
@@ -167,7 +167,7 @@ void dessiner_ligne(Point p1, Point p2, Couleur couleur)
         if (pente_abs <=1 )
         {
             {
-                p.y = p1.y ; 
+                p.y = p1.y ;
                 for(p.x = p1.x ; p.x != p2.x ; p.x += dx)
                 {
                     changer_pixel(p, couleur);
@@ -180,10 +180,10 @@ void dessiner_ligne(Point p1, Point p2, Couleur couleur)
                 }
             }
         }
-        else 
+        else
         {
             pente_abs = 1/pente_abs ;
-            p.x = p1.x ; 
+            p.x = p1.x ;
             for(p.y = p1.y ; p.y != p2.y ; p.y += dy)
             {
                 changer_pixel(p, couleur);
@@ -212,7 +212,7 @@ void dessiner_disque(Point centre, int rayon, Couleur couleur)
     for (p.x = xmin; p.x <= xmax ; p.x++)
     {
         for (p.y = ymin; p.y <= ymax ; p.y++)
-            if ( (centre.x-p.x)*(centre.x-p.x) + (centre.y-p.y)*(centre.y-p.y) <= rayon * rayon ) 
+            if ( (centre.x-p.x)*(centre.x-p.x) + (centre.y-p.y)*(centre.y-p.y) <= rayon * rayon )
                 changer_pixel(p, couleur);
     }
 }
@@ -299,7 +299,7 @@ int attendre_touche_duree(int duree_ms)
             code = e.key.keysym.sym;
         _test_arret() ;
     }
-    while(courant - depart < duree_ms ) 
+    while(courant - depart < duree_ms )
     {
         courant = SDL_GetTicks();
         _test_arret() ;
@@ -336,7 +336,7 @@ Point attendre_clic_gauche_droite() {
         p.x = - lastevent.button.x ;
         p.y = - lastevent.button.y ;
     }
-    else 
+    else
     {
         p.x = lastevent.button.x ;
         p.y = lastevent.button.y ;
@@ -383,10 +383,10 @@ void traiter_evenements(void)
 
 }
 
-// indique si la touche de code SDL en question a été pressée 
+// indique si la touche de code SDL en question a été pressée
 // entre la derniere reinitialisation et le dernier traitement
 int touche_a_ete_pressee(int code)
-{   
+{
     return trace_evts.touches[code] ;
 }
 

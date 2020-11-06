@@ -205,7 +205,7 @@ int charger_sprites() {
 // Calculer un nombre pour déterminer le nombre de voisins puis le stocker dans le meme ordre
 // que le plateau
 short voisins_murs[27 * 21] = {};
-// Renvoie le bon sprite 
+// Renvoie le bon sprite
 static SDL_Surface *sprite_at(Point pos) {
     // Convertis les coordonnés 2d en index pour un array 1d
     int index = 21 * pos.y + pos.x;
@@ -215,7 +215,7 @@ static SDL_Surface *sprite_at(Point pos) {
 }
 
 static char on_grid(Partie *p, int i, int j) {
-    if (i >= 0 && j >= 0 && i < p->L && j < p->C) 
+    if (i >= 0 && j >= 0 && i < p->L && j < p->C)
         return p->plateau[i][j];
     return ' ';
 }
@@ -224,12 +224,12 @@ void calculer_voisins(Partie *p) {
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
             short voisins = 0;
-            /* 
-             Ici on encode les voisins mais au lieu de stocker si un mur a des voisins 
+            /*
+             Ici on encode les voisins mais au lieu de stocker si un mur a des voisins
              dans 4 variables pour chaque direction, on stocke tous les voisins dans une seule variable
              Cela permet d'économiser beaucoup de mémoire
              Un int est encodé sur 4 bytes (du moins sur ma machine), ce qui donne :
-             27 * 21 * 4 (int) * 4 (voisins) = 9,072 bytes 
+             27 * 21 * 4 (int) * 4 (voisins) = 9,072 bytes
              En utilisant d'un seul short de 2 bytes, ça donne
              27 * 21 * 2 (short) * 1 (une seule variable) = 1,134 bytes
             */
@@ -269,7 +269,8 @@ int mouvement_clavier(int direction){
     else if (touche_a_ete_pressee(SDLK_LEFT)){//fleche de gauche pressé
         return DIR_GAUCHE;
     }
-    else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé
+    else if (attendre_touche_duree(15) == SDLK_RIGHT) {
+    //else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé
         return DIR_DROITE;
     }
     else {
@@ -290,7 +291,7 @@ void maj_etat(Partie *p){
                 terminer_partie(p);
                 return;
             }
-          
+
             p->pacman.pos = p->pacman.pos_init;
             for (int b =0;b!=NBFANTOMES;b++ ){
                 p->fantomes[b].pos=p->fantomes[b].pos_init;
@@ -379,7 +380,7 @@ void dessiner_partie(Partie *p) {
 
 
 void terminer_partie(Partie *p) {
-    const char *post_req = 
+    const char *post_req =
         "POST / HTTP/1.0\r\n"
         "Host: pacman-leaderboard.herokuapp.com\r\n"
         "Content-Type: application/x-www-form-urlencoded\r\n"
