@@ -370,7 +370,6 @@ void dessiner_texte(Partie *p) {
 }
 
 void dessiner_partie(Partie *p) {
-    // Efface l'écran
     dessiner_grille(p);
     dessiner_pacman(p);
     dessiner_fantomes(p);
@@ -393,9 +392,7 @@ void terminer_partie(Partie *p) {
     sprintf(req, post_req, strlen(params), params);
 
     char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, req);
-#ifdef DEBUG
-    printf("Envoyé : %s\nReçu : %s\n", req, reponse);
-#endif
+    //char *reponse = envoyer_requete("localhost", 3000, req);
     free(reponse);
 
     // TODO: Retour à l'écran d'accueil
