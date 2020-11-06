@@ -5,16 +5,25 @@
 #include "../lib/libgraphique.h"
 #include "timer.h"
 #include "leaderboard.h"
+#include "Bouton.h"
 
 /******************************************************************************/
 /* MAIN                                                                       */
 /******************************************************************************/
 
 SCENE scene_active = SCENE_ACCUEIL;
+#define NOMBRE_BOUTONS 3
+BoutonAccueil boutons[NOMBRE_BOUTONS];
+int bouton_selectionne = 0;
 
 int main(int argc, char **argv) {
     // TODO: Devra être affiché sur l'écran d'accueil
     afficher_leaderboard();
+
+    // Création des boutons
+    boutons[0] = nouveau_bouton((Point){600 / 2, 200}, blanc, "Jouer", 26);
+    boutons[1] = nouveau_bouton((Point){600 / 2, 250}, blanc, "Classement", 26);
+    boutons[2] = nouveau_bouton((Point){600 / 2, 300}, blanc, "Quitter", 26);
 
     ouvrir_fenetre(600, 540);
     Timer timer = nouveau_timer();
@@ -48,7 +57,7 @@ void actualiser_jeu(Partie *p, Timer *t) {
 void dessiner_jeu(Partie *p) {
     switch(scene_active) {
     case SCENE_ACCUEIL:
-        actualiser();
+        dessiner_accueil();
         break;
     case SCENE_NIVEAU:
         dessiner_partie(p);
@@ -57,6 +66,12 @@ void dessiner_jeu(Partie *p) {
 }
 
 void actualiser_accueil(Partie *p, Timer *t) {
+    static int derniere_touche = 0;
+    int touche = attendre_touche_duree(10);
+
+    if (touche == derniere_touche) return;
+    derniere_touche = touche;
+
     if (touche_a_ete_pressee(SDLK_j)) {
         if (charger_niveau(p)) {
             printf("Erreur lors du chargement du niveau\n");
@@ -65,6 +80,33 @@ void actualiser_accueil(Partie *p, Timer *t) {
         scene_active = SCENE_NIVEAU;
         actualiser_partie(p, t);
     }
+
+    if (touche == SDLK_DOWN) {
+        bouton_selectionne = (bouton_selectionne + 1) % NOMBRE_BOUTONS;
+    }
+
+    if (touche == SDLK_UP) {
+        bouton_selectionne--;
+        if (bouton_selectionne < 0) 
+            bouton_selectionne = NOMBRE_BOUTONS - 1;
+    }
+}
+
+void dessiner_accueil() {
+    dessiner_rectangle((Point){0,0}, 800,600, noir);
+    // TODO: Dessiner un logo au lieu d'un texte
+    afficher_texte("Pacman", 46, (Point){800 / 2 - 26 * 7, 50}, jaune);
+    for (int i = 0; i < NOMBRE_BOUTONS; i++) {
+        BoutonAccueil b = boutons[i];
+        afficher_texte(b.texte, b.taille, (Point){b.rect.x, b.rect.y}, b.c);
+        // Souligne le bouton selectionné
+        if (i == bouton_selectionne) {
+            Point p1 = {b.rect.x, b.rect.y + b.rect.h};
+            Point p2 = {b.rect.x + b.rect.w, b.rect.y + b.rect.h};
+            dessiner_ligne(p1, p2, blanc);
+        }
+    }
+    actualiser();
 }
 
 int charger_niveau(Partie *p) {
