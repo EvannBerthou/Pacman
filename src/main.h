@@ -17,5 +17,6 @@ typedef enum {
 void actualiser_jeu(Partie *p, Timer *t);
 void dessiner_jeu(Partie *p);
 void actualiser_accueil();
+int charger_niveau(Partie *p);
 
 #endif
