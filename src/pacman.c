@@ -44,7 +44,6 @@ void bouger_pacman(Partie *p, float dt) {
     if (p->pacman.etat.direction == DIR_INCONNUE
         || ((aligne_grille(p) || direction_opposee(p))
         && case_direction(p, &p->pacman, p->pacman.etat.prochaine_direction) != '*')) {
-        printf("bouger\n");
         p->pacman.etat.direction = p->pacman.etat.prochaine_direction;
         p->pacman.etat.prochaine_direction = DIR_INCONNUE;
     }

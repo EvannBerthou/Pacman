@@ -269,8 +269,8 @@ int mouvement_clavier(int direction){
     else if (touche_a_ete_pressee(SDLK_LEFT)){//fleche de gauche pressé
         return DIR_GAUCHE;
     }
-    else if (attendre_touche_duree(15) == SDLK_RIGHT) {
-    //else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé
+    //else if (attendre_touche_duree(15) == SDLK_RIGHT) {
+    else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé
         return DIR_DROITE;
     }
     else {

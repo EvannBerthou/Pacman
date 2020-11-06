@@ -43,10 +43,8 @@ int main(int argc, char **argv) {
 
 	/* Load the WAV */
 	// the specs, length and buffer of our wav are filled
-	if( SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) == NULL ){
-      musique = 0;
-      SDL_CloseAudio();
-	  return 1;
+	if (SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) == NULL ){
+        musique = 0;
 	}
     if (musique) {
         // set the callback function
@@ -59,11 +57,12 @@ int main(int argc, char **argv) {
         /* Open the audio device */
         if ( SDL_OpenAudio(&wav_spec, NULL) < 0 ){
           fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
-          exit(-1);
+          musique = 0;
         }
-
-        /* Start playing */
-        SDL_PauseAudio(0);
+        else {
+            /* Start playing */
+            SDL_PauseAudio(0);
+        }
     }
 
     // Création des boutons
