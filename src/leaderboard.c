@@ -6,6 +6,8 @@
 #include <netinet/in.h> 
 #include <netdb.h>
 
+#include "leaderboard.h"
+
 // Fonctions d'aide pour gérer les erreurs
 static int err(int result, const char *msg) {
     if (result < 0) {
@@ -91,12 +93,26 @@ void afficher_leaderboard() {
     char *body = strstr(reponse, "\r\n\r\n");
     char *state;
     char *line = strtok_r(body, "\r\n", &state);
+    Point point_dessin = {0,0};
     while (line != NULL) {
         char *partie;
-        const char *joueur = strtok_r(line, ":", &partie);
-        const char *points = strtok_r(NULL, ":", &partie);
-        printf("joueur : %s Points : %s\n", joueur, points);
+        char *joueur = strtok_r(line, ":", &partie);
+        char *points = strtok_r(NULL, ":", &partie);
+        afficher_ligne(joueur, points, &point_dessin);
         line = strtok_r(NULL, "\r\n", &state);
     }
     free(reponse);
+}
+
+void afficher_ligne(char *joueur, char *score, Point *point_dessin) {
+#ifdef DEBUG
+    printf("joueur : %s score : %s\n", joueur, score);
+#endif
+    afficher_texte(joueur, 26, *point_dessin, blanc);
+    point_dessin->x += 150;
+    afficher_texte(score, 26, *point_dessin, blanc);
+    point_dessin->y += 20;
+    point_dessin->x = 0;
+    actualiser();
+    attendre_clic();
 }
