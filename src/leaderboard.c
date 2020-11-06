@@ -67,6 +67,10 @@ char *envoyer_requete(const char *host, int port, const char *req) {
     // Fermeture du socket
     close(sockfd);
 
+#ifdef DEBUG
+    printf("Envoyé : %s\nReçu : %s\n", req, reponse);
+#endif
+
     return reponse;
 }
 
@@ -83,6 +87,7 @@ void afficher_leaderboard() {
     sprintf(req, get_req, strlen(get_params), get_params);
 
     char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, req);
+    //char *reponse = envoyer_requete("localhost", 3000, req);
     char *body = strstr(reponse, "\r\n\r\n");
     char *state;
     char *line = strtok_r(body, "\r\n", &state);
