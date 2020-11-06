@@ -17,6 +17,7 @@ void actualiser_jeu(Partie *p, Timer *t);
 void dessiner_jeu(Partie *p);
 void actualiser_accueil(Partie *p, Timer *t);
 void activer_bouton(Partie *p, Timer *t);
+void manger_bouton();
 void dessiner_accueil();
 int charger_niveau(Partie *p);
 

@@ -248,6 +248,8 @@ void afficher_image(char *nom, Point coin){
     position_img.x = coin.x;
     position_img.y = coin.y;
     SDL_BlitSurface(img,NULL,ecran,&position_img);
+    // Evite la fuite de mémoire
+    SDL_FreeSurface(img);
 }
 
 // INFO : On a dû ajouté cette fonction car la fonction afficher_image

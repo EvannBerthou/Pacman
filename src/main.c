@@ -6,6 +6,7 @@
 #include "timer.h"
 #include "leaderboard.h"
 #include "Bouton.h"
+#include "entite.h"
 
 /******************************************************************************/
 /* MAIN                                                                       */
@@ -17,6 +18,9 @@ BoutonAccueil boutons[NOMBRE_BOUTONS];
 int bouton_selectionne = 0;
 
 int main(int argc, char **argv) {
+    if (charger_sprites() == -1)
+        return 1;
+
     // Création des boutons
     boutons[0] = nouveau_bouton((Point){600 / 2, 200}, blanc, "Jouer", 26);
     boutons[1] = nouveau_bouton((Point){600 / 2, 250}, blanc, "Classement", 26);
@@ -73,7 +77,7 @@ void actualiser_accueil(Partie *p, Timer *t) {
 
     if (touche == SDLK_UP) {
         bouton_selectionne--;
-        if (bouton_selectionne < 0) 
+        if (bouton_selectionne < 0)
             bouton_selectionne = NOMBRE_BOUTONS - 1;
     }
 
@@ -83,8 +87,10 @@ void actualiser_accueil(Partie *p, Timer *t) {
 }
 
 void activer_bouton(Partie *p, Timer *t) {
+    manger_bouton();
+    // Transition écran noir
     switch(bouton_selectionne) {
-    case 0: 
+    case 0:
         if (charger_niveau(p)) {
             printf("Erreur lors du chargement du niveau\n");
             exit(1);
@@ -98,20 +104,37 @@ void activer_bouton(Partie *p, Timer *t) {
 }
 
 void dessiner_accueil() {
-    dessiner_rectangle((Point){0,0}, 800,600, noir);
+    dessiner_rectangle((Point){0, 0}, 800, 600, noir);
     // TODO: Dessiner un logo au lieu d'un texte
     afficher_texte("Pacman", 46, (Point){800 / 2 - 26 * 7, 50}, jaune);
     for (int i = 0; i < NOMBRE_BOUTONS; i++) {
         BoutonAccueil b = boutons[i];
         afficher_texte(b.texte, b.taille, (Point){b.rect.x, b.rect.y}, b.c);
-        // Souligne le bouton selectionné
+        // Si le bouton en cours d'affichage est le bouton selectionné
         if (i == bouton_selectionne) {
-            Point p1 = {b.rect.x, b.rect.y + b.rect.h};
-            Point p2 = {b.rect.x + b.rect.w, b.rect.y + b.rect.h};
-            dessiner_ligne(p1, p2, blanc);
+            afficher_image("data/sprites/pacman30.bmp", (Point){b.rect.x - 30, b.rect.y + 7});
         }
     }
     actualiser();
+}
+
+void manger_bouton() {
+    SDL_Surface *images[] = {
+        charger_sprite(ENTITE_PACMAN, 3, 0),
+        charger_sprite(ENTITE_PACMAN, 3, 1),
+    };
+    BoutonAccueil b = boutons[bouton_selectionne];
+    Point p = {b.rect.x - 30, b.rect.y + 7};
+    Point debut = p;
+    int cible = b.rect.x + b.rect.w;
+    while (p.x < cible) {
+        dessiner_rectangle(debut, (p.x - debut.x + 10), 25, noir);
+        p.x += 1;
+        // Change d'image toutes les 15 frames
+        afficher_surface(images[p.x % 30 / 15], p);
+        attente(5);
+        actualiser();
+    }
 }
 
 int charger_niveau(Partie *p) {
@@ -120,19 +143,17 @@ int charger_niveau(Partie *p) {
     // TODO: Charger le niveau dynamiquement
     *p = charge_plan("data/test.txt");
     /* Si problème lors du chargement du plan...                                  */
-    if(p->plateau == NULL)
-        return 1;
-    if (charger_sprites() == -1)
+    if (p->plateau == NULL)
         return 1;
     calculer_voisins(p);
 
 #ifdef DEBUG
     /* Affichage du plan lu                                                       */
-    int i,j;
+    int i, j;
     printf("Affichage du plan...\n");
-    for(i=0;i!=p->L;i++) {
-        for(j=0;j!=p->C;j++)
-            printf("%c",p->plateau[i][j]);
+    for (i = 0; i != p->L; i++) {
+        for (j = 0; j != p->C; j++)
+            printf("%c", p->plateau[i][j]);
         printf("\n");
     }
     printf("Bonbons et bonus : %d\n", p->nbbonus);
