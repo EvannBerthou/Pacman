@@ -269,7 +269,6 @@ int mouvement_clavier(int direction){
     else if (touche_a_ete_pressee(SDLK_LEFT)){//fleche de gauche pressé
         return DIR_GAUCHE;
     }
-    //else if (attendre_touche_duree(15) == SDLK_RIGHT) {
     else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé
         return DIR_DROITE;
     }
@@ -380,6 +379,8 @@ void dessiner_partie(Partie *p) {
 
 
 void terminer_partie(Partie *p) {
+    char *nom = entrer_nom();
+
     const char *post_req =
         "POST / HTTP/1.0\r\n"
         "Host: pacman-leaderboard.herokuapp.com\r\n"
@@ -388,13 +389,86 @@ void terminer_partie(Partie *p) {
         "%s\r\n";
     const char post_params[] = "joueur=%s&points=%d";
     char params[64] = {};
-    sprintf(params, post_params, "joueur1", p->pacman.etat.score);
+    sprintf(params, post_params, nom, p->pacman.etat.score);
     char req[2048] = {};
     sprintf(req, post_req, strlen(params), params);
 
-    char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, req);
     //char *reponse = envoyer_requete("localhost", 3000, req);
-    free(reponse);
+    char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, req);
+    if (reponse != NULL) {
+        free(reponse);
+    }
+    free(nom);
 
     // TODO: Retour à l'écran d'accueil
+}
+
+char * entrer_nom() {
+    // Nom a 5 lettres + \0
+    char nom[6] = "AAAAA";
+    int touche = 0, index = 0;
+    afficher_nom(nom, index);
+    while (touche != SDLK_RETURN) {
+        traiter_evenements();
+        touche = attendre_touche();
+        if (touche == SDLK_RIGHT) 
+            index = (index + 1) % 5;
+        else if (touche == SDLK_LEFT) {
+            index = (index - 1);
+            if (index < 0) index = 5;
+        }
+        // Autorise que les lettres majuscules
+        else if (touche == SDLK_UP) {
+            if (nom[index] - 1 >= 'A')
+                nom[index]--;
+        }
+        else if (touche == SDLK_DOWN) {
+            if (nom[index] + 1 <= 'Z')
+                nom[index]++;
+        }
+        afficher_nom(nom, index);
+        reinitialiser_evenements();
+        attente(100);
+    }
+    return strdup(nom);
+}
+
+Point centrer_boite(Point centre, Point taille) {
+    return (Point) {
+        centre.x - (taille.x / 2),
+        centre.y - (taille.y / 2),
+    };
+}
+
+void afficher_nom(char *nom, int index) {
+    // Dessine la boite autour du texte au centre de l'écran
+    Point coin = centrer_boite((Point){600 / 2, 540 / 2}, (Point){5 * 46, 60});
+    dessiner_rectangle(coin, 5 * 46, 60, noir);
+    // Ligne haut
+    dessiner_ligne(coin, (Point){coin.x + 5 * 46, coin.y}, blanc);
+    // Ligne bas
+    dessiner_ligne((Point){coin.x, coin.y + 60}, (Point){coin.x + 5 * 46, coin.y + 60}, blanc);
+    // Ligne droite
+    dessiner_ligne((Point){coin.x + 5 * 46, coin.y}, (Point){coin.x + 5 * 46, coin.y + 60}, blanc);
+    // Ligne gauche
+    dessiner_ligne(coin, (Point){coin.x, coin.y + 60}, blanc);
+
+    // Permet de dessiner chaque caractère du texte dans une position fixe au lieu de le texte change de taille
+    for (int i = 0; i < 5; i++) {
+        // La lettre a affichée
+        char c = nom[i];
+        // Fabrique un string contenant seulement la lettre à affiche, on ne peut pas directement afficher
+        // &c car le buffer ne se serait pas terminé par un \0 et
+        char buff[2];
+        sprintf(buff, "%c", c);
+        // Détermine la position de la lettre
+        Point pos = (Point){coin.x + i * 46 + 5, coin.y};
+        // Affiche la lettre
+        afficher_texte(buff, 46, pos, blanc);
+        // Souligne la lettre en cours de modification
+        if (i == index) {
+            dessiner_ligne((Point){pos.x, pos.y + 50}, (Point){pos.x + 35, pos.y + 50}, blanc);
+        }
+    }
+    actualiser();
 }

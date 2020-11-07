@@ -38,5 +38,7 @@ void actualiser_partie(Partie *p, Timer *timer);
 void dessiner_texte(Partie *p);
 void dessiner_partie(Partie *p);
 void terminer_partie(Partie *p);
+char *entrer_nom();
+void afficher_nom(char *nom, int index);
 
 #endif
