@@ -6,7 +6,7 @@ Entite nouvelle_entite(Pos pos,Pos pos_init, TypeEntite type) {
         .prochaine_direction = 0,
         .score = 0,
         .fuite = 0,
-        .nb_vie = 3,
+        .nb_vie = 1,
     };
     Entite result = {
         .pos = pos,
