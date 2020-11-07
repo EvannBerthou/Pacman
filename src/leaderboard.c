@@ -101,7 +101,7 @@ void afficher_leaderboard() {
             "Content-Type: application/x-www-form-urlencoded"
             "\r\n\r\n";
 
-    //char *reponse = envoyer_requete("localhost", 3000, req);
+    //char *reponse = envoyer_requete("localhost", 3000, get_req);
     char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, get_req);
     // En cas d'erreur dans la requête
     if (reponse == NULL) {

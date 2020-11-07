@@ -215,3 +215,8 @@ int charger_niveau(Partie *p) {
 #endif
     return 0;
 }
+
+void charger_accueil() {
+    bouton_selectionne = 0;
+    scene_active = SCENE_ACCUEIL;
+}
