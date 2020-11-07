@@ -20,5 +20,6 @@ void activer_bouton(Partie *p, Timer *t);
 void manger_bouton();
 void dessiner_accueil();
 int charger_niveau(Partie *p);
+void charger_accueil();
 
 #endif

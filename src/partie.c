@@ -7,6 +7,7 @@
 #include "pacman.h"
 #include "fantome.h"
 #include "leaderboard.h"
+#include "main.h"
 
 #define SPRITE_COUNT 17
 const char *sprites_paths[SPRITE_COUNT] = {
@@ -399,8 +400,7 @@ void terminer_partie(Partie *p) {
         free(reponse);
     }
     free(nom);
-
-    // TODO: Retour à l'écran d'accueil
+    charger_accueil();
 }
 
 char * entrer_nom() {
