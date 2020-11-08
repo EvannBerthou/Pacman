@@ -34,7 +34,7 @@ Partie charge_plan(char *fichier);
 int charger_sprites();
 void calculer_voisins(Partie *p);
 char case_direction(Partie *p, Entite *e, int direction);
-void actualiser_partie(Partie *p, Timer *timer);
+void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette);
 void dessiner_texte(Partie *p);
 void dessiner_partie(Partie *p);
 void terminer_partie(Partie *p);

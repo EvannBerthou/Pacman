@@ -260,17 +260,19 @@ char case_direction(Partie *p, Entite *e, int direction) {
     return '*';
 }
 
-int mouvement_clavier(int direction){
-    if (touche_a_ete_pressee(SDLK_UP)){//fleche du haut pressé
+int deplacement(SDL_Joystick *manette, int direction){
+    int croix = 0;
+    if (manette != NULL) croix = SDL_JoystickGetHat(manette, 0);
+    if (touche_a_ete_pressee(SDLK_UP) || croix & SDL_HAT_UP){//fleche du haut pressé
         return DIR_HAUT;
     }
-    else if (touche_a_ete_pressee(SDLK_DOWN)){//fleche du bas pressé
+    else if (touche_a_ete_pressee(SDLK_DOWN) || croix & SDL_HAT_DOWN){//fleche du bas pressé
         return DIR_BAS;
     }
-    else if (touche_a_ete_pressee(SDLK_LEFT)){//fleche de gauche pressé
+    else if (touche_a_ete_pressee(SDLK_LEFT) || croix & SDL_HAT_LEFT){//fleche de gauche pressé
         return DIR_GAUCHE;
     }
-    else if (touche_a_ete_pressee(SDLK_RIGHT)){//fleche de droite pressé
+    else if (touche_a_ete_pressee(SDLK_RIGHT) || croix & SDL_HAT_RIGHT){//fleche de droite pressé
         return DIR_DROITE;
     }
     else {
@@ -301,8 +303,8 @@ void maj_etat(Partie *p){
 }
 
 
-void actualiser_partie(Partie *p, Timer *timer) {
-    p->pacman.etat.prochaine_direction = mouvement_clavier(p->pacman.etat.prochaine_direction);
+void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette) {
+    p->pacman.etat.prochaine_direction = deplacement(manette, p->pacman.etat.prochaine_direction);
 
     bouger_pacman(p, timer->dt / 1000.f);
     bouger_fantomes(p);
@@ -411,7 +413,7 @@ char * entrer_nom() {
     while (touche != SDLK_RETURN) {
         traiter_evenements();
         touche = attendre_touche();
-        if (touche == SDLK_RIGHT) 
+        if (touche == SDLK_RIGHT)
             index = (index + 1) % 5;
         else if (touche == SDLK_LEFT) {
             index = (index - 1);

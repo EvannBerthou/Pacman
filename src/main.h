@@ -13,10 +13,10 @@ typedef enum {
     SCENE_NIVEAU,
 } SCENE;
 
-void actualiser_jeu(Partie *p, Timer *t);
+void actualiser_jeu(Partie *p, Timer *t, SDL_Joystick *manette);
 void dessiner_jeu(Partie *p);
-void actualiser_accueil(Partie *p, Timer *t);
-void activer_bouton(Partie *p, Timer *t);
+void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette);
+void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette);
 void manger_bouton();
 void dessiner_accueil();
 int charger_niveau(Partie *p);
