@@ -35,6 +35,32 @@ void my_audio_callback(void *userdata, Uint8 *stream, int len) {
 }
 
 int main(int argc, char **argv) {
+    SDL_Init(SDL_INIT_JOYSTICK);
+    int num_joy = SDL_NumJoysticks();
+    SDL_Joystick *manette = NULL;
+#ifdef DEBUG
+    printf("%d manettes détectés\n", num_joy);
+#endif
+    if (num_joy > 0) {
+        printf("Utilisation de la manette 0 (%s)\n", SDL_JoystickName(0));
+        manette = SDL_JoystickOpen(0);
+        SDL_JoystickEventState(SDL_ENABLE);
+    }
+
+    /*while (1) {
+        traiter_evenements();
+        if (SDL_JoystickOpened(0)) {
+            for (int i = 0; i < SDL_JoystickNumButtons(manette); i++) {
+                if (SDL_JoystickGetButton(manette, i)) {
+                    printf("%d pressé\n", i);
+                }
+            }
+        }
+        reinitialiser_evenements();
+    }
+    return 0;*/
+
+
     ouvrir_fenetre(600, 540);
 	// local variables
 	static Uint32 wav_length; // length of our sample
@@ -81,7 +107,7 @@ int main(int argc, char **argv) {
         print_fps(&timer);
 #endif
         traiter_evenements();
-        actualiser_jeu(&p, &timer);
+        actualiser_jeu(&p, &timer, manette);
         dessiner_jeu(&p);
         reinitialiser_evenements();
     }
@@ -95,13 +121,13 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void actualiser_jeu(Partie *p, Timer *t) {
+void actualiser_jeu(Partie *p, Timer *t, SDL_Joystick *manette) {
     switch(scene_active) {
     case SCENE_ACCUEIL:
-        actualiser_accueil(p, t);
+        actualiser_accueil(p, t, manette);
         break;
     case SCENE_NIVEAU:
-        actualiser_partie(p, t);
+        actualiser_partie(p, t, manette);
         break;
     }
 }
@@ -117,29 +143,43 @@ void dessiner_jeu(Partie *p) {
     }
 }
 
-void actualiser_accueil(Partie *p, Timer *t) {
+static int touche_manete(SDL_Joystick *manette, int bouton) {
+    if (manette == NULL) return 0;
+    return SDL_JoystickGetButton(manette, bouton);
+}
+
+static Uint8 croix_manette(SDL_Joystick *manette) {
+    if (manette == NULL) return 0;
+    return SDL_JoystickGetHat(manette, 0);
+}
+
+void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette) {
     // Evite la répétition de touche
     static int derniere_touche = 0;
+    static Uint8 derniere_croix = 0;
     int touche = attendre_touche_duree(10);
-    if (touche == derniere_touche) return;
+    Uint8 croix = croix_manette(manette);
+    int entrer = touche_manete(manette, 0);
+    if (touche == derniere_touche && croix == derniere_croix && entrer == 0) return;
     derniere_touche = touche;
+    derniere_croix = croix;
 
-    if (touche == SDLK_DOWN) {
+    if (touche == SDLK_DOWN || croix & SDL_HAT_DOWN) {
         bouton_selectionne = (bouton_selectionne + 1) % NOMBRE_BOUTONS;
     }
 
-    if (touche == SDLK_UP) {
+    if (touche == SDLK_UP || croix & SDL_HAT_UP) {
         bouton_selectionne--;
         if (bouton_selectionne < 0)
             bouton_selectionne = NOMBRE_BOUTONS - 1;
     }
 
-    if (touche == SDLK_RETURN) {
-        activer_bouton(p, t);
+    if (touche == SDLK_RETURN || entrer) {
+        activer_bouton(p, t, manette);
     }
 }
 
-void activer_bouton(Partie *p, Timer *t) {
+void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
     manger_bouton();
     // Transition écran noir
     switch(bouton_selectionne) {
@@ -149,7 +189,7 @@ void activer_bouton(Partie *p, Timer *t) {
             exit(1);
         }
         scene_active = SCENE_NIVEAU;
-        actualiser_jeu(p, t);
+        actualiser_jeu(p, t, manette);
         if (musique)
             SDL_CloseAudio();
         break;
