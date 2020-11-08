@@ -15,8 +15,10 @@ Git du projet pacman
 
 # Idées originales
 - [ ] Editeur de niveaux
-- [ ] Ecran d'accueil
-- [ ] Leaderboard en ligne (fait des requêtes à un serveur)
+- [x] Ecran d'accueil
+- [x] Leaderboard en ligne (fait des requêtes à un serveur)
+- [ ] Musique/sons
+- [x] Support manette
 
 
 # Credits
