@@ -18,16 +18,16 @@ BoutonAccueil boutons[NOMBRE_BOUTONS];
 int bouton_selectionne = 0;
 int musique = 1;
 
-static Uint8 *audio_pos; // global pointer to the audio buffer to be played
-static Uint32 audio_len; // remaining length of the sample we have to play
+static Uint8 *audio_pos; // avance de la lecture du fichier audio
+static Uint32 audio_len; // taille restante à être lue
 
+// Permet d'avancer la lecture du fichier audio
+// Provient de la doc SDL1
 void my_audio_callback(void *userdata, Uint8 *stream, int len) {
-
-	if (audio_len ==0)
+	if (audio_len == 0)
 		return;
 
 	len = ( len > audio_len ? audio_len : len );
-	//SDL_memcpy (stream, audio_pos, len); 					// simply copy from one buffer into the other
 	SDL_MixAudio(stream, audio_pos, len, SDL_MIX_MAXVOLUME);// mix from one buffer into another
 
 	audio_pos += len;
@@ -35,7 +35,9 @@ void my_audio_callback(void *userdata, Uint8 *stream, int len) {
 }
 
 int main(int argc, char **argv) {
-    SDL_Init(SDL_INIT_JOYSTICK);
+    ouvrir_fenetre(600, 540);
+
+    // Chargement de la manette si disponible
     int num_joy = SDL_NumJoysticks();
     SDL_Joystick *manette = NULL;
 #ifdef DEBUG
@@ -43,50 +45,35 @@ int main(int argc, char **argv) {
 #endif
     if (num_joy > 0) {
         printf("Utilisation de la manette 0 (%s)\n", SDL_JoystickName(0));
+        // Active la manette
         manette = SDL_JoystickOpen(0);
+        // Active la mise à jour des evenements de la manette (sera appelé dans traiter_evenement
+        // par la libgraphique)
         SDL_JoystickEventState(SDL_ENABLE);
     }
 
-    /*while (1) {
-        traiter_evenements();
-        if (SDL_JoystickOpened(0)) {
-            for (int i = 0; i < SDL_JoystickNumButtons(manette); i++) {
-                if (SDL_JoystickGetButton(manette, i)) {
-                    printf("%d pressé\n", i);
-                }
-            }
-        }
-        reinitialiser_evenements();
-    }
-    return 0;*/
 
+    // Le code lié à l'audio est directement pris depuis la doc de la SDL1
+	static Uint32 wav_length; // taille du fichier audio
+	static Uint8 *wav_buffer; // contenue du fichier audio
+	static SDL_AudioSpec wav_spec; // Caractéristique du fichier audio
 
-    ouvrir_fenetre(600, 540);
-	// local variables
-	static Uint32 wav_length; // length of our sample
-	static Uint8 *wav_buffer; // buffer containing our audio file
-	static SDL_AudioSpec wav_spec; // the specs of our piece of music
-
-	/* Load the WAV */
-	// the specs, length and buffer of our wav are filled
+    // Charge le fichier musique
 	if (SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) == NULL ){
         musique = 0;
 	}
     if (musique) {
-        // set the callback function
         wav_spec.callback = my_audio_callback;
         wav_spec.userdata = NULL;
-        // set our global static variables
-        audio_pos = wav_buffer; // copy sound buffer
-        audio_len = wav_length; // copy file length
+        audio_pos = wav_buffer;
+        audio_len = wav_length;
 
-        /* Open the audio device */
-        if ( SDL_OpenAudio(&wav_spec, NULL) < 0 ){
-          fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
+        // Ouvre le périphérique audio
+        if (SDL_OpenAudio(&wav_spec, NULL) < 0 ){
+          fprintf(stderr, "Erreur lors de l'ouverture de l'audio: %s\n", SDL_GetError());
           musique = 0;
         }
         else {
-            /* Start playing */
             SDL_PauseAudio(0);
         }
     }
@@ -101,6 +88,9 @@ int main(int argc, char **argv) {
 
     Timer timer = nouveau_timer();
     Partie p;
+    // Boucle principale
+    // On peut faire une boucle infinie car lorsque le signal d'arrêt est envoyé, la libgraphique
+    // termine directement le programme, toute la mémoire alloué est directement libérée par le système
     while(1) {
         tick_timer(&timer);
 #ifdef DEBUG
@@ -111,16 +101,10 @@ int main(int argc, char **argv) {
         dessiner_jeu(&p);
         reinitialiser_evenements();
     }
-
-    if (musique) {
-        // shut everything down
-        SDL_CloseAudio();
-        SDL_FreeWAV(wav_buffer);
-    }
-
     return 0;
 }
 
+// Actualise la scene active
 void actualiser_jeu(Partie *p, Timer *t, SDL_Joystick *manette) {
     switch(scene_active) {
     case SCENE_ACCUEIL:
@@ -132,6 +116,7 @@ void actualiser_jeu(Partie *p, Timer *t, SDL_Joystick *manette) {
     }
 }
 
+// Dessine la scene active
 void dessiner_jeu(Partie *p) {
     switch(scene_active) {
     case SCENE_ACCUEIL:
@@ -143,6 +128,7 @@ void dessiner_jeu(Partie *p) {
     }
 }
 
+// Fonctions d'aide pour vérifier si une manette est branchée et qu'une touche est appuyée
 static int touche_manete(SDL_Joystick *manette, int bouton) {
     if (manette == NULL) return 0;
     return SDL_JoystickGetButton(manette, bouton);
@@ -155,12 +141,18 @@ static Uint8 croix_manette(SDL_Joystick *manette) {
 
 void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette) {
     // Evite la répétition de touche
+    // Touche appuyé lors du dernier appel
     static int derniere_touche = 0;
     static Uint8 derniere_croix = 0;
-    int touche = attendre_touche_duree(10);
-    Uint8 croix = croix_manette(manette);
-    int entrer = touche_manete(manette, 0);
+    // Touche appuyés à cet appel
+    int touche = attendre_touche_duree(10); // Touche clavier
+    Uint8 croix = croix_manette(manette);  // Croix manette
+    int entrer = touche_manete(manette, 0); // Touche X manette (manette ps4)
+    // Si la touche appuyé est la meme que celui du dernier appel, cela veut dire que la touche
+    // n'a pas été relachée
     if (touche == derniere_touche && croix == derniere_croix && entrer == 0) return;
+
+    // Sauvegarde les touches appuyés au dernier appel
     derniere_touche = touche;
     derniere_croix = croix;
 
@@ -180,16 +172,18 @@ void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette) {
 }
 
 void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
+    // Animation de pacman qui mange le bouton avant de changer de menu
     manger_bouton();
     // Transition écran noir
     switch(bouton_selectionne) {
     case 0:
+        // Charge le niveau
         if (charger_niveau(p)) {
             printf("Erreur lors du chargement du niveau\n");
             exit(1);
         }
         scene_active = SCENE_NIVEAU;
-        actualiser_jeu(p, t, manette);
+        // Arrete la musique de l'accueil
         if (musique)
             SDL_CloseAudio();
         break;
