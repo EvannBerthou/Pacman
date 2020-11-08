@@ -76,25 +76,25 @@ void bouger_pacman(Partie *p, float dt) {
     }
     // TODO: Segfault quand on sors du plateau par en bas
     // Bas
-    else if (p->pacman.pos.c > (p->C - 1) + p->tc.l * p->tc.c && p->pacman.etat.direction == DIR_BAS) {
+    else if (p->pacman.pos.l > (p->L - 1) * p->tc.l + p->tc.l && p->pacman.etat.direction == DIR_BAS) {
         p->pacman.pos.l = -(p->tc.l * 2);
     }
     // Haut
     else if (p->pacman.pos.l < -p->tc.l && p->pacman.etat.direction == DIR_HAUT) {
-        p->pacman.pos.l = (p->C - 1) * p->tc.l + p->tc.l * 2;
+        p->pacman.pos.l = (p->L - 1) * p->tc.l + p->tc.l * 2;
     }
 
     // Vérifie si pacman est en collision avec un bonbon
     if (centre_case(p)) {
         Pos grille = ecran_vers_grille(p->pacman.pos, p->tc);
-        if (p->plateau[grille.l][grille.c]=='.'){
+        if (on_grid(p, grille.l, grille.c) == '.'){
             p->pacman.etat.score++;
             p->nbbonus--;
             #if DEBUG
             printf("bonbons : %d\n", p->nbbonus);
             #endif
         }
-        else if (p->plateau[grille.l][grille.c]=='B') {
+        else if (on_grid(p, grille.l, grille.c) == 'B') {
             p->pacman.etat.score+=50;
             p->pacman.etat.fuite=1;
             p->nbbonus--;
@@ -103,6 +103,8 @@ void bouger_pacman(Partie *p, float dt) {
             printf("bonbons : %d\n", p->nbbonus);
             #endif
         }
+        if (on_grid(p, grille.l, grille.c) != ' ')
+            p->plateau[grille.l][grille.c] = 'P';
     }
 }
 
