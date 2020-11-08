@@ -32,7 +32,7 @@ const char *sprites_paths[SPRITE_COUNT] = {
 SDL_Surface* sprites[SPRITE_COUNT];
 
 /******************************************************************************/
-/* CHARGE PLAN                                                                */
+ /* CHARGE PLAN                                                                */
 /******************************************************************************/
 Partie charge_plan(char *fichier)
     {
@@ -215,9 +215,9 @@ static SDL_Surface *sprite_at(Point pos) {
     return sprites[1 + voisins_murs[index]];
 }
 
-static char on_grid(Partie *p, int i, int j) {
-    if (i >= 0 && j >= 0 && i < p->L && j < p->C)
-        return p->plateau[i][j];
+char on_grid(Partie *p, int l, int c) {
+    if (l >= 0 && c >= 0 && l < p->L && c < p->C)
+        return p->plateau[l][c];
     return ' ';
 }
 
@@ -252,12 +252,13 @@ void calculer_voisins(Partie *p) {
 char case_direction(Partie *p, Entite *e, int direction) {
     Pos pos = ecran_vers_grille(e->pos, p->tc);
     switch(direction) {
-    case DIR_HAUT: return p->plateau[pos.l-1][pos.c];
-    case DIR_BAS: return p->plateau[pos.l+1][pos.c];
-    case DIR_GAUCHE: return p->plateau[pos.l][pos.c-1];
-    case DIR_DROITE: return p->plateau[pos.l][pos.c+1];
+    case DIR_HAUT: pos.l -= 1; break;
+    case DIR_BAS: pos.l += 1; break;
+    case DIR_GAUCHE: pos.c -= 1; break;
+    case DIR_DROITE: pos.c += 1; break;
+    default: return '*';
     }
-    return '*';
+    return on_grid(p, pos.l, pos.c);
 }
 
 int deplacement(SDL_Joystick *manette, int direction){
