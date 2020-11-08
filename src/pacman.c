@@ -107,7 +107,13 @@ void bouger_pacman(Partie *p, float dt) {
     }
 }
 
+static SDL_Surface* sprite_pacman(Entite *p) {
+    // Si pacman n'a pas de direction (arrive lors de la frame frame du chargement du niveau
+    if (p->etat.direction == DIR_INCONNUE) return p->sprite[DIR_HAUT][0];
+    return p->sprite[p->etat.direction][(int)p->animation_time];
+}
+
 void dessiner_pacman(Partie *p) {
     Point pos = {p->pacman.pos.c, p->pacman.pos.l};
-    afficher_surface(p->pacman.sprite[p->pacman.etat.direction][(int)p->pacman.animation_time], pos);
+    afficher_surface(sprite_pacman(&p->pacman), pos);
 }
