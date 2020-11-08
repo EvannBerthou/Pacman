@@ -103,7 +103,6 @@ void bouger_pacman(Partie *p, float dt) {
             printf("bonbons : %d\n", p->nbbonus);
             #endif
         }
-        p->plateau[grille.l][grille.c] = 'P';
     }
 }
 
