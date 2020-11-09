@@ -1,11 +1,7 @@
 #include "fantome.h"
 
-static int aligne_grille(Partie *p, Entite *fantome) {
-    return (fantome->pos.l % p->tc.l == 0 && fantome->pos.c % p->tc.c == 0);
-}
-
-void bouger_fantomes(Partie *p) {
-    Pos pacman = p->pacman.pos;
+void bouger_fantomes(Partie *p, float dt) {
+    Posf pacman = p->pacman.pos;
     for (int i = 0; i < NBFANTOMES; i++) {
         Entite *fantome = &p->fantomes[i];
         // Verifie quelle direction est disponible pour le fantôme
@@ -20,16 +16,17 @@ void bouger_fantomes(Partie *p) {
             direction = DIR_DROITE;
 
         // Change la direction du fantôme ssi il est aligné à la grille pour éviter qu'il traverse les murs
-        if (aligne_grille(p, fantome)) {
+        if (aligne_grille(p, fantome->pos)) {
             fantome->etat.direction = direction;
         }
 
         // Déplace le fantôme
+        const float vitesse = 50;
         switch (fantome->etat.direction) {
-            case DIR_HAUT:   fantome->pos.l-=1; break;
-            case DIR_BAS:    fantome->pos.l+=1; break;
-            case DIR_GAUCHE: fantome->pos.c-=1; break;
-            case DIR_DROITE: fantome->pos.c+=1; break;
+            case DIR_HAUT:   fantome->pos.l-= dt * vitesse; break;
+            case DIR_BAS:    fantome->pos.l+= dt * vitesse; break;
+            case DIR_GAUCHE: fantome->pos.c-= dt * vitesse; break;
+            case DIR_DROITE: fantome->pos.c+= dt * vitesse; break;
         }
     }
 }

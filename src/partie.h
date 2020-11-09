@@ -33,6 +33,7 @@ typedef struct partie {
 Partie charge_plan(char *fichier);
 int charger_sprites();
 char on_grid(Partie *p, int l, int c);
+int aligne_grille(Partie *p, Posf pos);
 void calculer_voisins(Partie *p);
 char case_direction(Partie *p, Entite *e, int direction);
 void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette);

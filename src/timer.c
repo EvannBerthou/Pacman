@@ -18,9 +18,9 @@ void tick_timer(Timer *timer) {
 	if (dt < timer->duree_frame)
 		SDL_Delay(timer->duree_frame - dt);
 	else
-		timer->fps = 1000 / dt;
+		timer->fps = 1000.f / dt;
 	timer->prev_ticks = curr_ticks;
-	timer->dt = dt;
+	timer->dt = dt / 1000.f;
 }
 
 void print_fps(Timer *timer) {
