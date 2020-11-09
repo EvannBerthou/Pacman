@@ -37,6 +37,14 @@ pour la vérification de chaque erreur dans la fonction
 } while (0)
 
 
+// Extrait le code de statut de la réponse (code 200 = ok)
+int status(char *reponse) { 
+    char *statut = strstr(reponse, " "); // Trouve le premier espace
+    int res = 0;
+    sscanf(statut, "%d", &res);
+    return res;
+}
+
 // Envoie une requete à un serveur et renvoie la réponse du serveur
 char *envoyer_requete(const char *host, int port, const char *req) {
 
@@ -70,7 +78,7 @@ char *envoyer_requete(const char *host, int port, const char *req) {
 
     // Réponse du serveur
     total = 4096;
-    char *reponse = calloc(total, sizeof(char));
+    char *reponse = calloc(total, sizeof(char)); // Memory leak, reponse n'est pas free en cas d'erreur dans recv
     int recu = 0;
     do {
         int bytes;
@@ -85,6 +93,11 @@ char *envoyer_requete(const char *host, int port, const char *req) {
 #ifdef DEBUG
     printf("Envoyé : %s\nReçu : %s\n", req, reponse);
 #endif
+
+    if (status(reponse) != 200) {
+        free(reponse);
+        return NULL;
+    }
 
     return reponse;
 }
@@ -105,7 +118,6 @@ void afficher_leaderboard() {
     char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, get_req);
     // En cas d'erreur dans la requête
     if (reponse == NULL) {
-        free(reponse);
         return;
     }
 
