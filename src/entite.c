@@ -1,3 +1,4 @@
+#include <math.h>
 #include "entite.h"
 
 Entite nouvelle_entite(Posf pos,Posf pos_init, TypeEntite type) {
