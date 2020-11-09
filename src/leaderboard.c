@@ -104,7 +104,7 @@ char *envoyer_requete(const char *host, int port, const char *req) {
 
 Point centrer_texte(char *texte, Point centre, int taille) {
     Point t = taille_texte(texte, taille);
-    return (Point) {centre.x - (t.x / 2), centre.y};
+    return (Point) {centre.x - (t.x / 2), centre.y - (t.y / 2)};
 }
 
 void afficher_leaderboard() {
@@ -118,6 +118,7 @@ void afficher_leaderboard() {
     char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, get_req);
     // En cas d'erreur dans la requête
     if (reponse == NULL) {
+        afficher_erreur_leaderboard();
         return;
     }
 
@@ -155,4 +156,12 @@ void afficher_ligne(char *joueur, char *score, int y) {
 #endif
     afficher_texte(joueur, 26, centrer_texte(joueur, (Point){600 / 4, y}, 26), blanc);
     afficher_texte(score, 26, centrer_texte(score, (Point){600 / 2 + 300 / 2, y}, 26), blanc);
+}
+
+void afficher_erreur_leaderboard() {
+    dessiner_rectangle((Point){0,0}, 600, 600, noir);
+    char *message = "Erreur lors du chargement du classement";
+    afficher_texte(message, 26, centrer_texte(message, (Point){600 / 2, 540 / 2}, 26), blanc);
+    actualiser();
+    attendre_clic();
 }

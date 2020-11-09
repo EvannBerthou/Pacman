@@ -184,8 +184,8 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
         }
         scene_active = SCENE_NIVEAU;
         // Arrete la musique de l'accueil
-        if (musique)
-            SDL_CloseAudio();
+        //if (SDL_GetAudioStatus() == SDL_AUDIO_PLAYING)
+            SDL_PauseAudio(1);
         break;
     case 1: afficher_leaderboard(); break;
     case 2: exit(0); break;
