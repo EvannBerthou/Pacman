@@ -10,7 +10,7 @@ typedef struct pos {
 } Pos;
 
 typedef struct posf {
-    float x,y;
+    float l,c;
 } Posf;
 
 typedef enum {
@@ -36,8 +36,8 @@ typedef struct {
 } Etat;
 
 typedef struct {
-    Pos pos;
-    Pos pos_init;
+    Posf pos;
+    Posf pos_init;
     TypeEntite type;
     Etat etat;
     // Liste des sprites de l'entité
@@ -48,8 +48,9 @@ typedef struct {
     float animation_time;
 } Entite;
 
-Entite nouvelle_entite(Pos pos,Pos pos_init ,TypeEntite type);
+
+Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type);
 SDL_Surface *charger_sprite(TypeEntite type, int dir, int frame);
-Pos ecran_vers_grille(Pos pos, Pos taille);
+Pos ecran_vers_grille(Posf pos, Pos taille);
 
 #endif

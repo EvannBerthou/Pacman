@@ -1,6 +1,6 @@
 #include "entite.h"
 
-Entite nouvelle_entite(Pos pos,Pos pos_init, TypeEntite type) {
+Entite nouvelle_entite(Posf pos,Posf pos_init, TypeEntite type) {
     Etat etat = {
         .direction = DIR_INCONNUE,
         .prochaine_direction = 0,
@@ -58,10 +58,14 @@ SDL_Surface *charger_sprite(TypeEntite type, int dir, int frame) {
     return img;
 }
 
+static Posf pos_vers_posf(Pos p) {
+    return (Posf) { p.l, p.c };
+}
 
-Pos ecran_vers_grille(Pos pos, Pos taille) {
+Pos ecran_vers_grille(Posf pos, Pos taille) {
+    Posf taille_f = pos_vers_posf(taille);
     return (Pos) {
-        pos.l  / taille.l,
-        pos.c  / taille.c,
+        (int)(roundf (pos.l  / taille_f.l)),
+        (int)(roundf (pos.c  / taille_f.c))
     };
 }

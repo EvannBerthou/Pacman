@@ -1,13 +1,8 @@
+#include <math.h>
 #include "pacman.h"
 #include "partie.h"
 
 #define VITESSE_ANIMATION 7
-
-// Renvoie 1 si pacman est aligné à la grille et donc pas en transition
-// Pacman est aligné sur la grille ssi ces coordonés sont des multiples de la taille d'une case
-static int aligne_grille(Partie *p) {
-    return (p->pacman.pos.l % p->tc.l == 0 && p->pacman.pos.c % p->tc.c == 0);
-}
 
 static int direction_opposee(Partie *p) {
     int curr = p->pacman.etat.direction;
@@ -21,16 +16,16 @@ static int direction_opposee(Partie *p) {
 }
 
 static int centre_case(Partie *p) {
-    int demi_x = p->tc.l / 2;
-    int demi_y = p->tc.c / 2;
+    float demi_x = p->tc.l / 2;
+    float demi_y = p->tc.c / 2;
 
 // Necessaire pour les cas spécials dans les coins
 // TODO: Sûrement une meilleure solution disponible
     switch (p->pacman.etat.direction){
         case DIR_HAUT:
-        case DIR_GAUCHE: return (p->pacman.pos.l + demi_x) % p->tc.l > demi_x || (p->pacman.pos.c + demi_y) % p->tc.c > demi_y;
-        case DIR_BAS:    return (p->pacman.pos.l + demi_x) % p->tc.l > demi_x || (p->pacman.pos.c + demi_y) % p->tc.c >= demi_y;
-        case DIR_DROITE: return (p->pacman.pos.l + demi_x) % p->tc.l >= demi_x || (p->pacman.pos.c + demi_y) % p->tc.c > demi_y;
+        case DIR_GAUCHE: return fmod(p->pacman.pos.l + demi_x, p->tc.l) > demi_x ||  fmod(p->pacman.pos.c + demi_y, p->tc.c) > demi_y;
+        case DIR_BAS:    return fmod(p->pacman.pos.l + demi_x, p->tc.l) > demi_x ||  fmod(p->pacman.pos.c + demi_y, p->tc.c) >= demi_y;
+        case DIR_DROITE: return fmod(p->pacman.pos.l + demi_x, p->tc.l) >= demi_x || fmod(p->pacman.pos.c + demi_y, p->tc.c) > demi_y;
     }
     return 0;
 }
@@ -42,23 +37,23 @@ void bouger_pacman(Partie *p, float dt) {
     // Ou qu'il part dans dans la direction opposée
     // Alors il change de direction
     if (p->pacman.etat.direction == DIR_INCONNUE
-        || ((aligne_grille(p) || direction_opposee(p))
+        || ((aligne_grille(p, p->pacman.pos) || direction_opposee(p))
         && case_direction(p, &p->pacman, p->pacman.etat.prochaine_direction) != '*')) {
         p->pacman.etat.direction = p->pacman.etat.prochaine_direction;
         p->pacman.etat.prochaine_direction = DIR_INCONNUE;
     }
 
     // Si pacman est contre un mur alors ne pas bouger
-    if (aligne_grille(p) && case_direction(p, &p->pacman, p->pacman.etat.direction) == '*') {
+    if (aligne_grille(p, p->pacman.pos) && case_direction(p, &p->pacman, p->pacman.etat.direction) == '*') {
         return;
     }
 
-
+    const float vitesse = 75;
     switch (p->pacman.etat.direction){
-        case DIR_HAUT: p->pacman.pos.l-=1; break;
-        case DIR_BAS: p->pacman.pos.l+=1; break;
-        case DIR_GAUCHE: p->pacman.pos.c-=1; break;
-        case DIR_DROITE: p->pacman.pos.c+=1; break;
+        case DIR_HAUT: p->pacman.pos.l-=dt * vitesse; break;
+        case DIR_BAS: p->pacman.pos.l+=dt * vitesse; break;
+        case DIR_GAUCHE: p->pacman.pos.c-=dt * vitesse; break;
+        case DIR_DROITE: p->pacman.pos.c+=dt * vitesse; break;
     }
 
     p->pacman.animation_time += dt * VITESSE_ANIMATION;
@@ -66,20 +61,15 @@ void bouger_pacman(Partie *p, float dt) {
         p->pacman.animation_time = 0;
 
     // Wrapping de pacman sur les bords
-    // Droite
     if (p->pacman.pos.c > (p->C - 1) * p->tc.c + p->tc.c && p->pacman.etat.direction == DIR_DROITE) {
         p->pacman.pos.c = -(p->tc.c * 2);
     }
-    // Gauche
     else if (p->pacman.pos.c < -p->tc.c && p->pacman.etat.direction == DIR_GAUCHE) {
         p->pacman.pos.c = (p->C - 1) * p->tc.c + p->tc.c * 2;
     }
-    // TODO: Segfault quand on sors du plateau par en bas
-    // Bas
     else if (p->pacman.pos.l > (p->L - 1) * p->tc.l + p->tc.l && p->pacman.etat.direction == DIR_BAS) {
         p->pacman.pos.l = -(p->tc.l * 2);
     }
-    // Haut
     else if (p->pacman.pos.l < -p->tc.l && p->pacman.etat.direction == DIR_HAUT) {
         p->pacman.pos.l = (p->L - 1) * p->tc.l + p->tc.l * 2;
     }

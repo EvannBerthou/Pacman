@@ -1,6 +1,7 @@
 /******************************************************************************/
 /* CHARGEMENT.c                                                               */
 /******************************************************************************/
+#include <math.h>
 #include <assert.h>
 #include "./partie.h"
 #include "entite.h"
@@ -138,7 +139,7 @@ Partie charge_plan(char *fichier)
 
             if(ch=='P')
                 {
-                    p.pacman = nouvelle_entite((Pos){l * p.tc.l, c * p.tc.c},(Pos){l * p.tc.l, c * p.tc.c}, ENTITE_PACMAN);
+                    p.pacman = nouvelle_entite((Posf){l * p.tc.l, c * p.tc.c},(Posf){l * p.tc.l, c * p.tc.c}, ENTITE_PACMAN);
                 }
             else if(ch=='F')
                 {
@@ -148,7 +149,7 @@ Partie charge_plan(char *fichier)
                     fclose(f);
                     exit(0);
                     }
-                p.fantomes[nbf] = nouvelle_entite((Pos){l * p.tc.l, c * p.tc.c},(Pos){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME);
+                p.fantomes[nbf] = nouvelle_entite((Posf){l * p.tc.l, c * p.tc.c},(Posf){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME);
                 nbf++;
                 }
             else if(ch=='B' || ch == '.')
@@ -221,6 +222,11 @@ char on_grid(Partie *p, int l, int c) {
     return ' ';
 }
 
+int aligne_grille(Partie *p, Posf pos) {
+    return (int)(fmod(pos.l, p->tc.l)) <= 1 && (int)(fmod(pos.c, p->tc.l)) <= 1;
+    //return ((int)(p->pacman.pos.l) % p->tc.l == 0 && (int)(p->pacman.pos.c) % p->tc.c == 0);
+}
+
 void calculer_voisins(Partie *p) {
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
@@ -258,6 +264,8 @@ char case_direction(Partie *p, Entite *e, int direction) {
     case DIR_DROITE: pos.c += 1; break;
     default: return '*';
     }
+    /*if (p->plateau[pos.l][pos.c] != '*' && p->plateau[pos.l][pos.c] != 'F')
+        printf("%c\n", p->plateau[pos.l][pos.c]);*/
     return on_grid(p, pos.l, pos.c);
 }
 
@@ -307,8 +315,8 @@ void maj_etat(Partie *p){
 void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette) {
     p->pacman.etat.prochaine_direction = deplacement(manette, p->pacman.etat.prochaine_direction);
 
-    bouger_pacman(p, timer->dt / 1000.f);
-    bouger_fantomes(p);
+    bouger_pacman(p, timer->dt);
+    bouger_fantomes(p, timer->dt);
     maj_etat(p);
 
     if (p->nbbonus == 0) {
