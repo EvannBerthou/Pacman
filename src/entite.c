@@ -59,12 +59,9 @@ SDL_Surface *charger_sprite(TypeEntite type, int dir, int frame) {
     return img;
 }
 
-static Posf pos_vers_posf(Pos p) {
-    return (Posf) { p.l, p.c };
-}
-
 Pos ecran_vers_grille(Posf pos, Pos taille) {
-    Posf taille_f = pos_vers_posf(taille);
+    // Convertis taille en Posf pour ne pas perdre la précision lors de la division
+    Posf taille_f = { taille.l, taille.c }; 
     return (Pos) {
         (int)(roundf (pos.l  / taille_f.l)),
         (int)(roundf (pos.c  / taille_f.c))
