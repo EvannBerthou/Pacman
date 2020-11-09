@@ -108,6 +108,7 @@ Point centrer_texte(char *texte, Point centre, int taille) {
 }
 
 void afficher_leaderboard() {
+    afficher_message_leaderboard("Chargement du classement", 26);
     const char *get_req = 
             "GET / HTTP/1.0\r\n"
             "Host: pacman-leaderboard.herokuapp.com\r\n"
@@ -118,7 +119,8 @@ void afficher_leaderboard() {
     char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, get_req);
     // En cas d'erreur dans la requête
     if (reponse == NULL) {
-        afficher_erreur_leaderboard();
+        afficher_message_leaderboard("Erreur lors du chargement du classement", 26);
+        attendre_clic();
         return;
     }
 
@@ -126,10 +128,11 @@ void afficher_leaderboard() {
     char *body = strstr(reponse, "\r\n\r\n");
 
     // Efface l'écran
-    dessiner_rectangle((Point){0,0}, 600, 600, noir);
+    dessiner_rectangle((Point){0,0}, 600, 540, noir);
 
-    afficher_texte("Joueur", 46, centrer_texte("Joueur", (Point){600 / 4, 10}, 46), blanc);
-    afficher_texte("Score", 46, centrer_texte("Score", (Point){600 / 2 + 300 / 2, 10}, 46), blanc);
+    const int taille_titre = 46;
+    afficher_texte("Joueur", taille_titre, centrer_texte("Joueur", (Point){600 / 4, 20}, taille_titre), blanc);
+    afficher_texte("Score", taille_titre, centrer_texte("Score", (Point){600 / 2 + 300 / 2, 20}, taille_titre), blanc);
     // Point de départ du tableau du classement
     int y = 75;
     // Sépare chaque ligne du corps
@@ -154,14 +157,13 @@ void afficher_ligne(char *joueur, char *score, int y) {
 #ifdef DEBUG
     printf("joueur : %s score : %s\n", joueur, score);
 #endif
-    afficher_texte(joueur, 26, centrer_texte(joueur, (Point){600 / 4, y}, 26), blanc);
-    afficher_texte(score, 26, centrer_texte(score, (Point){600 / 2 + 300 / 2, y}, 26), blanc);
+    const int taille_font = 26;
+    afficher_texte(joueur, taille_font, centrer_texte(joueur, (Point){600 / 4, y}, taille_font), blanc);
+    afficher_texte(score, taille_font, centrer_texte(score, (Point){600 / 2 + 300 / 2, y}, taille_font), blanc);
 }
 
-void afficher_erreur_leaderboard() {
-    dessiner_rectangle((Point){0,0}, 600, 600, noir);
-    char *message = "Erreur lors du chargement du classement";
-    afficher_texte(message, 26, centrer_texte(message, (Point){600 / 2, 540 / 2}, 26), blanc);
+void afficher_message_leaderboard(char *message, int font) {
+    dessiner_rectangle((Point){0,0}, 600, 540, noir);
+    afficher_texte(message, font, centrer_texte(message, (Point){600 / 2, 540 / 2}, font), blanc);
     actualiser();
-    attendre_clic();
 }
