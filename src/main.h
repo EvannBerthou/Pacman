@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include "./partie.h" // on a besoin de connaître la structure Partie
 
+#define ECRAN_W 600
+#define ECRAN_H 540
+
 typedef enum {
     SCENE_ACCUEIL = 0,
     SCENE_NIVEAU,
