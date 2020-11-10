@@ -1,6 +1,7 @@
 #include <math.h>
 #include "pacman.h"
 #include "partie.h"
+#include "main.h"
 
 #define VITESSE_ANIMATION 7
 
@@ -16,16 +17,16 @@ static int direction_opposee(Partie *p) {
 }
 
 static int centre_case(Partie *p) {
-    float demi_x = p->tc.l / 2;
-    float demi_y = p->tc.c / 2;
+    float demi_x = CASE / 2;
+    float demi_y = CASE / 2;
 
 // Necessaire pour les cas spécials dans les coins
 // TODO: Sûrement une meilleure solution disponible
     switch (p->pacman.etat.direction){
         case DIR_HAUT:
-        case DIR_GAUCHE: return fmod(p->pacman.pos.l + demi_x, p->tc.l) > demi_x ||  fmod(p->pacman.pos.c + demi_y, p->tc.c) > demi_y;
-        case DIR_BAS:    return fmod(p->pacman.pos.l + demi_x, p->tc.l) > demi_x ||  fmod(p->pacman.pos.c + demi_y, p->tc.c) >= demi_y;
-        case DIR_DROITE: return fmod(p->pacman.pos.l + demi_x, p->tc.l) >= demi_x || fmod(p->pacman.pos.c + demi_y, p->tc.c) > demi_y;
+        case DIR_GAUCHE: return fmod(p->pacman.pos.l + demi_x, CASE) > demi_x ||  fmod(p->pacman.pos.c + demi_y, CASE) > demi_y;
+        case DIR_BAS:    return fmod(p->pacman.pos.l + demi_x, CASE) > demi_x ||  fmod(p->pacman.pos.c + demi_y, CASE) >= demi_y;
+        case DIR_DROITE: return fmod(p->pacman.pos.l + demi_x, CASE) >= demi_x || fmod(p->pacman.pos.c + demi_y, CASE) > demi_y;
     }
     return 0;
 }
@@ -61,22 +62,22 @@ void bouger_pacman(Partie *p, float dt) {
         p->pacman.animation_time = 0;
 
     // Wrapping de pacman sur les bords
-    if (p->pacman.pos.c > (p->C - 1) * p->tc.c + p->tc.c && p->pacman.etat.direction == DIR_DROITE) {
-        p->pacman.pos.c = -(p->tc.c * 2);
+    if (p->pacman.pos.c > (p->C - 1) * CASE + CASE && p->pacman.etat.direction == DIR_DROITE) {
+        p->pacman.pos.c = -(CASE * 2);
     }
-    else if (p->pacman.pos.c < -p->tc.c && p->pacman.etat.direction == DIR_GAUCHE) {
-        p->pacman.pos.c = (p->C - 1) * p->tc.c + p->tc.c * 2;
+    else if (p->pacman.pos.c < -CASE && p->pacman.etat.direction == DIR_GAUCHE) {
+        p->pacman.pos.c = (p->C - 1) * CASE + CASE * 2;
     }
-    else if (p->pacman.pos.l > (p->L - 1) * p->tc.l + p->tc.l && p->pacman.etat.direction == DIR_BAS) {
-        p->pacman.pos.l = -(p->tc.l * 2);
+    else if (p->pacman.pos.l > (p->L - 1) * CASE + CASE && p->pacman.etat.direction == DIR_BAS) {
+        p->pacman.pos.l = -(CASE * 2);
     }
-    else if (p->pacman.pos.l < -p->tc.l && p->pacman.etat.direction == DIR_HAUT) {
-        p->pacman.pos.l = (p->L - 1) * p->tc.l + p->tc.l * 2;
+    else if (p->pacman.pos.l < -CASE && p->pacman.etat.direction == DIR_HAUT) {
+        p->pacman.pos.l = (p->L - 1) * CASE + CASE * 2;
     }
 
     // Vérifie si pacman est en collision avec un bonbon
     if (centre_case(p)) {
-        Pos grille = ecran_vers_grille(p->pacman.pos, p->tc);
+        Pos grille = ecran_vers_grille(p->pacman.pos);
         if (on_grid(p, grille.l, grille.c) == '.'){
             p->pacman.etat.score++;
             p->nbbonus--;

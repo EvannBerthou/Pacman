@@ -24,7 +24,6 @@ typedef struct partie {
     Entite  fantomes[NBFANTOMES]; // Liste des entités fantomes
     int     nbbonus; // le nombre de bonus restants à manger
     // ...et vous pouvez ajouter tout ce dont vous avez besoin
-    Pos tc; // taille des cases
 } Partie;
 
 // PROTOTYPES

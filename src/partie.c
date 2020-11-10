@@ -63,10 +63,6 @@ Partie charge_plan(char *fichier)
         }
     printf("Dimensions lues: %d x %d\n",p.L,p.C);
 
-    // TODO: Ne pas avoir une taille fixe
-    // Cette taille ne marche que pour le plateau test.txt (27x21)
-    p.tc = (Pos){420 / p.C, ECRAN_H / p.L};
-
 /* ALLOCATION DYNAMIQUE                                                       */
 /* Allocation du tableau de *L pointeurs sur lignes                           */
     p.plateau = (char **) malloc(p.L * sizeof(char *));
@@ -139,7 +135,7 @@ Partie charge_plan(char *fichier)
 
             if(ch=='P')
                 {
-                    p.pacman = nouvelle_entite((Posf){l * p.tc.l, c * p.tc.c},(Posf){l * p.tc.l, c * p.tc.c}, ENTITE_PACMAN);
+                    p.pacman = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, ENTITE_PACMAN);
                 }
             else if(ch=='F')
                 {
@@ -149,7 +145,7 @@ Partie charge_plan(char *fichier)
                     fclose(f);
                     exit(0);
                     }
-                p.fantomes[nbf] = nouvelle_entite((Posf){l * p.tc.l, c * p.tc.c},(Posf){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME);
+                p.fantomes[nbf] = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, ENTITE_FANTOME);
                 nbf++;
                 }
             else if(ch=='B' || ch == '.')
@@ -223,8 +219,8 @@ char on_grid(Partie *p, int l, int c) {
 }
 
 int aligne_grille(Partie *p, Posf pos) {
-    return (int)(fmod(pos.l, p->tc.l)) <= 1 && (int)(fmod(pos.c, p->tc.l)) <= 1;
-    //return ((int)(p->pacman.pos.l) % p->tc.l == 0 && (int)(p->pacman.pos.c) % p->tc.c == 0);
+    return (int)(fmod(pos.l, CASE)) <= 1 && (int)(fmod(pos.c, CASE)) <= 1;
+    //return ((int)(p->pacman.pos.l) % CASE == 0 && (int)(p->pacman.pos.c) % CASE == 0);
 }
 
 void calculer_voisins(Partie *p) {
@@ -256,7 +252,7 @@ void calculer_voisins(Partie *p) {
 
 // Renvoie le type de case vers laquelle se déplace l'entitée
 char case_direction(Partie *p, Entite *e, int direction) {
-    Pos pos = ecran_vers_grille(e->pos, p->tc);
+    Pos pos = ecran_vers_grille(e->pos);
     switch(direction) {
     case DIR_HAUT: pos.l -= 1; break;
     case DIR_BAS: pos.l += 1; break;
@@ -327,12 +323,10 @@ void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette) {
 
 void dessiner_grille(Partie *p) {
     // Efface la grille pour la redessiner de 0
-    dessiner_rectangle((Point){0,0}, 420, ECRAN_H, noir);
-    int cx = p->tc.l;
-    int cy = p->tc.c;
+    dessiner_rectangle((Point){0,0}, PLATEAU_W, ECRAN_H, noir);
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
-            Point pos = {j * cx, i * cy};
+            Point pos = {j * CASE, i * CASE};
             char type = p->plateau[i][j];
             // Mur
             if (type == '*') {
@@ -355,12 +349,12 @@ void dessiner_texte(Partie *p) {
     // Remarque : on fait ça pour tricher un peu, lorsque pacman arrive sur la droite du plateau, il est dessiné
     // au dessus de la zone de texte. En faisant ça, on efface les pixels de pacman qui sont en dehors du plateau
     // ce qui donne une impression de transition
-    dessiner_rectangle((Point){p->tc.c * p->C, 0}, 200, ECRAN_H, noir);
+    dessiner_rectangle((Point){p->C * CASE, 0}, 200, ECRAN_H, noir);
 
     // Espace entre les éléments
     const int padding = 5;
 
-    Point point_affichage = {p->tc.c * p->C + padding, 0}; // Origine des texte (en haut à droite du plateau)
+    Point point_affichage = {CASE * p->C + padding, 0}; // Origine des texte (en haut à droite du plateau)
     // Titre score
     afficher_texte("Score", 26, point_affichage, rouge);
 
