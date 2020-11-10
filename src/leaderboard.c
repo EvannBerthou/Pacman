@@ -6,6 +6,7 @@
 #include <netinet/in.h> 
 #include <netdb.h>
 
+#include "main.h"
 #include "leaderboard.h"
 
 /* 
@@ -128,11 +129,11 @@ void afficher_leaderboard() {
     char *body = strstr(reponse, "\r\n\r\n");
 
     // Efface l'écran
-    dessiner_rectangle((Point){0,0}, 600, 540, noir);
+    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
 
     const int taille_titre = 46;
-    afficher_texte("Joueur", taille_titre, centrer_texte("Joueur", (Point){600 / 4, 20}, taille_titre), blanc);
-    afficher_texte("Score", taille_titre, centrer_texte("Score", (Point){600 / 2 + 300 / 2, 20}, taille_titre), blanc);
+    afficher_texte("Joueur", taille_titre, centrer_texte("Joueur", (Point){ECRAN_W / 4, 20}, taille_titre), blanc);
+    afficher_texte("Score", taille_titre, centrer_texte("Score", (Point){ECRAN_W / 2 + 300 / 2, 20}, taille_titre), blanc);
     // Point de départ du tableau du classement
     int y = 75;
     // Sépare chaque ligne du corps
@@ -158,12 +159,12 @@ void afficher_ligne(char *joueur, char *score, int y) {
     printf("joueur : %s score : %s\n", joueur, score);
 #endif
     const int taille_font = 26;
-    afficher_texte(joueur, taille_font, centrer_texte(joueur, (Point){600 / 4, y}, taille_font), blanc);
-    afficher_texte(score, taille_font, centrer_texte(score, (Point){600 / 2 + 300 / 2, y}, taille_font), blanc);
+    afficher_texte(joueur, taille_font, centrer_texte(joueur, (Point){ECRAN_W / 4, y}, taille_font), blanc);
+    afficher_texte(score, taille_font, centrer_texte(score, (Point){ECRAN_W / 2 + 300 / 2, y}, taille_font), blanc);
 }
 
 void afficher_message_leaderboard(char *message, int font) {
-    dessiner_rectangle((Point){0,0}, 600, 540, noir);
-    afficher_texte(message, font, centrer_texte(message, (Point){600 / 2, 540 / 2}, font), blanc);
+    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
+    afficher_texte(message, font, centrer_texte(message, (Point){ECRAN_W / 2, ECRAN_H / 2}, font), blanc);
     actualiser();
 }

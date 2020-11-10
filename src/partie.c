@@ -55,7 +55,7 @@ Partie charge_plan(char *fichier)
     res = fscanf(f,"%d %d\n",&p.L,&p.C); // Lecture de deux entiers
 
 // Si on n'a pas pu lire deux entiers ou s'ils sont incorrects
-    if(res !=2 || p.C<2 || p.L<2 || p.C >800 || p.L>600)
+    if(res !=2 || p.C<2 || p.L<2 || p.C >800 || p.L>ECRAN_W)
         {
         printf("Dimensions du tableau lues dans '%s' incorrectes\n",fichier);
         fclose(f);
@@ -65,7 +65,7 @@ Partie charge_plan(char *fichier)
 
     // TODO: Ne pas avoir une taille fixe
     // Cette taille ne marche que pour le plateau test.txt (27x21)
-    p.tc = (Pos){420 / p.C, 540 / p.L};
+    p.tc = (Pos){420 / p.C, ECRAN_H / p.L};
 
 /* ALLOCATION DYNAMIQUE                                                       */
 /* Allocation du tableau de *L pointeurs sur lignes                           */
@@ -327,7 +327,7 @@ void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette) {
 
 void dessiner_grille(Partie *p) {
     // Efface la grille pour la redessiner de 0
-    dessiner_rectangle((Point){0,0}, 420, 540, noir);
+    dessiner_rectangle((Point){0,0}, 420, ECRAN_H, noir);
     int cx = p->tc.l;
     int cy = p->tc.c;
     for (int i = 0; i < p->L; i++) {
@@ -355,7 +355,7 @@ void dessiner_texte(Partie *p) {
     // Remarque : on fait ça pour tricher un peu, lorsque pacman arrive sur la droite du plateau, il est dessiné
     // au dessus de la zone de texte. En faisant ça, on efface les pixels de pacman qui sont en dehors du plateau
     // ce qui donne une impression de transition
-    dessiner_rectangle((Point){p->tc.c * p->C, 0}, 200, 540, noir);
+    dessiner_rectangle((Point){p->tc.c * p->C, 0}, 200, ECRAN_H, noir);
 
     // Espace entre les éléments
     const int padding = 5;
@@ -453,7 +453,7 @@ Point centrer_boite(Point centre, Point taille) {
 
 void afficher_nom(char *nom, int index) {
     // Dessine la boite autour du texte au centre de l'écran
-    Point coin = centrer_boite((Point){600 / 2, 540 / 2}, (Point){5 * 46, 60});
+    Point coin = centrer_boite((Point){ECRAN_W / 2, ECRAN_H / 2}, (Point){5 * 46, 60});
     dessiner_rectangle(coin, 5 * 46, 60, noir);
     // Ligne haut
     dessiner_ligne(coin, (Point){coin.x + 5 * 46, coin.y}, blanc);

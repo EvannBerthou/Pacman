@@ -35,7 +35,7 @@ void my_audio_callback(void *userdata, Uint8 *stream, int len) {
 }
 
 int main(int argc, char **argv) {
-    ouvrir_fenetre(600, 540);
+    ouvrir_fenetre(ECRAN_W, ECRAN_H);
 
     // Chargement de la manette si disponible
     int num_joy = SDL_NumJoysticks();
@@ -79,9 +79,9 @@ int main(int argc, char **argv) {
     }
 
     // Création des boutons
-    boutons[0] = nouveau_bouton((Point){600 / 2, 200}, blanc, "Jouer", 26);
-    boutons[1] = nouveau_bouton((Point){600 / 2, 250}, blanc, "Classement", 26);
-    boutons[2] = nouveau_bouton((Point){600 / 2, 300}, blanc, "Quitter", 26);
+    boutons[0] = nouveau_bouton((Point){ECRAN_W / 2, 200}, blanc, "Jouer", 26);
+    boutons[1] = nouveau_bouton((Point){ECRAN_W / 2, 250}, blanc, "Classement", 26);
+    boutons[2] = nouveau_bouton((Point){ECRAN_W / 2, 300}, blanc, "Quitter", 26);
 
     if (charger_sprites() == -1)
         return 1;
@@ -193,7 +193,7 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
 }
 
 void dessiner_accueil() {
-    dessiner_rectangle((Point){0, 0}, 800, 600, noir);
+    dessiner_rectangle((Point){0, 0}, 800, ECRAN_W, noir);
     // TODO: Dessiner un logo au lieu d'un texte
     afficher_texte("Pacman", 46, (Point){800 / 2 - 26 * 7, 50}, jaune);
     for (int i = 0; i < NOMBRE_BOUTONS; i++) {
