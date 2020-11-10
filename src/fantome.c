@@ -23,10 +23,10 @@ void bouger_fantomes(Partie *p, float dt) {
         // Déplace le fantôme
         const float vitesse = 50;
         switch (fantome->etat.direction) {
-            case DIR_HAUT:   fantome->pos.l-= dt * vitesse; break;
-            case DIR_BAS:    fantome->pos.l+= dt * vitesse; break;
-            case DIR_GAUCHE: fantome->pos.c-= dt * vitesse; break;
-            case DIR_DROITE: fantome->pos.c+= dt * vitesse; break;
+            case DIR_HAUT:   fantome->pos.l -= dt * vitesse; break;
+            case DIR_BAS:    fantome->pos.l += dt * vitesse; break;
+            case DIR_GAUCHE: fantome->pos.c -= dt * vitesse; break;
+            case DIR_DROITE: fantome->pos.c += dt * vitesse; break;
         }
     }
 }

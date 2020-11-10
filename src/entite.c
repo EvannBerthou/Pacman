@@ -2,10 +2,10 @@
 #include "entite.h"
 #include "main.h"
 
-Entite nouvelle_entite(Posf pos,Posf pos_init, TypeEntite type) {
+Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
     Etat etat = {
         .direction = DIR_INCONNUE,
-        .prochaine_direction = 0,
+        .prochaine_direction = DIR_INCONNUE,
         .score = 0,
         .fuite = 0,
         .nb_vie = 1,
@@ -18,8 +18,10 @@ Entite nouvelle_entite(Posf pos,Posf pos_init, TypeEntite type) {
         .animation_time = 0,
     };
 
+    // Les fantomes n'ont pas d'animations donc une seul frame par direction
     if (type == ENTITE_FANTOME)
         result.nombre_frames = 1;
+    // Pacman (pas ENTITE_FANTOME) possède 2 frames d'animation : bouche ouverte/fermée
     else 
         result.nombre_frames = 2;
 

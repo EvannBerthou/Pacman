@@ -16,7 +16,6 @@ SCENE scene_active = SCENE_ACCUEIL;
 #define NOMBRE_BOUTONS 3
 BoutonAccueil boutons[NOMBRE_BOUTONS];
 int bouton_selectionne = 0;
-int musique = 1;
 
 static Uint8 *audio_pos; // avance de la lecture du fichier audio
 static Uint32 audio_len; // taille restante à être lue
@@ -40,9 +39,11 @@ int main(int argc, char **argv) {
     // Chargement de la manette si disponible
     int num_joy = SDL_NumJoysticks();
     SDL_Joystick *manette = NULL;
+
 #ifdef DEBUG
     printf("%d manettes détectés\n", num_joy);
 #endif
+
     if (num_joy > 0) {
         printf("Utilisation de la manette 0 (%s)\n", SDL_JoystickName(0));
         // Active la manette
@@ -59,10 +60,7 @@ int main(int argc, char **argv) {
 	static SDL_AudioSpec wav_spec; // Caractéristique du fichier audio
 
     // Charge le fichier musique
-	if (SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) == NULL ){
-        musique = 0;
-	}
-    if (musique) {
+	if (SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) != NULL ){
         wav_spec.callback = my_audio_callback;
         wav_spec.userdata = NULL;
         audio_pos = wav_buffer;
@@ -70,8 +68,9 @@ int main(int argc, char **argv) {
 
         // Ouvre le périphérique audio
         if (SDL_OpenAudio(&wav_spec, NULL) < 0 ){
+        #ifdef DEBUG
           fprintf(stderr, "Erreur lors de l'ouverture de l'audio: %s\n", SDL_GetError());
-          musique = 0;
+        #endif
         }
         else {
             SDL_PauseAudio(0);
@@ -184,7 +183,7 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
         }
         scene_active = SCENE_NIVEAU;
         // Arrete la musique de l'accueil
-        //if (SDL_GetAudioStatus() == SDL_AUDIO_PLAYING)
+        if (SDL_GetAudioStatus() == SDL_AUDIO_PLAYING)
             SDL_PauseAudio(1);
         break;
     case 1: afficher_leaderboard(); break;

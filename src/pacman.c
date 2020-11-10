@@ -19,16 +19,7 @@ static int direction_opposee(Partie *p) {
 static int centre_case(Partie *p) {
     float demi_x = CASE / 2;
     float demi_y = CASE / 2;
-
-// Necessaire pour les cas spécials dans les coins
-// TODO: Sûrement une meilleure solution disponible
-    switch (p->pacman.etat.direction){
-        case DIR_HAUT:
-        case DIR_GAUCHE: return fmod(p->pacman.pos.l + demi_x, CASE) > demi_x ||  fmod(p->pacman.pos.c + demi_y, CASE) > demi_y;
-        case DIR_BAS:    return fmod(p->pacman.pos.l + demi_x, CASE) > demi_x ||  fmod(p->pacman.pos.c + demi_y, CASE) >= demi_y;
-        case DIR_DROITE: return fmod(p->pacman.pos.l + demi_x, CASE) >= demi_x || fmod(p->pacman.pos.c + demi_y, CASE) > demi_y;
-    }
-    return 0;
+    return fmod(p->pacman.pos.l + demi_x, CASE) >= demi_x ||  fmod(p->pacman.pos.c + demi_y, CASE) >= demi_y;
 }
 
 //modification de la positon de pacman en fonction de l'environnement et des touches pressés
@@ -51,12 +42,13 @@ void bouger_pacman(Partie *p, float dt) {
 
     const float vitesse = 75;
     switch (p->pacman.etat.direction){
-        case DIR_HAUT: p->pacman.pos.l-=dt * vitesse; break;
-        case DIR_BAS: p->pacman.pos.l+=dt * vitesse; break;
-        case DIR_GAUCHE: p->pacman.pos.c-=dt * vitesse; break;
-        case DIR_DROITE: p->pacman.pos.c+=dt * vitesse; break;
+        case DIR_HAUT:   p->pacman.pos.l -= dt * vitesse; break;
+        case DIR_BAS:    p->pacman.pos.l += dt * vitesse; break;
+        case DIR_GAUCHE: p->pacman.pos.c -= dt * vitesse; break;
+        case DIR_DROITE: p->pacman.pos.c += dt * vitesse; break;
     }
 
+    // Animation_time étant un float, on vérifie manuellement si on doit boucler
     p->pacman.animation_time += dt * VITESSE_ANIMATION;
     if (p->pacman.animation_time >= p->pacman.nombre_frames)
         p->pacman.animation_time = 0;
