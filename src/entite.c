@@ -1,5 +1,6 @@
 #include <math.h>
 #include "entite.h"
+#include "main.h"
 
 Entite nouvelle_entite(Posf pos,Posf pos_init, TypeEntite type) {
     Etat etat = {
@@ -59,9 +60,9 @@ SDL_Surface *charger_sprite(TypeEntite type, int dir, int frame) {
     return img;
 }
 
-Pos ecran_vers_grille(Posf pos, Pos taille) {
+Pos ecran_vers_grille(Posf pos) {
     // Convertis taille en Posf pour ne pas perdre la précision lors de la division
-    Posf taille_f = { taille.l, taille.c }; 
+    Posf taille_f = { CASE, CASE }; 
     return (Pos) {
         (int)(roundf (pos.l  / taille_f.l)),
         (int)(roundf (pos.c  / taille_f.c))

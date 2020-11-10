@@ -51,6 +51,6 @@ typedef struct {
 
 Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type);
 SDL_Surface *charger_sprite(TypeEntite type, int dir, int frame);
-Pos ecran_vers_grille(Posf pos, Pos taille);
+Pos ecran_vers_grille(Posf pos);
 
 #endif
