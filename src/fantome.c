@@ -1,26 +1,50 @@
+#include <unistd.h>
+#include <math.h>
 #include "fantome.h"
+#include "main.h"
 
 void bouger_fantomes(Partie *p, float dt) {
-    Posf pacman = p->pacman.pos;
     for (int i = 0; i < NBFANTOMES; i++) {
         Entite *fantome = &p->fantomes[i];
-        // Verifie quelle direction est disponible pour le fantôme
-        DirEntite direction = DIR_INCONNUE;
-        if (fantome->pos.l > pacman.l && case_direction(p, fantome, DIR_HAUT) != '*')
-            direction = DIR_HAUT;
-        else if (fantome->pos.l < pacman.l && case_direction(p, fantome, DIR_BAS) != '*')
-            direction = DIR_BAS;
-        else if (fantome->pos.c > pacman.c && case_direction(p, fantome, DIR_GAUCHE) != '*')
-            direction = DIR_GAUCHE;
-        else if (fantome->pos.c < pacman.c && case_direction(p, fantome, DIR_DROITE) != '*')
-            direction = DIR_DROITE;
+        Pos current_pos = ecran_vers_grille(fantome->pos);
 
+        // Si le fantome est rentré à la base
+        // TODO: Détecte que le fantome est à la base
+        if (fantome->etat.fuite && ((fantome->pos.l == fantome->pos_init.l) && (fantome->pos.l == fantome->pos_init.l))){
+            fantome->etat.fuite=0;
+        }
+
+        // Si le fantome est en mode fuite, le faire se déplacer vers sa base
+        if (fantome->etat.fuite){
+            find_path(p,current_pos,ecran_vers_grille(fantome->pos_init),fantome);
+        }
+        else if ((fantome->pos_cible.l != p->pacman.pos.l) || (fantome->pos_cible.c!=p->pacman.pos.c)){
+            // Ici on gère les différentes IA de chaque fantome car ils ont une case cible differente
+            if (fantome->type==ENTITE_FANTOME_R){
+                fantome->pos_cible = p->pacman.pos;
+                find_path(p,current_pos,ecran_vers_grille(p->pacman.pos),fantome);
+            }
+        }
+
+        DirEntite direction = DIR_INCONNUE;
+        if (current_pos.l > fantome->chemin_noeud[0]->pos.l) {
+            direction = DIR_HAUT;
+        }
+        else if (current_pos.l < fantome->chemin_noeud[0]->pos.l) {
+            direction = DIR_BAS;
+        }
+        else if (current_pos.c > fantome->chemin_noeud[0]->pos.c) {
+            direction = DIR_GAUCHE;
+        }
+        else if (current_pos.c < fantome->chemin_noeud[0]->pos.c) {
+            direction = DIR_DROITE;
+        }
         // Change la direction du fantôme ssi il est aligné à la grille pour éviter qu'il traverse les murs
         if (aligne_grille(p, fantome->pos)) {
             fantome->etat.direction = direction;
         }
 
-        // Déplace le fantôme
+        // Déplace le fantôme dt * vitesse
         const float vitesse = 50;
         switch (fantome->etat.direction) {
             case DIR_HAUT:   fantome->pos.l -= dt * vitesse; break;
