@@ -16,7 +16,6 @@ SCENE scene_active = SCENE_ACCUEIL;
 #define NOMBRE_BOUTONS 3
 BoutonAccueil boutons[NOMBRE_BOUTONS];
 int bouton_selectionne = 0;
-int musique = 1;
 
 static Uint8 *audio_pos; // avance de la lecture du fichier audio
 static Uint32 audio_len; // taille restante à être lue
@@ -35,14 +34,16 @@ void my_audio_callback(void *userdata, Uint8 *stream, int len) {
 }
 
 int main(int argc, char **argv) {
-    ouvrir_fenetre(600, 540);
+    ouvrir_fenetre(ECRAN_W, ECRAN_H);
 
     // Chargement de la manette si disponible
     int num_joy = SDL_NumJoysticks();
     SDL_Joystick *manette = NULL;
+
 #ifdef DEBUG
     printf("%d manettes détectés\n", num_joy);
 #endif
+
     if (num_joy > 0) {
         printf("Utilisation de la manette 0 (%s)\n", SDL_JoystickName(0));
         // Active la manette
@@ -59,11 +60,7 @@ int main(int argc, char **argv) {
 	static SDL_AudioSpec wav_spec; // Caractéristique du fichier audio
 
     // Charge le fichier musique
-	if (SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) == NULL ){
-        musique = 0;
-	}
-    /*
-    if (musique) {
+	if (SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) != NULL ){
         wav_spec.callback = my_audio_callback;
         wav_spec.userdata = NULL;
         audio_pos = wav_buffer;
@@ -71,19 +68,19 @@ int main(int argc, char **argv) {
 
         // Ouvre le périphérique audio
         if (SDL_OpenAudio(&wav_spec, NULL) < 0 ){
+        #ifdef DEBUG
           fprintf(stderr, "Erreur lors de l'ouverture de l'audio: %s\n", SDL_GetError());
-          musique = 0;
+        #endif
         }
         else {
             SDL_PauseAudio(0);
         }
     }
-    */
 
     // Création des boutons
-    boutons[0] = nouveau_bouton((Point){600 / 2, 200}, blanc, "Jouer", 26);
-    boutons[1] = nouveau_bouton((Point){600 / 2, 250}, blanc, "Classement", 26);
-    boutons[2] = nouveau_bouton((Point){600 / 2, 300}, blanc, "Quitter", 26);
+    boutons[0] = nouveau_bouton((Point){ECRAN_W / 2, 200}, blanc, "Jouer", 26);
+    boutons[1] = nouveau_bouton((Point){ECRAN_W / 2, 250}, blanc, "Classement", 26);
+    boutons[2] = nouveau_bouton((Point){ECRAN_W / 2, 300}, blanc, "Quitter", 26);
 
     if (charger_sprites() == -1)
         return 1;
@@ -186,8 +183,8 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
         }
         scene_active = SCENE_NIVEAU;
         // Arrete la musique de l'accueil
-        if (musique)
-            SDL_CloseAudio();
+        if (SDL_GetAudioStatus() == SDL_AUDIO_PLAYING)
+            SDL_PauseAudio(1);
         break;
     case 1: afficher_leaderboard(); break;
     case 2: exit(0); break;
@@ -195,7 +192,7 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
 }
 
 void dessiner_accueil() {
-    dessiner_rectangle((Point){0, 0}, 800, 600, noir);
+    dessiner_rectangle((Point){0, 0}, 800, ECRAN_W, noir);
     // TODO: Dessiner un logo au lieu d'un texte
     afficher_texte("Pacman", 46, (Point){800 / 2 - 26 * 7, 50}, jaune);
     for (int i = 0; i < NOMBRE_BOUTONS; i++) {

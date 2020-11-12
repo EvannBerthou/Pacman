@@ -55,17 +55,13 @@ Partie charge_plan(char *fichier)
     res = fscanf(f,"%d %d\n",&p.L,&p.C); // Lecture de deux entiers
 
 // Si on n'a pas pu lire deux entiers ou s'ils sont incorrects
-    if(res !=2 || p.C<2 || p.L<2 || p.C >800 || p.L>600)
+    if(res !=2 || p.C<2 || p.L<2 || p.C >800 || p.L>ECRAN_W)
         {
         printf("Dimensions du tableau lues dans '%s' incorrectes\n",fichier);
         fclose(f);
         exit(0);
         }
     printf("Dimensions lues: %d x %d\n",p.L,p.C);
-
-    // TODO: Ne pas avoir une taille fixe
-    // Cette taille ne marche que pour le plateau test.txt (27x21)
-    p.tc = (Pos){420 / p.C, 540 / p.L};
 
 /* ALLOCATION DYNAMIQUE                                                       */
 /* Allocation du tableau de *L pointeurs sur lignes                           */
@@ -139,7 +135,7 @@ Partie charge_plan(char *fichier)
 
             if(ch=='P')
                 {
-                    p.pacman = nouvelle_entite((Posf){l * p.tc.l, c * p.tc.c},(Posf){l * p.tc.l, c * p.tc.c}, ENTITE_PACMAN);
+                    p.pacman = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, ENTITE_PACMAN);
                 }
             else if(ch=='F')
                 {
@@ -149,7 +145,7 @@ Partie charge_plan(char *fichier)
                     fclose(f);
                     exit(0);
                     }
-                p.fantomes[nbf] = nouvelle_entite((Posf){l * p.tc.l, c * p.tc.c},(Posf){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME_R);
+                p.fantomes[nbf] = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, ENTITE_FANTOME_R);
                 nbf++;
                 }
             else if(ch=='B' || ch == '.')
@@ -212,7 +208,6 @@ static SDL_Surface *sprite_at(Point pos) {
     // Convertis les coordonnés 2d en index pour un array 1d
     int index = 21 * pos.y + pos.x;
     // Le 2 correspond à l'offset pour avoir les sprites des murs
-    //return sprites[2 + voisins_murs[index]];
     return sprites[1 + voisins_murs[index]];
 }
 
@@ -223,8 +218,7 @@ char on_grid(Partie *p, int l, int c) {
 }
 
 int aligne_grille(Partie *p, Posf pos) {
-    return (int)(fmod(pos.l, p->tc.l)) <= 1 && (int)(fmod(pos.c, p->tc.l)) <= 1;
-    //return ((int)(p->pacman.pos.l) % p->tc.l == 0 && (int)(p->pacman.pos.c) % p->tc.c == 0);
+    return (int)(fmod(pos.l, CASE)) <= 1 && (int)(fmod(pos.c, CASE)) <= 1;
 }
 
 void calculer_voisins(Partie *p) {
@@ -248,7 +242,7 @@ void calculer_voisins(Partie *p) {
                 voisins |= 0b0100;
             if (on_grid(p, i, j + 1) == '*')
                 voisins |= 0b1000;
-            voisins_murs[21 * i + j] = voisins;
+            voisins_murs[p->C * i + j] = voisins;
         }
     }
 }
@@ -256,7 +250,7 @@ void calculer_voisins(Partie *p) {
 
 // Renvoie le type de case vers laquelle se déplace l'entitée
 char case_direction(Partie *p, Entite *e, int direction) {
-    Pos pos = ecran_vers_grille(e->pos, p->tc);
+    Pos pos = ecran_vers_grille(e->pos);
     switch(direction) {
     case DIR_HAUT: pos.l -= 1; break;
     case DIR_BAS: pos.l += 1; break;
@@ -264,8 +258,6 @@ char case_direction(Partie *p, Entite *e, int direction) {
     case DIR_DROITE: pos.c += 1; break;
     default: return '*';
     }
-    /*if (p->plateau[pos.l][pos.c] != '*' && p->plateau[pos.l][pos.c] != 'F')
-        printf("%c\n", p->plateau[pos.l][pos.c]);*/
     return on_grid(p, pos.l, pos.c);
 }
 
@@ -297,6 +289,7 @@ void maj_etat(Partie *p){
     }*/
 
     for (int i =0;i!=NBFANTOMES;i++){
+        // Détection de la collision entre fantome et pacman
         if ((p->pacman.pos.l == p->fantomes[i].pos.l) && (p->pacman.pos.c == p->fantomes[i].pos.c)){
             if (!(p->fantomes[i].etat.fuite)){
                 p->pacman.etat.nb_vie-=1;
@@ -333,14 +326,13 @@ void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette) {
     }
 }
 
-void dessiner_grille(Partie *p) {
+void dessiner_plateau(Partie *p) {
     // Efface la grille pour la redessiner de 0
-    dessiner_rectangle((Point){0,0}, 420, 540, noir);
-    int cx = p->tc.l;
-    int cy = p->tc.c;
+    dessiner_rectangle((Point){0,0}, PLATEAU_W, ECRAN_H, noir);
+    // Dessine chaque case du plateau
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
-            Point pos = {j * cx, i * cy};
+            Point pos = {j * CASE, i * CASE};
             char type = p->plateau[i][j];
             // Mur
             if (type == '*') {
@@ -363,37 +355,38 @@ void dessiner_texte(Partie *p) {
     // Remarque : on fait ça pour tricher un peu, lorsque pacman arrive sur la droite du plateau, il est dessiné
     // au dessus de la zone de texte. En faisant ça, on efface les pixels de pacman qui sont en dehors du plateau
     // ce qui donne une impression de transition
-    dessiner_rectangle((Point){p->tc.c * p->C, 0}, 200, 540, noir);
+    dessiner_rectangle((Point){p->C * CASE, 0}, 200, ECRAN_H, noir);
 
     // Espace entre les éléments
     const int padding = 5;
+    const int font = font;
 
-    Point point_affichage = {p->tc.c * p->C + padding, 0}; // Origine des texte (en haut à droite du plateau)
+    Point point_affichage = {p->C * CASE + padding, 0}; // Origine des texte (en haut à droite du plateau)
     // Titre score
-    afficher_texte("Score", 26, point_affichage, rouge);
+    afficher_texte("Score", font, point_affichage, rouge);
 
     // Score
-    point_affichage.y += 26 + padding; // Descend la positon de la taille du texte + padding pour avoir de l'espace entre les textes
+    point_affichage.y += font + padding; // Descend la positon de la taille du texte + padding pour avoir de l'espace entre les textes
     char score[6];
     sprintf(score, "%05d", p->pacman.etat.score); // Converties le score de pacman de int à string
-    afficher_texte(score, 26, point_affichage, blanc);
+    afficher_texte(score, font, point_affichage, blanc);
 
     // Titre vies
-    point_affichage.y += (26 + padding) * 2; // Grand espace entre les deux sections
-    afficher_texte("Vies", 26, point_affichage, rouge);
+    point_affichage.y += (font + padding) * 2; // Grand espace entre les deux sections
+    afficher_texte("Vies", font, point_affichage, rouge);
 
     // Vies
-    point_affichage.y += 26 + padding;
+    point_affichage.y += font + padding;
     char vies[2];
     sprintf(vies, "%d", p->pacman.etat.nb_vie); // Converties les vies de pacman de int à string
-    afficher_texte(vies, 26, point_affichage, blanc);
+    afficher_texte(vies, font, point_affichage, blanc);
 }
 
 void dessiner_partie(Partie *p) {
-    dessiner_grille(p);
+    dessiner_plateau(p);
     dessiner_pacman(p);
     dessiner_fantomes(p);
-    dessiner_texte(p);
+    dessiner_texte(p); // Affiche le texte sur la droite
     actualiser();
 }
 
@@ -407,6 +400,8 @@ void terminer_partie(Partie *p) {
         "Content-Type: application/x-www-form-urlencoded\r\n"
         "Content-Length: %d\r\n\r\n"
         "%s\r\n";
+    // Il est nécessaire de faire cette partie en 2 étapes car la requête HTTP a besoin de savoir la taille
+    // du corps, ce qu'on veut déterminer uniquement après l'avoir généré
     const char post_params[] = "joueur=%s&points=%d";
     char params[64] = {};
     sprintf(params, post_params, nom, p->pacman.etat.score);
@@ -430,11 +425,12 @@ char * entrer_nom() {
     while (touche != SDLK_RETURN) {
         traiter_evenements();
         touche = attendre_touche();
+
         if (touche == SDLK_RIGHT)
             index = (index + 1) % 5;
         else if (touche == SDLK_LEFT) {
             index = (index - 1);
-            if (index < 0) index = 5;
+            if (index < 0) index = 4;
         }
         // Autorise que les lettres majuscules
         else if (touche == SDLK_UP) {
@@ -446,8 +442,8 @@ char * entrer_nom() {
                 nom[index]++;
         }
         afficher_nom(nom, index);
-        reinitialiser_evenements();
         attente(100);
+        reinitialiser_evenements();
     }
     return strdup(nom);
 }
@@ -460,17 +456,20 @@ Point centrer_boite(Point centre, Point taille) {
 }
 
 void afficher_nom(char *nom, int index) {
+    const int font = 46;
+    const int w = 5 * font;
+    const int h = 60;
     // Dessine la boite autour du texte au centre de l'écran
-    Point coin = centrer_boite((Point){600 / 2, 540 / 2}, (Point){5 * 46, 60});
-    dessiner_rectangle(coin, 5 * 46, 60, noir);
+    Point coin = centrer_boite((Point){ECRAN_W / 2, ECRAN_H / 2}, (Point){w, h});
+    dessiner_rectangle(coin, w, h, noir);
     // Ligne haut
-    dessiner_ligne(coin, (Point){coin.x + 5 * 46, coin.y}, blanc);
+    dessiner_ligne(coin, (Point){coin.x + w, coin.y}, blanc);
     // Ligne bas
-    dessiner_ligne((Point){coin.x, coin.y + 60}, (Point){coin.x + 5 * 46, coin.y + 60}, blanc);
+    dessiner_ligne((Point){coin.x, coin.y + h}, (Point){coin.x + w, coin.y + h}, blanc);
     // Ligne droite
-    dessiner_ligne((Point){coin.x + 5 * 46, coin.y}, (Point){coin.x + 5 * 46, coin.y + 60}, blanc);
+    dessiner_ligne((Point){coin.x + w, coin.y}, (Point){coin.x + w, coin.y + h}, blanc);
     // Ligne gauche
-    dessiner_ligne(coin, (Point){coin.x, coin.y + 60}, blanc);
+    dessiner_ligne(coin, (Point){coin.x, coin.y + h}, blanc);
 
     // Permet de dessiner chaque caractère du texte dans une position fixe au lieu de le texte change de taille
     for (int i = 0; i < 5; i++) {
@@ -481,9 +480,9 @@ void afficher_nom(char *nom, int index) {
         char buff[2];
         sprintf(buff, "%c", c);
         // Détermine la position de la lettre
-        Point pos = (Point){coin.x + i * 46 + 5, coin.y};
+        Point pos = (Point){coin.x + i * font + 5, coin.y};
         // Affiche la lettre
-        afficher_texte(buff, 46, pos, blanc);
+        afficher_texte(buff, font, pos, blanc);
         // Souligne la lettre en cours de modification
         if (i == index) {
             dessiner_ligne((Point){pos.x, pos.y + 50}, (Point){pos.x + 35, pos.y + 50}, blanc);

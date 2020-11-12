@@ -1,10 +1,11 @@
 #include <math.h>
 #include "entite.h"
+#include "main.h"
 
-Entite nouvelle_entite(Posf pos,Posf pos_init, TypeEntite type) {
+Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
     Etat etat = {
         .direction = DIR_INCONNUE,
-        .prochaine_direction = 0,
+        .prochaine_direction = DIR_INCONNUE,
         .score = 0,
         .fuite = 0,
         .nb_vie =2,
@@ -23,6 +24,7 @@ Entite nouvelle_entite(Posf pos,Posf pos_init, TypeEntite type) {
 
     if (type == ENTITE_FANTOME_R )
         result.nombre_frames = 1;
+    // Pacman (pas ENTITE_FANTOME) possède 2 frames d'animation : bouche ouverte/fermée
     else 
         result.nombre_frames = 2;
 
@@ -45,8 +47,8 @@ const char *entites_sprites_path[][4][2] = {
         {"data/sprites/pacman30.bmp", "data/sprites/pacman31.bmp"},
     },
     {
-        {"data/sprites/fantome0.bmp"},
-        {"data/sprites/fantome1.bmp"},
+        {"data/sprites/fantome0.bmp"}, 
+        {"data/sprites/fantome1.bmp"}, 
         {"data/sprites/fantome2.bmp"},
         {"data/sprites/fantome3.bmp"},
     }
@@ -63,12 +65,9 @@ SDL_Surface *charger_sprite(TypeEntite type, int dir, int frame) {
     return img;
 }
 
-static Posf pos_vers_posf(Pos p) {
-    return (Posf) { p.l, p.c };
-}
-
-Pos ecran_vers_grille(Posf pos, Pos taille) {
-    Posf taille_f = pos_vers_posf(taille);
+Pos ecran_vers_grille(Posf pos) {
+    // Convertis taille en Posf pour ne pas perdre la précision lors de la division
+    Posf taille_f = { CASE, CASE }; 
     return (Pos) {
         (int)(roundf (pos.l  / taille_f.l)),
         (int)(roundf (pos.c  / taille_f.c))
