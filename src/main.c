@@ -62,6 +62,7 @@ int main(int argc, char **argv) {
 	if (SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) == NULL ){
         musique = 0;
 	}
+    /*
     if (musique) {
         wav_spec.callback = my_audio_callback;
         wav_spec.userdata = NULL;
@@ -77,6 +78,7 @@ int main(int argc, char **argv) {
             SDL_PauseAudio(0);
         }
     }
+    */
 
     // Création des boutons
     boutons[0] = nouveau_bouton((Point){600 / 2, 200}, blanc, "Jouer", 26);

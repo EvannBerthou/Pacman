@@ -7,17 +7,21 @@ Entite nouvelle_entite(Posf pos,Posf pos_init, TypeEntite type) {
         .prochaine_direction = 0,
         .score = 0,
         .fuite = 0,
-        .nb_vie = 1,
+        .nb_vie =2,
+        .suiv=0,
     };
     Entite result = {
         .pos = pos,
         .pos_init = pos_init,
+        .pos_cible=(Posf){0,0},
         .type = type,
         .etat = etat,
         .animation_time = 0,
+        .nombre_noeud=0,
+        .chemin_noeud={0},
     };
 
-    if (type == ENTITE_FANTOME)
+    if (type == ENTITE_FANTOME_R )
         result.nombre_frames = 1;
     else 
         result.nombre_frames = 2;

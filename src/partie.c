@@ -149,7 +149,7 @@ Partie charge_plan(char *fichier)
                     fclose(f);
                     exit(0);
                     }
-                p.fantomes[nbf] = nouvelle_entite((Posf){l * p.tc.l, c * p.tc.c},(Posf){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME);
+                p.fantomes[nbf] = nouvelle_entite((Posf){l * p.tc.l, c * p.tc.c},(Posf){l * p.tc.l, c * p.tc.c}, ENTITE_FANTOME_R);
                 nbf++;
                 }
             else if(ch=='B' || ch == '.')
@@ -295,17 +295,25 @@ void maj_etat(Partie *p){
     else if (temps ecouler > x ){
         p->pacman.etat.fuite=0;
     }*/
+
     for (int i =0;i!=NBFANTOMES;i++){
         if ((p->pacman.pos.l == p->fantomes[i].pos.l) && (p->pacman.pos.c == p->fantomes[i].pos.c)){
-            p->pacman.etat.nb_vie-=1;
-            if (p->pacman.etat.nb_vie == 0) {
-                terminer_partie(p);
-                return;
-            }
+            if (!(p->fantomes[i].etat.fuite)){
+                p->pacman.etat.nb_vie-=1;
+                if (p->pacman.etat.nb_vie == 0) {
+                    terminer_partie(p);
+                    return;
+                }
 
-            p->pacman.pos = p->pacman.pos_init;
-            for (int b =0;b!=NBFANTOMES;b++ ){
-                p->fantomes[b].pos=p->fantomes[b].pos_init;
+                p->pacman.pos = p->pacman.pos_init;
+                for (int b =0;b!=NBFANTOMES;b++ ){
+                    p->fantomes[b].pos=p->fantomes[b].pos_init;
+                    p->fantomes[b].pos_cible=(Posf){0,0};
+                }
+            }
+            else {
+                p->fantomes[i].pos=p->fantomes[i].pos_init;
+                p->fantomes[i].pos_cible=(Posf){0,0};
             }
         }
     }
