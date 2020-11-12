@@ -79,7 +79,9 @@ void bouger_pacman(Partie *p, float dt) {
         }
         else if (on_grid(p, grille.l, grille.c) == 'B') {
             p->pacman.etat.score+=50;
-            p->pacman.etat.fuite=1;
+            for (int i=0;i!=NBFANTOMES;i++){
+                p->fantomes[i].etat.fuite=1;
+            }
             p->nbbonus--;
             //metre compteur de temps a 0
             #if DEBUG

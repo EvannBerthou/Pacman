@@ -15,7 +15,9 @@ typedef struct posf {
 
 typedef enum {
     ENTITE_PACMAN = 0,
-    ENTITE_FANTOME,
+    ENTITE_FANTOME_R,// fantome red 
+    ENTITE_FANTOME_P,// fantome pink
+    ENTITE_FANTOME_G,// fantome Green
 } TypeEntite;
 
 typedef enum {
@@ -33,17 +35,28 @@ typedef struct {
     int score;
     int fuite;
     int nb_vie;
+    int suiv; //suivre ke cchemin 
 } Etat;
+
+
+
+typedef struct Noeud{
+    Pos pos;
+    int cout_g, cout_h, cout_t ;
+    struct Noeud * parent;
+} Noeud;
+
+
 
 typedef struct {
     Posf pos;
     Posf pos_init;
+    Posf pos_cible;
     TypeEntite type;
     Etat etat;
-    // Liste des sprites de l'entité
-    // 4 sprite pour chacune des 4 directions
-    // L'ordre correspond à l'odre de DirEntite
     SDL_Surface *sprite[4][2];
+    Noeud* chemin_noeud[500];
+    int nombre_noeud;
     int nombre_frames;
     float animation_time;
 } Entite;

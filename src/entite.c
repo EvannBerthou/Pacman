@@ -8,18 +8,21 @@ Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
         .prochaine_direction = DIR_INCONNUE,
         .score = 0,
         .fuite = 0,
-        .nb_vie = 1,
+        .nb_vie =2,
+        .suiv=0,
     };
     Entite result = {
         .pos = pos,
         .pos_init = pos_init,
+        .pos_cible=(Posf){0,0},
         .type = type,
         .etat = etat,
         .animation_time = 0,
+        .nombre_noeud=0,
+        .chemin_noeud={0},
     };
 
-    // Les fantomes n'ont pas d'animations donc une seul frame par direction
-    if (type == ENTITE_FANTOME)
+    if (type == ENTITE_FANTOME_R )
         result.nombre_frames = 1;
     // Pacman (pas ENTITE_FANTOME) possède 2 frames d'animation : bouche ouverte/fermée
     else 
@@ -44,8 +47,8 @@ const char *entites_sprites_path[][4][2] = {
         {"data/sprites/pacman30.bmp", "data/sprites/pacman31.bmp"},
     },
     {
-        {"data/sprites/fantome0.bmp"},
-        {"data/sprites/fantome1.bmp"},
+        {"data/sprites/fantome0.bmp"}, 
+        {"data/sprites/fantome1.bmp"}, 
         {"data/sprites/fantome2.bmp"},
         {"data/sprites/fantome3.bmp"},
     }
