@@ -17,6 +17,7 @@ clean:
 	$(RM) $(OUTPUT) $(OBJDIR)/*.o $(LIBGRDIR)/*.o 
 
 release: $(LIBGRDIR)/libgraphique.o $(OBJ)
+	@echo "Compilation en mode release"
 	gcc $^ -o $(OUTPUT)  $(SDL_CFLAGS) $(SDL_LDFLAGS) $(LIB)
 
 debug: $(wildcard src/*.c) $(wildcard src/*.h) $(LIBGRDIR)/libgraphique.o
@@ -24,13 +25,7 @@ debug: $(wildcard src/*.c) $(wildcard src/*.h) $(LIBGRDIR)/libgraphique.o
 	gcc -g -DDEBUG $^ -o $(OUTPUT) $(SDL_CFLAGS) $(SDL_LDFLAGS) $(LIB)
 
 $(LIBGRDIR)/libgraphique.o: $(LIBGRDIR)/libgraphique.c
-	gcc   -c $(LIBGRDIR)/libgraphique.c -o $(LIBGRDIR)/libgraphique.o 
+	gcc -c $(LIBGRDIR)/libgraphique.c -o $(LIBGRDIR)/libgraphique.o 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/%.h
 	gcc  $(OPT) -c $<  -o $@
-
-
-
-
-
-
