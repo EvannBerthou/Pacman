@@ -36,7 +36,7 @@ void find_path(Partie* p,Pos depart, Pos arriver,Entite* F){
 
         nb_voisin = nb_openlist - nb_voisin;
         find_min(liste_ouverte, nb_openlist, nb_voisin);
-        for (int k = (nb_openlist - nb_voisin); k != nb_openlist; k++) {
+        for (int k = (nb_openlist - nb_voisin); k < nb_openlist; k++) {
             liste_fermer[nb_closelist] = liste_ouverte[k];
             nb_closelist += 1;
             liste_nb_choix[nb_tour + 1] += 1;
@@ -45,18 +45,16 @@ void find_path(Partie* p,Pos depart, Pos arriver,Entite* F){
     }
 }
 
-
-
 void get_path(Noeud* last_noeud,int nb_tour,Entite* F){
     Noeud* local=last_noeud;
-    int index=nb_tour;
+    int index = nb_tour;
     F->nombre_noeud = nb_tour;
-    F->chemin_noeud[index] = last_noeud;
-    while (local != NULL){
+    while (local != NULL) {
         index--;
-        F->chemin_noeud[index] = local; // Segfault
+        if (index <= 0) break;
         local=local->parent;
     }
+    F->chemin_noeud[0] = local; // Segfault
 }
 
 static int sur_grille(Partie *p, Pos pos) {
@@ -69,7 +67,7 @@ int recherche_voisin(Partie* p,Noeud* current_noeud,Noeud liste_fermer[],Noeud l
     for (int i = 0; i < 4; i++){
         Pos position = {current_noeud->pos.l + directions[i][1], current_noeud->pos.c + directions[i][0]};
         if (!sur_grille(p, position)) continue;
-        if (p->plateau[position.l][position.c] != '*' && !(inliste(position, liste_fermer,nb_closelist))) {
+        if (p->plateau[position.l][position.c] != '*' && !(inliste(position, liste_fermer,nb_closelist)) && !(inliste(position, liste_ouverte, nb_openlist))) {
             int cout_g = distance(Noeud_depart->pos, position);
             int cout_h = distance(position, Noeud_arriver->pos);
             int cout_t = cout_g + cout_h;

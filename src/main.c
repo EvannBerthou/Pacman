@@ -232,7 +232,7 @@ int charger_niveau(Partie *p) {
     /* Chargement du plan à partir du fichier fourni en paramètre                 */
     printf("Chargement du plan...\n");
     // TODO: Charger le niveau dynamiquement
-    *p = charge_plan("data/test.txt");
+    *p = charge_plan("tmp");
     /* Si problème lors du chargement du plan...                                  */
     if (p->plateau == NULL)
         return 1;
