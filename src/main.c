@@ -7,13 +7,14 @@
 #include "leaderboard.h"
 #include "Bouton.h"
 #include "entite.h"
+#include "editeur.h"
 
 /******************************************************************************/
 /* MAIN                                                                       */
 /******************************************************************************/
 
 SCENE scene_active = SCENE_ACCUEIL;
-#define NOMBRE_BOUTONS 3
+#define NOMBRE_BOUTONS 4
 BoutonAccueil boutons[NOMBRE_BOUTONS];
 int bouton_selectionne = 0;
 
@@ -80,7 +81,8 @@ int main(int argc, char **argv) {
     // Création des boutons
     boutons[0] = nouveau_bouton((Point){ECRAN_W / 2, 200}, blanc, "Jouer", 26);
     boutons[1] = nouveau_bouton((Point){ECRAN_W / 2, 250}, blanc, "Classement", 26);
-    boutons[2] = nouveau_bouton((Point){ECRAN_W / 2, 300}, blanc, "Quitter", 26);
+    boutons[2] = nouveau_bouton((Point){ECRAN_W / 2, 300}, blanc, "Editeur", 26);
+    boutons[3] = nouveau_bouton((Point){ECRAN_W / 2, 350}, blanc, "Quitter", 26);
 
     if (charger_sprites() == -1)
         return 1;
@@ -187,7 +189,8 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
             SDL_PauseAudio(1);
         break;
     case 1: afficher_leaderboard(); break;
-    case 2: exit(0); break;
+    case 2: lancer_editeur(); break;
+    case 3: exit(0); break;
     }
 }
 

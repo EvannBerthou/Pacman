@@ -13,7 +13,6 @@
 
 #define NBFANTOMES  1 // nombres de fantômes dans les plateaux chargés
 
-
 // STRUCTURES
 /* Structure Partie:  permet de stocker les paramètres d'une partie           */
 typedef struct partie {
@@ -36,6 +35,7 @@ int aligne_grille(Partie *p, Posf pos);
 void calculer_voisins(Partie *p);
 char case_direction(Partie *p, Entite *e, int direction);
 void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette);
+void dessiner_grille(Partie *p, int dans_editeur);
 void dessiner_texte(Partie *p);
 void dessiner_partie(Partie *p);
 void terminer_partie(Partie *p);
