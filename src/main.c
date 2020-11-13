@@ -1,6 +1,7 @@
 /******************************************************************************/
 /* MAIN.c                                                                     */
 /******************************************************************************/
+#include <dirent.h>
 #include "./main.h"
 #include "../lib/libgraphique.h"
 #include "timer.h"
@@ -140,9 +141,7 @@ static Uint8 croix_manette(SDL_Joystick *manette) {
     return SDL_JoystickGetHat(manette, 0);
 }
 
-void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette) {
-    // Evite la répétition de touche
-    // Touche appuyé lors du dernier appel
+static int nouvelle_touche(SDL_Joystick *manette) {
     static int derniere_touche = 0;
     static Uint8 derniere_croix = 0;
     // Touche appuyés à cet appel
@@ -151,23 +150,41 @@ void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette) {
     int entrer = touche_manete(manette, 0); // Touche X manette (manette ps4)
     // Si la touche appuyé est la meme que celui du dernier appel, cela veut dire que la touche
     // n'a pas été relachée
-    if (touche == derniere_touche && croix == derniere_croix && entrer == 0) return;
+    if (touche == derniere_touche && croix == derniere_croix && entrer == 0) return 0;
 
     // Sauvegarde les touches appuyés au dernier appel
     derniere_touche = touche;
     derniere_croix = croix;
 
     if (touche == SDLK_DOWN || croix & SDL_HAT_DOWN) {
+        return SDLK_DOWN;
+    }
+    if (touche == SDLK_UP || croix & SDL_HAT_UP) {
+        return SDLK_UP;
+    }
+    if (touche == SDLK_RIGHT || croix & SDL_HAT_RIGHT) {
+        return SDLK_RIGHT;
+    }
+    if (touche == SDLK_LEFT || croix & SDL_HAT_LEFT) {
+        return SDLK_LEFT;
+    }
+    if (touche == SDLK_RETURN || entrer) {
+        return SDLK_RETURN;
+    }
+    return touche;
+}
+
+void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette) {
+    int touche = nouvelle_touche(manette);
+    if (touche == SDLK_DOWN) {
         bouton_selectionne = (bouton_selectionne + 1) % NOMBRE_BOUTONS;
     }
-
-    if (touche == SDLK_UP || croix & SDL_HAT_UP) {
+    else if (touche == SDLK_UP) {
         bouton_selectionne--;
         if (bouton_selectionne < 0)
             bouton_selectionne = NOMBRE_BOUTONS - 1;
     }
-
-    if (touche == SDLK_RETURN || entrer) {
+    else if (touche == SDLK_RETURN) {
         activer_bouton(p, t, manette);
     }
 }
@@ -177,9 +194,13 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
     manger_bouton();
     // Transition écran noir
     switch(bouton_selectionne) {
-    case 0:
+    case 0: {
+        char *chemin = selectionner_niveau(manette);
+        if (chemin == NULL) {
+            break;
+        }
         // Charge le niveau
-        if (charger_niveau(p)) {
+        if (charger_niveau(p, chemin)) {
             printf("Erreur lors du chargement du niveau\n");
             exit(1);
         }
@@ -187,7 +208,9 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
         // Arrete la musique de l'accueil
         if (SDL_GetAudioStatus() == SDL_AUDIO_PLAYING)
             SDL_PauseAudio(1);
+        free(chemin);
         break;
+    }
     case 1: afficher_leaderboard(); break;
     case 2: lancer_editeur(); break;
     case 3: exit(0); break;
@@ -228,11 +251,12 @@ void manger_bouton() {
     }
 }
 
-int charger_niveau(Partie *p) {
+int charger_niveau(Partie *p, char *chemin) {
     /* Chargement du plan à partir du fichier fourni en paramètre                 */
     printf("Chargement du plan...\n");
-    // TODO: Charger le niveau dynamiquement
-    *p = charge_plan("tmp");
+    char chemin_complet[100];
+    sprintf(chemin_complet, "data/maps/%s", chemin);
+    *p = charge_plan(chemin_complet);
     /* Si problème lors du chargement du plan...                                  */
     if (p->plateau == NULL)
         return 1;
@@ -255,4 +279,61 @@ int charger_niveau(Partie *p) {
 void charger_accueil() {
     bouton_selectionne = 0;
     scene_active = SCENE_ACCUEIL;
+}
+
+char* selectionner_niveau(SDL_Joystick *manette) {
+    // Chargement des fichiers
+    char *niveaux[100]; // TODO: Probleme de taille fixe
+    int nb = 0; // nombre de niveaux dans la liste
+    DIR *dossier;
+    struct dirent *fichier;
+    dossier = opendir("data/maps");
+    if (dossier != NULL) {
+        while ((fichier = readdir(dossier)) != NULL) {
+            if (fichier->d_type == DT_REG) { // Si fichier (et non dossier)
+                niveaux[nb] = strdup(fichier->d_name);
+                nb++;
+            }
+        }
+        closedir(dossier);
+    }
+    else {
+        return NULL;
+    }
+
+    int curseur = 0; // Quel niveau est selectionné
+    while (1) {
+        traiter_evenements();
+        int touche = nouvelle_touche(manette);
+        if (touche == SDLK_DOWN) {
+            curseur = (curseur + 1) % nb;
+        }
+        else if (touche == SDLK_UP) {
+            curseur--;
+            if (curseur < 0) curseur = nb - 1;
+        }
+        else if (touche == SDLK_RETURN) {
+            // Garde en mémoire le niveau selectionne pour pas qu'il se fasse free
+            char *selectionne = strdup(niveaux[curseur]);
+            // libère la mémoire alloué pour les noms de fichier
+            for (int i = 0; i < nb; i++) {
+                free(niveaux[i]);
+            }
+            return selectionne;
+        }
+
+        afficher_liste_niveaux(niveaux, nb, curseur);
+        reinitialiser_evenements();
+    }
+}
+
+void afficher_liste_niveaux(char **liste, int n, int curseur) {
+    const int font = 26;
+    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
+    for (int i = 0; i < n; i++) {
+        Point p = {0, font * i + 10};
+        Couleur c = i == curseur ? rouge : blanc;
+        afficher_texte(liste[i], font, p, c);
+    }
+    actualiser();
 }

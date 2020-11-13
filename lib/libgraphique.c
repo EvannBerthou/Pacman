@@ -50,7 +50,7 @@ void ouvrir_fenetre(int largeur, int hauteur){
         }
     fclose(f);
 
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
     ecran = SDL_SetVideoMode(largeur, hauteur, 32, SDL_HWSURFACE|SDL_DOUBLEBUF );
 
     //initialisation des variables globales

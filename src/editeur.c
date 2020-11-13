@@ -14,7 +14,7 @@ const int n = sizeof(bouton_editeurs) / sizeof(bouton_editeurs[0]);
 int sauvegarder_niveau(Partie *p) {
     printf("Début de la sauvegarde\n");
     // Ouvre le fichier
-    FILE *f = fopen("tmp", "w");
+    FILE *f = fopen("data/maps/tmp", "w");
     if (f == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture du fichier\n");
         return 1;
@@ -79,7 +79,7 @@ Partie charger_editeur(char *chemin) {
 static void dessiner_boutons() {
     const int font_size = 26;
     // Efface l'écran
-    dessiner_rectangle((Point){420, 0}, ECRAN_W - 420, ECRAN_H, noir); 
+    dessiner_rectangle((Point){420, 0}, ECRAN_W - 420, ECRAN_H, noir);
     for (int i = 0; i < n; i++) {
         // Texte du bouton à afficher
         const char *texte = boutons_editeur_textes[i];
@@ -106,7 +106,7 @@ static void placer_case(Partie *p, Point grille) {
     if (celulle == 'F' && selected_char != 'F') {
         nb_fantomes--;
     }
-    
+
     p->plateau[grille.y][grille.x] = selected_char;
     calculer_voisins(p);
 }
@@ -136,7 +136,7 @@ static void entourner_case(Point souris) {
 void lancer_editeur() {
     pacman_place = 0;
     nb_fantomes = 0;
-    Partie p = charger_editeur("data/test.txt");
+    Partie p = charger_editeur("data/maps/test.txt");
     calculer_voisins(&p);
 
     int en_cours = 1;
@@ -152,22 +152,22 @@ void lancer_editeur() {
             }
         }
 
-        if (touche_a_ete_pressee(SDLK_a)) 
+        if (touche_a_ete_pressee(SDLK_a))
             selected_char = bouton_editeurs[0];
-        else if (touche_a_ete_pressee(SDLK_z)) 
+        else if (touche_a_ete_pressee(SDLK_z))
             selected_char = bouton_editeurs[1];
-        else if (touche_a_ete_pressee(SDLK_e)) 
+        else if (touche_a_ete_pressee(SDLK_e))
             selected_char = bouton_editeurs[2];
-        else if (touche_a_ete_pressee(SDLK_r)) 
+        else if (touche_a_ete_pressee(SDLK_r))
             selected_char = bouton_editeurs[3];
-        else if (touche_a_ete_pressee(SDLK_t)) 
+        else if (touche_a_ete_pressee(SDLK_t))
             selected_char = bouton_editeurs[4];
-        else if (touche_a_ete_pressee(SDLK_y)) 
+        else if (touche_a_ete_pressee(SDLK_y))
             selected_char = bouton_editeurs[5];
 
-        else if (touche_a_ete_pressee(SDLK_s)) 
+        else if (touche_a_ete_pressee(SDLK_s))
             sauvegarder_niveau(&p);
-        else if (touche_a_ete_pressee(SDLK_q)) 
+        else if (touche_a_ete_pressee(SDLK_q))
             en_cours = 0;
 
         dessiner_grille(&p, 1);
