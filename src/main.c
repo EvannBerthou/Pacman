@@ -141,16 +141,18 @@ static Uint8 croix_manette(SDL_Joystick *manette) {
     return SDL_JoystickGetHat(manette, 0);
 }
 
-static int nouvelle_touche(SDL_Joystick *manette) {
+// TODO: Refaire proprement
+int nouvelle_touche(SDL_Joystick *manette) {
     static int derniere_touche = 0;
     static Uint8 derniere_croix = 0;
     // Touche appuyés à cet appel
     int touche = attendre_touche_duree(10); // Touche clavier
     Uint8 croix = croix_manette(manette);  // Croix manette
-    int entrer = touche_manete(manette, 0); // Touche X manette (manette ps4)
+    int entrer = touche_manete(manette, 0);
+    int back = touche_manete(manette, 1);
     // Si la touche appuyé est la meme que celui du dernier appel, cela veut dire que la touche
     // n'a pas été relachée
-    if (touche == derniere_touche && croix == derniere_croix && entrer == 0) return 0;
+    if (touche == derniere_touche && croix == derniere_croix && entrer == 0 && back == 0) return 0;
 
     // Sauvegarde les touches appuyés au dernier appel
     derniere_touche = touche;
@@ -168,8 +170,11 @@ static int nouvelle_touche(SDL_Joystick *manette) {
     if (touche == SDLK_LEFT || croix & SDL_HAT_LEFT) {
         return SDLK_LEFT;
     }
-    if (touche == SDLK_RETURN || entrer) {
+    if (touche == SDLK_RETURN || touche_manete(manette, 0)) {
         return SDLK_RETURN;
+    }
+    if (touche == SDLK_q || touche_manete(manette, 1)) {
+        return SDLK_q;
     }
     return touche;
 }
@@ -211,7 +216,7 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
         free(chemin);
         break;
     }
-    case 1: afficher_leaderboard(); break;
+    case 1: afficher_leaderboard(manette); break;
     case 2: lancer_editeur(); break;
     case 3: exit(0); break;
     }
@@ -320,6 +325,12 @@ char* selectionner_niveau(SDL_Joystick *manette) {
                 free(niveaux[i]);
             }
             return selectionne;
+        }
+        else if (touche == SDLK_q) {
+            for (int i = 0; i < nb; i++) {
+                free(niveaux[i]);
+            }
+            return NULL;
         }
 
         afficher_liste_niveaux(niveaux, nb, curseur);
