@@ -289,10 +289,12 @@ void maj_etat(Partie *p){
     else if (temps ecouler > x ){
         p->pacman.etat.fuite=0;
     }*/
-
+    Pos pos_pacman=ecran_vers_grille(p->pacman.pos);
     for (int i =0;i!=NBFANTOMES;i++){
+        Pos pos_fantome=ecran_vers_grille(p->fantomes[i].pos);
         // Détection de la collision entre fantome et pacman
-        if ((p->pacman.pos.l == p->fantomes[i].pos.l) && (p->pacman.pos.c == p->fantomes[i].pos.c)){
+        
+        if ((pos_pacman.l == pos_fantome.l) && (pos_pacman.c == pos_fantome.c)){
             if (!(p->fantomes[i].etat.fuite)){
                 p->pacman.etat.nb_vie-=1;
                 if (p->pacman.etat.nb_vie == 0) {
@@ -307,8 +309,7 @@ void maj_etat(Partie *p){
                 }
             }
             else {
-                p->fantomes[i].pos=p->fantomes[i].pos_init;
-                p->fantomes[i].pos_cible=(Posf){0,0};
+                p->fantomes[i].etat.manger=1;
             }
         }
     }
