@@ -150,7 +150,7 @@ void afficher_leaderboard(SDL_Joystick *manette) {
         y += 45;
     }
     actualiser();
-    while (nouvelle_touche(manette) == 0);
+    while (nouvelle_touche(manette) != SDLK_q);
     free(reponse);
 }
 

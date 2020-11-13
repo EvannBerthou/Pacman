@@ -141,42 +141,41 @@ static Uint8 croix_manette(SDL_Joystick *manette) {
     return SDL_JoystickGetHat(manette, 0);
 }
 
-// TODO: Refaire proprement
 int nouvelle_touche(SDL_Joystick *manette) {
     static int derniere_touche = 0;
-    static Uint8 derniere_croix = 0;
-    // Touche appuyés à cet appel
-    int touche = attendre_touche_duree(10); // Touche clavier
-    Uint8 croix = croix_manette(manette);  // Croix manette
-    int entrer = touche_manete(manette, 0);
-    int back = touche_manete(manette, 1);
-    // Si la touche appuyé est la meme que celui du dernier appel, cela veut dire que la touche
-    // n'a pas été relachée
-    if (touche == derniere_touche && croix == derniere_croix && entrer == 0 && back == 0) return 0;
+    static int derniere_croix  = 0;
 
-    // Sauvegarde les touches appuyés au dernier appel
+    int touches[] = {SDLK_DOWN, SDLK_UP, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_q};
+    int croix[] = {SDL_HAT_DOWN, SDL_HAT_UP, SDL_HAT_LEFT, SDL_HAT_RIGHT};
+    int boutons[] = {0,1};
+
+    int touche = attendre_touche_duree(10);
+    Uint8 croix_presse = croix_manette(manette);
+
+    // Vérifie les autres touches
+    // On peut le mettre en dehors du prochain if car dès qu'un bouton est pressé, il y a
+    // un changement de menu et donc la fonctin ne sera pas rappelée directement
+    for (int i = 0; i < 2; i++) {
+        if (touche == touches[4 + i] || touche_manete(manette, boutons[i])) {
+            return touches[4 + i];
+        }
+    }
+
+    // Vérifie si la touche détecté était déjà appuyé lors du dernier appel, évite
+    // la répétition de la touche (ou de la croix)
+    if (touche == derniere_touche && croix_presse == derniere_croix) return 0;
+
     derniere_touche = touche;
-    derniere_croix = croix;
+    derniere_croix = croix_presse;
 
-    if (touche == SDLK_DOWN || croix & SDL_HAT_DOWN) {
-        return SDLK_DOWN;
+    // Vérifie les directions
+    for (int i = 0; i < 4; i++) {
+        if (touche == touches[i] || croix_presse & croix[i]) {
+            return touches[i];
+        }
     }
-    if (touche == SDLK_UP || croix & SDL_HAT_UP) {
-        return SDLK_UP;
-    }
-    if (touche == SDLK_RIGHT || croix & SDL_HAT_RIGHT) {
-        return SDLK_RIGHT;
-    }
-    if (touche == SDLK_LEFT || croix & SDL_HAT_LEFT) {
-        return SDLK_LEFT;
-    }
-    if (touche == SDLK_RETURN || touche_manete(manette, 0)) {
-        return SDLK_RETURN;
-    }
-    if (touche == SDLK_q || touche_manete(manette, 1)) {
-        return SDLK_q;
-    }
-    return touche;
+    // Aucune touche pressée
+    return 0;
 }
 
 void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette) {
