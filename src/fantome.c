@@ -18,7 +18,7 @@ void bouger_fantomes(Partie *p, float dt) {
         if (fantome->etat.fuite){
             find_path(p,current_pos,ecran_vers_grille(fantome->pos_init),fantome);
         }
-        else if ((fantome->pos_cible.l != p->pacman.pos.l) || (fantome->pos_cible.c!=p->pacman.pos.c)){
+        else {
             // Ici on gère les différentes IA de chaque fantome car ils ont une case cible differente
             if (fantome->type==ENTITE_FANTOME_R){
                 fantome->pos_cible = p->pacman.pos;
