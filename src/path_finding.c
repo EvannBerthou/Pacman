@@ -54,7 +54,7 @@ void get_path(Noeud* last_noeud,int nb_tour,Entite* F){
     F->chemin_noeud[index] = last_noeud;
     while (local != NULL){
         index--;
-        F->chemin_noeud[index] = local;
+        F->chemin_noeud[index] = local; // Segfault
         local=local->parent;
     }
 }

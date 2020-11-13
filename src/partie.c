@@ -260,8 +260,6 @@ char case_direction(Partie *p, Entite *e, int direction) {
     case DIR_DROITE: pos.c += 1; break;
     default: return '*';
     }
-    /*if (p->plateau[pos.l][pos.c] != '*' && p->plateau[pos.l][pos.c] != 'F')
-        printf("%c\n", p->plateau[pos.l][pos.c]);*/
     return on_grid(p, pos.l, pos.c);
 }
 
