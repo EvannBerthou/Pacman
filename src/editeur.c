@@ -111,12 +111,27 @@ static void placer_case(Partie *p, Point grille) {
     calculer_voisins(p);
 }
 
-static Point clic_vers_grille(Point p) {
+static Point point_vers_grille(Point p) {
     return (Point){
         p.x / CASE,
         p.y / CASE
     };
 }
+
+static void entourner_case(Point souris) {
+    Point grille = point_vers_grille(souris);
+    grille.x *= CASE;
+    grille.y *= CASE;
+    // HAUT
+    dessiner_ligne((Point){grille.x, grille.y}, (Point){grille.x + CASE, grille.y}, blanc);
+    // BAS
+    dessiner_ligne((Point){grille.x, grille.y + CASE}, (Point){grille.x + CASE, grille.y + CASE}, blanc);
+    // GAUCHE
+    dessiner_ligne((Point){grille.x, grille.y}, (Point){grille.x, grille.y + CASE}, blanc);
+    // DROITE
+    dessiner_ligne((Point){grille.x + CASE, grille.y}, (Point){grille.x + CASE, grille.y + CASE}, blanc);
+}
+
 
 void lancer_editeur() {
     pacman_place = 0;
@@ -132,7 +147,7 @@ void lancer_editeur() {
         if (souris.x <= 420) {
             Point clic = clic_a_eu_lieu();
             if (clic.x != -1 && clic.y != -1) {
-                Point grille = clic_vers_grille(clic);
+                Point grille = point_vers_grille(clic);
                 placer_case(&p, grille);
             }
         }
@@ -156,6 +171,7 @@ void lancer_editeur() {
             en_cours = 0;
 
         dessiner_grille(&p, 1);
+        entourner_case(souris); // Permet de montrer quelle case est survolée
         dessiner_boutons();
         actualiser();
         reinitialiser_evenements();
