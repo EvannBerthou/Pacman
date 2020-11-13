@@ -24,7 +24,9 @@ void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette);
 void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette);
 void manger_bouton();
 void dessiner_accueil();
-int charger_niveau(Partie *p);
+char* selectionner_niveau(SDL_Joystick *manette);
+int charger_niveau(Partie *p, char *chemin);
 void charger_accueil();
+void afficher_liste_niveaux(char **liste, int n, int curseur);
 
 #endif
