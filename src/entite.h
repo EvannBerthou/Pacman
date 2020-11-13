@@ -34,7 +34,9 @@ typedef struct {
     int prochaine_direction;
     int score;
     int fuite;
+    float tmp_fuite;
     int nb_vie;
+    int manger;
     int suiv; //suivre ke cchemin 
 } Etat;
 

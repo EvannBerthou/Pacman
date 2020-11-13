@@ -7,15 +7,22 @@ void bouger_fantomes(Partie *p, float dt) {
     for (int i = 0; i < NBFANTOMES; i++) {
         Entite *fantome = &p->fantomes[i];
         Pos current_pos = ecran_vers_grille(fantome->pos);
-
+        Pos pos_init_f= ecran_vers_grille(fantome->pos_init);
         // Si le fantome est rentré à la base
         // TODO: Détecte que le fantome est à la base
-        if (fantome->etat.fuite && ((fantome->pos.l == fantome->pos_init.l) && (fantome->pos.l == fantome->pos_init.l))){
+        if (((current_pos.l == pos_init_f.l) && (current_pos.c == pos_init_f.c)) && ( fantome->etat.manger|| fantome->etat.fuite)){
+            fantome->etat.manger=0;
             fantome->etat.fuite=0;
         }
+        if  (fantome->etat.tmp_fuite>=10000.0)
+            fantome->etat.fuite=0;
 
         // Si le fantome est en mode fuite, le faire se déplacer vers sa base
-        if (fantome->etat.fuite){
+        if (fantome->etat.fuite ){
+            fantome->etat.tmp_fuite+=dt;
+            find_path(p,current_pos,ecran_vers_grille(fantome->pos_init),fantome);
+        }
+        else if (fantome->etat.manger){
             find_path(p,current_pos,ecran_vers_grille(fantome->pos_init),fantome);
         }
         else {
@@ -54,6 +61,13 @@ void bouger_fantomes(Partie *p, float dt) {
         }
     }
 }
+/*
+static SDL_Surface* sprite_fantome(Entite *p) {
+    // Si pacman n'a pas de direction (arrive lors de la frame frame du chargement du niveau
+    if (p->etat.direction == DIR_INCONNUE) return p->sprite[DIR_HAUT][0];
+    return p->sprite[p->etat.direction][(int)p->animation_time];
+}
+*/
 
 void dessiner_fantomes(Partie *p) {
     for (int i = 0; i < NBFANTOMES; i++) {
