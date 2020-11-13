@@ -10,10 +10,11 @@
 #include "leaderboard.h"
 #include "main.h"
 
-#define SPRITE_COUNT 17
+#define SPRITE_COUNT 18
 const char *sprites_paths[SPRITE_COUNT] = {
     "data/sprites/bille.bmp",
     "data/sprites/bonbon.bmp",
+    "data/sprites/mur0.bmp",
     "data/sprites/mur1.bmp",
     "data/sprites/mur2.bmp",
     "data/sprites/mur3.bmp",
@@ -208,8 +209,7 @@ static SDL_Surface *sprite_at(Point pos) {
     // Convertis les coordonnés 2d en index pour un array 1d
     int index = 21 * pos.y + pos.x;
     // Le 2 correspond à l'offset pour avoir les sprites des murs
-    //return sprites[2 + voisins_murs[index]];
-    return sprites[1 + voisins_murs[index]];
+    return sprites[2 + voisins_murs[index]];
 }
 
 char on_grid(Partie *p, int l, int c) {
