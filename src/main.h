@@ -28,5 +28,6 @@ char* selectionner_niveau(SDL_Joystick *manette);
 int charger_niveau(Partie *p, char *chemin);
 void charger_accueil();
 void afficher_liste_niveaux(char **liste, int n, int curseur);
+int nouvelle_touche(SDL_Joystick *manette);
 
 #endif

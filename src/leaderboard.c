@@ -3,13 +3,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
-#include <netinet/in.h> 
+#include <netinet/in.h>
 #include <netdb.h>
 
 #include "main.h"
 #include "leaderboard.h"
 
-/* 
+/*
 Ces macros servent a quitter la fonction envoyer_requete en cas d'erreur dans la requête
 elles permettent de direction renvoyer NULL en cas d'erreur et diminue la quantité de code répété
 pour la vérification de chaque erreur dans la fonction
@@ -39,7 +39,7 @@ pour la vérification de chaque erreur dans la fonction
 
 
 // Extrait le code de statut de la réponse (code 200 = ok)
-int status(char *reponse) { 
+int status(char *reponse) {
     char *statut = strstr(reponse, " "); // Trouve le premier espace
     int res = 0;
     sscanf(statut, "%d", &res);
@@ -108,9 +108,9 @@ Point centrer_texte(char *texte, Point centre, int taille) {
     return (Point) {centre.x - (t.x / 2), centre.y - (t.y / 2)};
 }
 
-void afficher_leaderboard() {
+void afficher_leaderboard(SDL_Joystick *manette) {
     afficher_message_leaderboard("Chargement du classement", 26);
-    const char *get_req = 
+    const char *get_req =
             "GET / HTTP/1.0\r\n"
             "Host: pacman-leaderboard.herokuapp.com\r\n"
             "Content-Type: application/x-www-form-urlencoded"
@@ -150,7 +150,7 @@ void afficher_leaderboard() {
         y += 45;
     }
     actualiser();
-    attendre_clic();
+    while (nouvelle_touche(manette) == 0);
     free(reponse);
 }
 
