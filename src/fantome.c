@@ -34,21 +34,26 @@ void bouger_fantomes(Partie *p, float dt) {
         }
 
         DirEntite direction = DIR_INCONNUE;
-        if (current_pos.l > fantome->chemin_noeud[0]->pos.l) {
-            direction = DIR_HAUT;
+        if (fantome->chemin_noeud[0] != NULL) {
+            if (current_pos.l > fantome->chemin_noeud[0]->pos.l) {
+                direction = DIR_HAUT;
+            }
+            else if (current_pos.l < fantome->chemin_noeud[0]->pos.l) {
+                direction = DIR_BAS;
+            }
+            else if (current_pos.c > fantome->chemin_noeud[0]->pos.c) {
+                direction = DIR_GAUCHE;
+            }
+            else if (current_pos.c < fantome->chemin_noeud[0]->pos.c) {
+                direction = DIR_DROITE;
+            }
+            // Change la direction du fantôme ssi il est aligné à la grille pour éviter qu'il traverse les murs
+            if (aligne_grille(p, fantome->pos)) {
+                fantome->etat.direction = direction;
+            }
         }
-        else if (current_pos.l < fantome->chemin_noeud[0]->pos.l) {
-            direction = DIR_BAS;
-        }
-        else if (current_pos.c > fantome->chemin_noeud[0]->pos.c) {
-            direction = DIR_GAUCHE;
-        }
-        else if (current_pos.c < fantome->chemin_noeud[0]->pos.c) {
-            direction = DIR_DROITE;
-        }
-        // Change la direction du fantôme ssi il est aligné à la grille pour éviter qu'il traverse les murs
-        if (aligne_grille(p, fantome->pos)) {
-            fantome->etat.direction = direction;
+        else {
+            direction = fantome->etat.direction;
         }
 
         // Déplace le fantôme dt * vitesse
