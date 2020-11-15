@@ -240,6 +240,8 @@ void calculer_voisins(Partie *p) {
              27 * 21 * 4 (int) * 4 (voisins) = 9,072 bytes
              En utilisant d'un seul short de 2 bytes, ça donne
              27 * 21 * 2 (short) * 1 (une seule variable) = 1,134 bytes
+             Cela permet en plus de plus facilement déterminer quel sprite doit être afficher
+             pour chaque mur
             */
             if (on_grid(p, i - 1, j) == '*')
                 voisins |= 0b0001;
@@ -279,16 +281,11 @@ int deplacement(int touche, int direction){
 }
 
 void maj_etat(Partie *p){
-    /*
-    ajout de temps ecouler a la structure partie
-    else if (temps ecouler > x ){
-        p->pacman.etat.fuite=0;
-    }*/
-    Pos pos_pacman=ecran_vers_grille(p->pacman.pos);
-    for (int i =0;i!=NBFANTOMES;i++){
-        Pos pos_fantome=ecran_vers_grille(p->fantomes[i].pos);
+    Pos pos_pacman = ecran_vers_grille(p->pacman.pos); 
+    for (int i = 0; i != NBFANTOMES; i++) {
+        Pos pos_fantome = ecran_vers_grille(p->fantomes[i].pos);
+
         // Détection de la collision entre fantome et pacman
-        
         if ((pos_pacman.l == pos_fantome.l) && (pos_pacman.c == pos_fantome.c)){
             if (!(p->fantomes[i].etat.fuite)){
                 p->pacman.etat.nb_vie-=1;
@@ -324,8 +321,7 @@ void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette) {
     maj_etat(p);
 
     if (p->nbbonus == 0) {
-        printf("Niveau terminé, chargement du niveau suivant\n");
-        *p = charge_plan("data/test.txt");
+        terminer_partie(p);
     }
 }
 
