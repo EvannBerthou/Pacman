@@ -24,12 +24,14 @@ Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
         .chemin_noeud={0},
     };
 
-    if (type == ENTITE_FANTOME_R )
+    if (type == ENTITE_FANTOME_R ){
         result.nombre_frames = 1;
-    // Pacman (pas ENTITE_FANTOME) possède 2 frames d'animation : bouche ouverte/fermée
-    else 
+        result.vitesse=50;
+    }// Pacman (pas ENTITE_FANTOME) possède 2 frames d'animation : bouche ouverte/fermée
+    else {
         result.nombre_frames = 2;
-
+        result.vitesse=75;
+    }
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < result.nombre_frames; j++) {
             result.sprite[i][j] = charger_sprite(type, i, j);

@@ -60,6 +60,7 @@ typedef struct {
     Noeud* chemin_noeud[500];
     int nombre_noeud;
     int nombre_frames;
+    float vitesse;
     float animation_time;
 } Entite;
 
