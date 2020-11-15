@@ -146,7 +146,7 @@ Partie charge_plan(char *fichier)
                     fclose(f);
                     exit(0);
                     }
-                p.fantomes[nbf] = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, ENTITE_FANTOME_R);
+                p.fantomes[nbf] = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, nbf);
                 nbf++;
                 }
             else if(ch=='B' || ch == '.')

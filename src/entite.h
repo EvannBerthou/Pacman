@@ -14,10 +14,11 @@ typedef struct posf {
 } Posf;
 
 typedef enum {
-    ENTITE_PACMAN = 0,
-    ENTITE_FANTOME_R,// fantome red 
+    ENTITE_FANTOME_R,// fantome red
     ENTITE_FANTOME_P,// fantome pink
-    ENTITE_FANTOME_G,// fantome Green
+    ENTITE_FANTOME_C,// fantome cyan
+    ENTITE_FANTOME_O,// fantome orange
+    ENTITE_PACMAN,
 } TypeEntite;
 
 typedef enum {
