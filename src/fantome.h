@@ -7,6 +7,7 @@
 
 int charger_sprites_fantomes();
 SDL_Surface *sprite_fantome(TypeEntite t, int dir, int frame);
+void reset_timer_fantomes();
 void bouger_fantomes(Partie *p, float dt);
 void dessiner_fantomes(Partie *p);
 #endif
