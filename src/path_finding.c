@@ -2,6 +2,7 @@
 #define max_size 1000
 
 void find_path(Partie* p,Pos depart, Pos arriver,Entite* F){	
+
     int liste_nb_choix[max_size]={0};
     int nb_openlist=0;
     int nb_closelist=0;
@@ -10,18 +11,24 @@ void find_path(Partie* p,Pos depart, Pos arriver,Entite* F){
     int way_find=0;
     Noeud liste_ouverte[max_size]={0};
     Noeud liste_fermer[max_size]={0};
-    
+    // initialisation des noeud principaux
     Noeud Noeud_depart={depart,0,distance(depart,arriver),distance(depart,arriver),NULL};
     Noeud Noeud_arriver={arriver,distance(depart,arriver),0,distance(depart,arriver),NULL};
-
+    // initialisation des liste de noeud 
     liste_ouverte[0]=Noeud_depart;
     liste_fermer[0]=Noeud_depart;
     liste_nb_choix[0] += 1;
     nb_openlist++;
     nb_closelist++;
+    
 
+    // si pacman en dehors de la  grille ne pas faire de path_finding 
+    if ((arriver.c>(p->C-1)) ||   (arriver.c<0) || (arriver.l>(p->L-1)) || (arriver.l<0)){
+        way_find=1;   
+    }
     while(!way_find){
-        nb_voisin=nb_openlist;		
+        nb_voisin=nb_openlist;	
+        // chaque noeud ajouter rechercher les voisin 	
         for(int v = liste_nb_choix[nb_tour]; v >= 0; v--){
             if  ((liste_fermer[nb_closelist-v].pos.l==Noeud_arriver.pos.l) && (liste_fermer[nb_closelist-v].pos.c == Noeud_arriver.pos.c)){
                 way_find=1;
@@ -34,6 +41,7 @@ void find_path(Partie* p,Pos depart, Pos arriver,Entite* F){
             break;
         }
 
+        //recherche ajout de tout les voisins   
         nb_voisin = nb_openlist - nb_voisin;
         find_min(liste_ouverte, nb_openlist, nb_voisin);
         for (int k = (nb_openlist - nb_voisin); k < nb_openlist; k++) {
@@ -45,6 +53,7 @@ void find_path(Partie* p,Pos depart, Pos arriver,Entite* F){
     }
 }
 
+//recuperation de la filiation entre les noeud parents
 void get_path(Noeud* last_noeud,int nb_tour,Entite* F){
     Noeud* local=last_noeud;
     int index = nb_tour;

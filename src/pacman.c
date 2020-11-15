@@ -40,12 +40,11 @@ void bouger_pacman(Partie *p, float dt) {
         return;
     }
 
-    const float vitesse = 75;
     switch (p->pacman.etat.direction){
-        case DIR_HAUT:   p->pacman.pos.l -= dt * vitesse; break;
-        case DIR_BAS:    p->pacman.pos.l += dt * vitesse; break;
-        case DIR_GAUCHE: p->pacman.pos.c -= dt * vitesse; break;
-        case DIR_DROITE: p->pacman.pos.c += dt * vitesse; break;
+        case DIR_HAUT:   p->pacman.pos.l -= dt * p->pacman.vitesse; break;
+        case DIR_BAS:    p->pacman.pos.l += dt * p->pacman.vitesse; break;
+        case DIR_GAUCHE: p->pacman.pos.c -= dt * p->pacman.vitesse; break;
+        case DIR_DROITE: p->pacman.pos.c += dt * p->pacman.vitesse; break;
     }
 
     // Animation_time étant un float, on vérifie manuellement si on doit boucler
@@ -91,6 +90,10 @@ void bouger_pacman(Partie *p, float dt) {
         if (on_grid(p, grille.l, grille.c) != ' ')
             p->plateau[grille.l][grille.c] = 'P';
     }
+    // temps que pacmes est dans un mur
+
+
+
 }
 
 static SDL_Surface* sprite_pacman(Entite *p) {
@@ -99,7 +102,22 @@ static SDL_Surface* sprite_pacman(Entite *p) {
     return p->sprite[p->etat.direction][(int)p->animation_time];
 }
 
+
 void dessiner_pacman(Partie *p) {
+    Pos grille =ecran_vers_grille(p->pacman.pos);
+    // temps que pacmman est dans un mur faire demitour 
+    // bug résultant 
+    while (on_grid(p,grille.l,grille.c) =='*'){
+        switch (p->pacman.etat.direction){
+            case DIR_HAUT:   p->pacman.pos.l += p->pacman.vitesse; break;
+            case DIR_BAS:    p->pacman.pos.l -= p->pacman.vitesse; break;
+            case DIR_GAUCHE: p->pacman.pos.c += p->pacman.vitesse; break;
+            case DIR_DROITE: p->pacman.pos.c -= p->pacman.vitesse; break;
+        }
+        
+    }
+
+
     Point pos = {p->pacman.pos.c, p->pacman.pos.l};
     afficher_surface(sprite_pacman(&p->pacman), pos);
 }
