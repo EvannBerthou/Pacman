@@ -12,6 +12,140 @@ const char bouton_editeurs[] = {'*', '.', 'B', ' ', 'P', 'F'};
 const char *boutons_editeur_textes[] = {"Mur", "Bille", "Bonbon", "Vide", "Pacman", "Fantome"};
 const int n = sizeof(bouton_editeurs) / sizeof(bouton_editeurs[0]);
 
+static Partie partie_vide() {
+    Partie p;
+    p.L = 27;
+    p.C = 21;
+
+    p.plateau = malloc(p.L * sizeof(char *));
+    if(p.plateau == NULL) {
+        fprintf(stderr, "Allocation dynamique impossible\n");
+        exit(1);
+    }
+
+    for (int l = 0; l != p.L; l++) {
+        p.plateau[l] = malloc(p.C * sizeof(char));
+        if(p.plateau[l] == NULL) {
+            fprintf(stderr, "Allocation dynamique impossible\n");
+            exit(1);
+        }
+    // Met toute la colonne à 0 pour éviter d'avoir des valeurs inattendus
+        memset(p.plateau[l], 0, p.C * sizeof(char));
+    }
+    return p;
+}
+// Très fortement inspiré du charger_plan fournis
+Partie charger_plan_editeur(char *chemin) {
+    Partie p;
+    FILE *f = fopen(chemin, "r");
+    if (f == NULL) {
+        fprintf(stderr, "Erreur dans l'ouverture de %s", chemin);
+        return partie_vide();
+    }
+
+    int res = fscanf(f,"%d %d\n", &p.L, &p.C); // Lecture de deux entiers
+
+    // Si on n'a pas pu lire deux entiers ou s'ils sont incorrects
+    if (res != 2 || p.C < 2 || p.L < 2 || p.C > 800 || p.L > 600) {
+        fprintf(stderr, "Dimensions du tableau lues dans '%s' incorrectes\n", chemin);
+        fclose(f);
+        return partie_vide();
+    }
+
+    /* ALLOCATION DYNAMIQUE                                                       */
+    /* Allocation du tableau de *L pointeurs sur lignes                           */
+    p.plateau = malloc(p.L * sizeof(char *));
+    if(p.plateau == NULL) {
+        fprintf(stderr, "Allocation dynamique impossible\n");
+        fclose(f);
+        exit(1);
+    }
+/* Allocation des tableaux de *C caractères                                   */
+    for (int l = 0; l != p.L; l++) {
+        p.plateau[l] = malloc(p.C * sizeof(char));
+        if(p.plateau[l] == NULL) {
+            fprintf(stderr, "Allocation dynamique impossible\n");
+            fclose(f);
+            exit(1);
+        }
+    }
+
+    int l = 0;
+    res = 0;
+    char ch;
+    while(res != EOF) { // Lecture de chaque ligne
+        int c = 0;
+        while(1) {
+            res = fscanf(f,"%c", &ch); // Lecture d'un caractère
+            if (res == EOF) // Si fin de fichier
+                break; // Quittons la boucle interne
+
+            if(c>p.C) { // Si trop de colonnes...
+                fprintf(stderr, "Ligne %d colonne %d: trop de colonnes\n", l, c);
+                fclose(f);
+                return partie_vide();
+            }
+
+            if(c==p.C) { // Si fin de ligne supposée...
+                if(ch=='\n') { // Si fin de ligne réelle, on quitte la boucle
+                    break;
+                }
+                else { // Sinon trop de caractères
+                    fprintf(stderr, "Ligne %d: trop de caractères\n", l);
+                    fclose(f);
+                    return partie_vide();
+                }
+            }
+            /* ...sinon, nous ne sommes pas à la fin de la ligne.                         */
+            /* Si on lit un caractère interdit...                                         */
+            if (ch != '.' && ch != ' ' && ch != '*' && ch != 'P' && ch != 'F' && ch != 'B' && ch != 'C') {
+                if(ch=='\n') // Si c'est un saut de ligne
+                    printf("Ligne %d: trop peu de caractères\n",l);
+                else
+                    printf("Ligne %d: caractère '%c' incorrect\n",l,ch);
+
+                fclose(f);
+                return partie_vide();
+            }
+            else if (ch == 'P') {
+                if (pacman_place == 1) { 
+                    c++;
+                    continue;
+                }
+                pacman_place = 1;
+            }
+            else if (ch == 'F') {
+                if (nb_fantomes >= 4) {
+                    fprintf(stderr, "Ligne %d:  un fantôme de trop!\n", l);
+                    c++;
+                    continue;
+                }
+                nb_fantomes++;
+            }
+
+            p.plateau[l][c] = ch; // Ecriture dans le plan
+
+            c++; // caractère suivant
+        }
+        l++; // ligne suivante
+    }
+
+    fclose(f); // Fermeture du flux de lecture du fichier
+
+    /* Si à la lecture de EOF on n'est pas sur la *V+1 ème ligne...               */
+    if(l != p.L+1) {
+        fprintf(stderr, "Ligne %d: nb de lignes incorrect\n", l);
+        return partie_vide();
+    }
+    return p;
+}
+
+Partie charger_editeur() {
+    nb_fantomes = 0;
+    pacman_place = 0;
+    return charger_plan_editeur(chemin_fichier);
+}
+
 int sauvegarder_niveau(Partie *p) {
     printf("Début de la sauvegarde\n");
     // Ouvre le fichier
@@ -45,36 +179,6 @@ int sauvegarder_niveau(Partie *p) {
     fclose(f);
     printf("Sauvegarde terminée\n");
     return 0;
-}
-
-Partie charger_editeur() {
-    Partie p = charge_plan(chemin_fichier);
-
-    // Détermine si pacman est placé et le nombre de fantomes
-    for (int i = 0; i < p.L; i++) {
-        for (int j = 0; j < p.C; j++) {
-            char c = p.plateau[i][j];
-            if (c == 'P') {
-                if (pacman_place == 0) {
-                    pacman_place = 1;
-                }
-                else {
-                    p.plateau[i][j] = ' ';
-                    printf("Un pacman est déjà placé sur la grille");
-                }
-            }
-            if (c == 'F') {
-                if (nb_fantomes < 4) {
-                    nb_fantomes++;
-                }
-                else {
-                    p.plateau[i][j] = ' ';
-                    printf("Trop de fantomes sur la carte\n");
-                }
-            }
-        }
-    }
-    return p;
 }
 
 static void dessiner_boutons() {
