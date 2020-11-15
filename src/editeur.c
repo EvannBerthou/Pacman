@@ -6,6 +6,7 @@
 char selected_char = '*';
 int pacman_place = 0;
 int nb_fantomes = 0;
+char chemin_fichier[100];
 
 const char bouton_editeurs[] = {'*', '.', 'B', ' ', 'P', 'F'};
 const char *boutons_editeur_textes[] = {"Mur", "Bille", "Bonbon", "Vide", "Pacman", "Fantome"};
@@ -14,7 +15,7 @@ const int n = sizeof(bouton_editeurs) / sizeof(bouton_editeurs[0]);
 int sauvegarder_niveau(Partie *p) {
     printf("Début de la sauvegarde\n");
     // Ouvre le fichier
-    FILE *f = fopen("data/maps/tmp", "w");
+    FILE *f = fopen(chemin_fichier, "w");
     if (f == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture du fichier\n");
         return 1;
@@ -26,10 +27,10 @@ int sauvegarder_niveau(Partie *p) {
         return 1;
     }
 
-    /*if (niveau->nb_fantomes < 4) {
+    if (nb_fantomes < 4) {
         printf("Il manque des fantomes\n");
         return 1;
-    }*/
+    }
 
     // Ecris la taille de la carte
     fprintf(f, "%d %d\n", p->L, p->C);
@@ -46,8 +47,8 @@ int sauvegarder_niveau(Partie *p) {
     return 0;
 }
 
-Partie charger_editeur(char *chemin) {
-    Partie p = charge_plan(chemin);
+Partie charger_editeur() {
+    Partie p = charge_plan(chemin_fichier);
 
     // Détermine si pacman est placé et le nombre de fantomes
     for (int i = 0; i < p.L; i++) {
@@ -132,11 +133,11 @@ static void entourner_case(Point souris) {
     dessiner_ligne((Point){grille.x + CASE, grille.y}, (Point){grille.x + CASE, grille.y + CASE}, blanc);
 }
 
-
-void lancer_editeur() {
+void lancer_editeur(char *chemin) {
     pacman_place = 0;
     nb_fantomes = 0;
-    Partie p = charger_editeur("data/maps/test.txt");
+    sprintf(chemin_fichier, "data/maps/%s", chemin);
+    Partie p = charger_editeur(chemin_fichier);
     calculer_voisins(&p);
 
     int en_cours = 1;
@@ -182,5 +183,4 @@ void lancer_editeur() {
 /*
 TODO :
     - Message d'information lors de la sauvegarde en dessous du type selectionné
-    - Sauvegarde dans le fichier chargé
 */

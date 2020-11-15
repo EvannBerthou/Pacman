@@ -134,7 +134,6 @@ void bouger_pacman(Partie *p, float dt) {
 }
 
 SDL_Surface* sprite_pacman(int dir, int frame) {
-    // Si pacman n'a pas de direction (arrive lors de la frame frame du chargement du niveau
     return sprites_pacman[dir][frame];
 }
 

@@ -218,7 +218,14 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
         break;
     }
     case 1: afficher_leaderboard(manette); break;
-    case 2: lancer_editeur(); break;
+    case 2: {
+        char *chemin = selectionner_niveau(manette);
+        if (chemin == NULL) {
+            break;
+        }
+        lancer_editeur(chemin);
+        break;
+    }
     case 3: exit(0); break;
     }
 }
