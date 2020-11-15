@@ -11,7 +11,7 @@
 #include "timer.h"
 #include "entite.h"
 
-#define NBFANTOMES  1 // nombres de fantômes dans les plateaux chargés
+#define NBFANTOMES  4 // nombres de fantômes dans les plateaux chargés
 
 // STRUCTURES
 /* Structure Partie:  permet de stocker les paramètres d'une partie           */
