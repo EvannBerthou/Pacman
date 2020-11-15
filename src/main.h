@@ -12,6 +12,7 @@
 #define PLATEAU_W 420
 #define ECRAN_H 540
 #define CASE 20
+#define VITESSE_ANIMATION 7
 
 typedef enum {
     SCENE_ACCUEIL = 0,

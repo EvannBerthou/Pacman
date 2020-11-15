@@ -56,7 +56,6 @@ typedef struct {
     Posf pos_cible;
     TypeEntite type;
     Etat etat;
-    SDL_Surface *sprite[4][2];
     Noeud* chemin_noeud[500];
     int nombre_noeud;
     int nombre_frames;

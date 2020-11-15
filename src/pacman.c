@@ -3,7 +3,29 @@
 #include "partie.h"
 #include "main.h"
 
-#define VITESSE_ANIMATION 7
+const char *pacman_sprite_path[4][2] = {
+    {"data/sprites/pacman00.bmp", "data/sprites/pacman01.bmp"},
+    {"data/sprites/pacman10.bmp", "data/sprites/pacman11.bmp"},
+    {"data/sprites/pacman20.bmp", "data/sprites/pacman21.bmp"},
+    {"data/sprites/pacman30.bmp", "data/sprites/pacman31.bmp"},
+};
+
+SDL_Surface *sprites_pacman[4][2];
+
+int charger_sprites_pacman() {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 2; j++) {
+            SDL_Surface *sprite = SDL_LoadBMP(pacman_sprite_path[i][j]);
+            if (sprite == NULL) {
+                fprintf(stderr, "Erreur lors du chargement du sprite %s\n", pacman_sprite_path[i][j]);
+                return -1;
+            }
+            SDL_SetColorKey(sprite, SDL_SRCCOLORKEY, noir);
+            sprites_pacman[i][j] = sprite;
+        }
+    }
+    return 0;
+}
 
 static void reculer_pacman(Partie *p, Pos grille) {
     // temps que pacmman est dans un mur faire demitour 
@@ -63,8 +85,9 @@ void bouger_pacman(Partie *p, float dt) {
 
     // Animation_time étant un float, on vérifie manuellement si on doit boucler
     p->pacman.animation_time += dt * VITESSE_ANIMATION;
-    if (p->pacman.animation_time >= p->pacman.nombre_frames)
+    if (p->pacman.animation_time >= 2) {
         p->pacman.animation_time = 0;
+    }
 
     // Wrapping de pacman sur les bords
     if (p->pacman.pos.c > (p->C - 1) * CASE + CASE && p->pacman.etat.direction == DIR_DROITE) {
@@ -110,14 +133,18 @@ void bouger_pacman(Partie *p, float dt) {
     }
 }
 
-static SDL_Surface* sprite_pacman(Entite *p) {
+SDL_Surface* sprite_pacman(int dir, int frame) {
     // Si pacman n'a pas de direction (arrive lors de la frame frame du chargement du niveau
-    if (p->etat.direction == DIR_INCONNUE) return p->sprite[DIR_HAUT][0];
-    return p->sprite[p->etat.direction][(int)p->animation_time];
+    return sprites_pacman[dir][frame];
 }
 
 
 void dessiner_pacman(Partie *p) {
     Point pos = {p->pacman.pos.c, p->pacman.pos.l};
-    afficher_surface(sprite_pacman(&p->pacman), pos);
+    if (p->pacman.etat.direction == DIR_INCONNUE) {
+        afficher_surface(sprite_pacman(1, 0), pos);
+    }
+    else {
+        afficher_surface(sprite_pacman(p->pacman.etat.direction, (int)p->pacman.animation_time), pos);
+    }
 }

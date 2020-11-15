@@ -198,6 +198,12 @@ int charger_sprites() {
         }
         sprites[i] = sprite;
     }
+    if (charger_sprites_fantomes() == -1) {
+        return -1;
+    }
+    if (charger_sprites_pacman() == -1) {
+        return -1;
+    }
     return 0;
 }
 
@@ -220,7 +226,6 @@ char on_grid(Partie *p, int l, int c) {
 
 int aligne_grille(Partie *p, Posf pos) {
     return (int)(fmod(pos.l, CASE)) <= 1 && (int)(fmod(pos.c, CASE)) <= 1;
-    //return ((int)(p->pacman.pos.l) % CASE == 0 && (int)(p->pacman.pos.c) % CASE == 0);
 }
 
 void calculer_voisins(Partie *p) {
@@ -344,10 +349,10 @@ void dessiner_grille(Partie *p, int dans_editeur) {
             }
             if (dans_editeur) {
                 if (type == 'P') {
-                    afficher_surface(p->pacman.sprite[0][0], pos);
+                    afficher_surface(sprite_pacman(0,0), pos);
                 }
                 else if (type == 'F') {
-                    afficher_surface(p->fantomes[0].sprite[0][0], pos);
+                    afficher_surface(sprite_fantome(0,0,0), pos);
                 }
             }
         }

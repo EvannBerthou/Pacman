@@ -3,6 +3,86 @@
 #include "fantome.h"
 #include "main.h"
 
+#define SPRITE_FANTOME_COUNT 7
+const char *fantome_sprite_path[SPRITE_FANTOME_COUNT][4][2] = {
+    {
+        //sprite de fantomes en mode normale O pour fantome orange 
+
+        {"data/sprites/fantomeO00.bmp","data/sprites/fantomeO01.bmp"},  
+        {"data/sprites/fantomeO10.bmp","data/sprites/fantomeO11.bmp"}, 
+        {"data/sprites/fantomeO20.bmp","data/sprites/fantomeO21.bmp"},
+        {"data/sprites/fantomeO30.bmp","data/sprites/fantomeO31.bmp"},
+    },
+    {
+        //sprite de fantomes en mode normale P pour fantome pink 
+
+        {"data/sprites/fantomeP00.bmp","data/sprites/fantomeP01.bmp"},  
+        {"data/sprites/fantomeP10.bmp","data/sprites/fantomeP11.bmp"}, 
+        {"data/sprites/fantomeP20.bmp","data/sprites/fantomeP21.bmp"},
+        {"data/sprites/fantomeP30.bmp","data/sprites/fantomeP31.bmp"},
+    },
+    {
+        //sprite de fantomes en mode normale R pour fantome red 
+
+        {"data/sprites/fantomeR00.bmp","data/sprites/fantomeR01.bmp"},  
+        {"data/sprites/fantomeR10.bmp","data/sprites/fantomeR11.bmp"}, 
+        {"data/sprites/fantomeR20.bmp","data/sprites/fantomeR21.bmp"},
+        {"data/sprites/fantomeR30.bmp","data/sprites/fantomeR31.bmp"},
+    },
+    {
+        //sprite de fantomes en mode normale B pour fantome orange 
+
+        {"data/sprites/fantomeB00.bmp","data/sprites/fantomeB01.bmp"},  
+        {"data/sprites/fantomeB10.bmp","data/sprites/fantomeB11.bmp"}, 
+        {"data/sprites/fantomeB20.bmp","data/sprites/fantomeB21.bmp"},
+        {"data/sprites/fantomeB30.bmp","data/sprites/fantomeB31.bmp"},
+    },
+    {
+        //sprites fantome mode fuite avec tmp_fuite <5000ms
+        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"}, 
+        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"}, 
+        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"}, 
+        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"}, 
+    },
+    {
+        //sprite fantome mode fuite avec tmp > 5000 ms 
+        //alerne entre celui la et le precedant a une frequence de plus en plus rapite jusqu'a tmp_fuite >=10000
+        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"}, 
+        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"}, 
+        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"}, 
+        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"}, 
+    },
+    {
+        //sprite fantome mode manger 
+        {"data/sprites/fantome_manger0.bmp", "data/sprites/fantome_manger0.bmp"},
+        {"data/sprites/fantome_manger1.bmp", "data/sprites/fantome_manger1.bmp"},
+        {"data/sprites/fantome_manger2.bmp", "data/sprites/fantome_manger2.bmp"},
+        {"data/sprites/fantome_manger3.bmp", "data/sprites/fantome_manger3.bmp"},
+    }
+};
+SDL_Surface *sprites_fantomes[SPRITE_FANTOME_COUNT][4][2];
+
+int charger_sprites_fantomes() {
+    for (int i = 0; i < SPRITE_FANTOME_COUNT; i++) {
+        for (int j = 0; j < 4; j++) {
+            for (int k = 0; k < 2; k++) {
+                SDL_Surface *sprite = SDL_LoadBMP(fantome_sprite_path[i][j][k]);
+                if (sprite == NULL) {
+                    fprintf(stderr, "Erreur lors du chargement du sprite %s\n", fantome_sprite_path[i][j][k]);
+                    return -1;
+                }
+                SDL_SetColorKey(sprite, SDL_SRCCOLORKEY, noir);
+                sprites_fantomes[i][j][k] = sprite;
+            }
+        }
+    }
+    return 0;
+}
+
+SDL_Surface *sprite_fantome(TypeEntite t, int dir, int frame) {
+    return sprites_fantomes[t][dir][frame];
+}
+
 void bouger_fantomes(Partie *p, float dt) {
     for (int i = 0; i < NBFANTOMES; i++) {
         Entite *fantome = &p->fantomes[i];
@@ -63,23 +143,33 @@ void bouger_fantomes(Partie *p, float dt) {
             case DIR_GAUCHE: fantome->pos.c -= dt * fantome->vitesse; break;
             case DIR_DROITE: fantome->pos.c += dt * fantome->vitesse; break;
         }
+
+        fantome->animation_time += dt * VITESSE_ANIMATION;
+        if (fantome->animation_time >= 2) {
+            fantome->animation_time = 0;
+        }
     }
 }
-/*
-static SDL_Surface* sprite_fantome(Entite *p) {
-    // Si pacman n'a pas de direction (arrive lors de la frame frame du chargement du niveau
-    if (p->etat.direction == DIR_INCONNUE) return p->sprite[DIR_HAUT][0];
-    return p->sprite[p->etat.direction][(int)p->animation_time];
-}
-*/
 
 void dessiner_fantomes(Partie *p) {
     for (int i = 0; i < NBFANTOMES; i++) {
         Entite *fantome = &p->fantomes[i];
         Point pos = {fantome->pos.c, fantome->pos.l};
-        if (fantome->etat.direction == DIR_INCONNUE) 
-            afficher_surface(fantome->sprite[1][0], pos);
-        else
-            afficher_surface(fantome->sprite[fantome->etat.direction][0], pos);
+        int dir = fantome->etat.direction;
+        int frame = (int)fantome->animation_time;
+        if (fantome->etat.direction == DIR_INCONNUE)  {
+            afficher_surface(sprite_fantome(fantome->type, 1, 0), pos);
+        }
+        else if (fantome->etat.manger) {
+            afficher_surface(sprites_fantomes[6][dir][frame], pos);
+        }
+        else if (fantome->etat.fuite > 0) {
+            int sprite = fantome->etat.tmp_fuite < 5000 ? 4 : 5;
+            afficher_surface(sprites_fantomes[sprite][dir][frame], pos);
+        }
+        else {
+            SDL_Surface *sprite = sprite_fantome(fantome->type, dir, frame);
+            afficher_surface(sprite, pos);
+        }
     }
 }
