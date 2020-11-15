@@ -102,7 +102,6 @@ int main(int argc, char **argv) {
         actualiser_jeu(&p, &timer, manette);
         dessiner_jeu(&p);
         reinitialiser_evenements();
-        SDL_Delay(50);
     }
     return 0;
 }
@@ -239,8 +238,8 @@ void dessiner_accueil() {
 
 void manger_bouton() {
     SDL_Surface *images[] = {
-        charger_sprite(ENTITE_PACMAN, 3, 0),
-        charger_sprite(ENTITE_PACMAN, 3, 1),
+        //charger_sprites(ENTITE_PACMAN, 3, 0),
+        //charger_sprite(ENTITE_PACMAN, 3, 1),
     };
     BoutonAccueil b = boutons[bouton_selectionne];
     Point p = {b.rect.x - 30, b.rect.y + 7};
@@ -250,7 +249,7 @@ void manger_bouton() {
         dessiner_rectangle(debut, (p.x - debut.x + 10), 25, noir);
         p.x += 1;
         // Change d'image toutes les 15 frames
-        afficher_surface(images[p.x % 30 / 15], p);
+        //afficher_surface(images[p.x % 30 / 15], p);
         attente(5);
         actualiser();
     }
