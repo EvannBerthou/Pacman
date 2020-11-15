@@ -3,8 +3,6 @@
 #include "partie.h"
 #include "main.h"
 
-#define VITESSE_ANIMATION 7
-
 const char *pacman_sprite_path[4][2] = {
     {"data/sprites/pacman00.bmp", "data/sprites/pacman01.bmp"},
     {"data/sprites/pacman10.bmp", "data/sprites/pacman11.bmp"},

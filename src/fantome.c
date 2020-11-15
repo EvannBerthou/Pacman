@@ -143,6 +143,11 @@ void bouger_fantomes(Partie *p, float dt) {
             case DIR_GAUCHE: fantome->pos.c -= dt * fantome->vitesse; break;
             case DIR_DROITE: fantome->pos.c += dt * fantome->vitesse; break;
         }
+
+        fantome->animation_time += dt * VITESSE_ANIMATION;
+        if (fantome->animation_time >= 2) {
+            fantome->animation_time = 0;
+        }
     }
 }
 
@@ -150,19 +155,20 @@ void dessiner_fantomes(Partie *p) {
     for (int i = 0; i < NBFANTOMES; i++) {
         Entite *fantome = &p->fantomes[i];
         Point pos = {fantome->pos.c, fantome->pos.l};
+        int dir = fantome->etat.direction;
+        int frame = (int)fantome->animation_time;
         if (fantome->etat.direction == DIR_INCONNUE)  {
             afficher_surface(sprite_fantome(fantome->type, 1, 0), pos);
         }
         else if (fantome->etat.manger) {
-            afficher_surface(sprites_fantomes[6][fantome->etat.direction][0], pos);
+            afficher_surface(sprites_fantomes[6][dir][frame], pos);
         }
         else if (fantome->etat.fuite > 0) {
             int sprite = fantome->etat.tmp_fuite < 5000 ? 4 : 5;
-            afficher_surface(sprites_fantomes[sprite][fantome->etat.direction][0], pos);
+            afficher_surface(sprites_fantomes[sprite][dir][frame], pos);
         }
         else {
-            SDL_Surface *sprite = sprite_fantome(fantome->type, fantome->etat.direction, 
-                                                 (int)fantome->animation_time);
+            SDL_Surface *sprite = sprite_fantome(fantome->type, dir, frame);
             afficher_surface(sprite, pos);
         }
     }
