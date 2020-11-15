@@ -102,6 +102,7 @@ int main(int argc, char **argv) {
         actualiser_jeu(&p, &timer, manette);
         dessiner_jeu(&p);
         reinitialiser_evenements();
+        SDL_Delay(50);
     }
     return 0;
 }
