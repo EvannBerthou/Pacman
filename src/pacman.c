@@ -5,6 +5,20 @@
 
 #define VITESSE_ANIMATION 7
 
+static void reculer_pacman(Partie *p, Pos grille) {
+    // temps que pacmman est dans un mur faire demitour 
+    // bug résultant 
+    while (on_grid(p, grille.l, grille.c) == '*'){
+        switch (p->pacman.etat.direction){
+            case DIR_HAUT:   grille.l++; break;
+            case DIR_BAS:    grille.l--; break;
+            case DIR_GAUCHE: grille.c++; break;
+            case DIR_DROITE: grille.c--; break;
+        }
+    }
+    p->pacman.pos = (Posf){grille.l * CASE, grille.c * CASE};
+}
+
 static int direction_opposee(Partie *p) {
     int curr = p->pacman.etat.direction;
     int next = p->pacman.etat.prochaine_direction;
@@ -87,13 +101,13 @@ void bouger_pacman(Partie *p, float dt) {
             printf("bonbons : %d\n", p->nbbonus);
             #endif
         }
-        if (on_grid(p, grille.l, grille.c) != ' ')
-            p->plateau[grille.l][grille.c] = 'P';
+        if (on_grid(p, grille.l, grille.c) == '*') {
+            reculer_pacman(p, grille);
+        }
+        else if (on_grid(p, grille.l, grille.c) != ' ') {
+            p->plateau[grille.l][grille.c] = ' ';
+        }
     }
-    // temps que pacmes est dans un mur
-
-
-
 }
 
 static SDL_Surface* sprite_pacman(Entite *p) {
@@ -104,20 +118,6 @@ static SDL_Surface* sprite_pacman(Entite *p) {
 
 
 void dessiner_pacman(Partie *p) {
-    Pos grille =ecran_vers_grille(p->pacman.pos);
-    // temps que pacmman est dans un mur faire demitour 
-    // bug résultant 
-    while (on_grid(p,grille.l,grille.c) =='*'){
-        switch (p->pacman.etat.direction){
-            case DIR_HAUT:   p->pacman.pos.l += p->pacman.vitesse; break;
-            case DIR_BAS:    p->pacman.pos.l -= p->pacman.vitesse; break;
-            case DIR_GAUCHE: p->pacman.pos.c += p->pacman.vitesse; break;
-            case DIR_DROITE: p->pacman.pos.c -= p->pacman.vitesse; break;
-        }
-        
-    }
-
-
     Point pos = {p->pacman.pos.c, p->pacman.pos.l};
     afficher_surface(sprite_pacman(&p->pacman), pos);
 }
