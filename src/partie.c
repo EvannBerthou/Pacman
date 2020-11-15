@@ -301,6 +301,7 @@ void maj_etat(Partie *p){
                 for (int b =0;b!=NBFANTOMES;b++ ){
                     p->fantomes[b].pos=p->fantomes[b].pos_init;
                     p->fantomes[b].pos_cible=(Posf){0,0};
+                    reset_timer_fantomes();
                 }
             }
             else {

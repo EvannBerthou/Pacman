@@ -83,8 +83,24 @@ SDL_Surface *sprite_fantome(TypeEntite t, int dir, int frame) {
     return sprites_fantomes[t][dir][frame];
 }
 
+// Temps avant que chaque fantome quitte la base
+float timer_fantomes[4];
+
+void reset_timer_fantomes() {
+    timer_fantomes[0] = 1.f;
+    timer_fantomes[1] = 2.f;
+    timer_fantomes[2] = 3.f;
+    timer_fantomes[3] = 4.f;
+}
+
 void bouger_fantomes(Partie *p, float dt) {
     for (int i = 0; i < NBFANTOMES; i++) {
+
+        if (timer_fantomes[i] > 0) {
+            timer_fantomes[i] -= dt;
+            continue;
+        }
+
         Entite *fantome = &p->fantomes[i];
         Pos current_pos = ecran_vers_grille(fantome->pos);
         Pos pos_init_f= ecran_vers_grille(fantome->pos_init);
@@ -107,10 +123,10 @@ void bouger_fantomes(Partie *p, float dt) {
         }
         else {
             // Ici on gère les différentes IA de chaque fantome car ils ont une case cible differente
-            if (fantome->type==ENTITE_FANTOME_R){
+            //if (fantome->type==ENTITE_FANTOME_R){
                 fantome->pos_cible = p->pacman.pos;
                 find_path(p,current_pos,ecran_vers_grille(p->pacman.pos),fantome);
-            }
+            //}
         }
 
         DirEntite direction = DIR_INCONNUE;

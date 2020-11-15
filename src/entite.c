@@ -25,11 +25,11 @@ Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
         .chemin_noeud={0},
     };
 
-    if (type == ENTITE_FANTOME_R ){
-        result.vitesse=50;
+    if (type == ENTITE_PACMAN) {
+        result.vitesse = 75;
     }// Pacman (pas ENTITE_FANTOME) possède 2 frames d'animation : bouche ouverte/fermée
     else {
-        result.vitesse=75;
+        result.vitesse = 50;
     }
 
     return result;

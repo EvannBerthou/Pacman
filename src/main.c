@@ -10,6 +10,7 @@
 #include "entite.h"
 #include "editeur.h"
 #include "pacman.h"
+#include "fantome.h"
 
 /******************************************************************************/
 /* MAIN                                                                       */
@@ -266,6 +267,7 @@ int charger_niveau(Partie *p, char *chemin) {
     if (p->plateau == NULL)
         return 1;
     calculer_voisins(p);
+    reset_timer_fantomes();
 
 #ifdef DEBUG
     /* Affichage du plan lu                                                       */
