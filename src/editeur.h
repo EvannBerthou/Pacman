@@ -3,8 +3,8 @@
 
 #include "partie.h"
 
-void lancer_editeur();
+void lancer_editeur(char *chemin);
 int sauvegarder_niveau(Partie *niveau);
-Partie charger_editeur(char *chemin);
+Partie charger_editeur();
 
 #endif
