@@ -58,8 +58,21 @@ static int centre_case(Partie *p) {
     return fmod(p->pacman.pos.l + demi_x, CASE) >= demi_x ||  fmod(p->pacman.pos.c + demi_y, CASE) >= demi_y;
 }
 
+static int deplacement(int touche, int direction){
+    switch (touche) {
+        case SDLK_UP: return DIR_HAUT;
+        case SDLK_DOWN: return DIR_BAS;
+        case SDLK_LEFT: return DIR_GAUCHE;
+        case SDLK_RIGHT: return DIR_DROITE;
+        default: return direction;
+    }
+}
+
+
 //modification de la positon de pacman en fonction de l'environnement et des touches pressés
-void bouger_pacman(Partie *p, float dt) {
+void bouger_pacman(Partie *p, float dt, int touche) {
+    p->pacman.etat.prochaine_direction = deplacement(touche, p->pacman.etat.prochaine_direction);
+
     // Si pacman ne se déplace dans aucune direciton
     // Ou qu'il a une direction en attente et qu'il atteint une intersection
     // Ou qu'il part dans dans la direction opposée

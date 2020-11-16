@@ -9,29 +9,9 @@
 #include "fantome.h"
 #include "leaderboard.h"
 #include "main.h"
+#include "entrer.h"
+#include "affichage.h"
 
-#define SPRITE_COUNT 18
-const char *sprites_paths[SPRITE_COUNT] = {
-    "data/sprites/bille.bmp",
-    "data/sprites/bonbon.bmp",
-    "data/sprites/mur0.bmp",
-    "data/sprites/mur1.bmp",
-    "data/sprites/mur2.bmp",
-    "data/sprites/mur3.bmp",
-    "data/sprites/mur4.bmp",
-    "data/sprites/mur5.bmp",
-    "data/sprites/mur6.bmp",
-    "data/sprites/mur7.bmp",
-    "data/sprites/mur8.bmp",
-    "data/sprites/mur9.bmp",
-    "data/sprites/mur10.bmp",
-    "data/sprites/mur11.bmp",
-    "data/sprites/mur12.bmp",
-    "data/sprites/mur13.bmp",
-    "data/sprites/mur14.bmp",
-    "data/sprites/mur15.bmp",
-};
-SDL_Surface* sprites[SPRITE_COUNT];
 
 /******************************************************************************/
  /* CHARGE PLAN                                                                */
@@ -149,35 +129,7 @@ int charger_plan(char *chemin, Partie *p) {
     return 0;
 }
 
-int charger_sprites() {
-    for (int i = 0; i < SPRITE_COUNT; i++) {
-        SDL_Surface *sprite = SDL_LoadBMP(sprites_paths[i]);
-        if (sprite == NULL) {
-            fprintf(stderr, "Erreur lors du chargement du sprite %s\n", sprites_paths[i]);
-            return -1;
-        }
-        sprites[i] = sprite;
-    }
-    if (charger_sprites_fantomes() == -1) {
-        return -1;
-    }
-    if (charger_sprites_pacman() == -1) {
-        return -1;
-    }
-    return 0;
-}
-
-// Calculer un nombre pour déterminer le nombre de voisins puis le stocker dans le meme ordre
-// que le plateau
-short voisins_murs[27 * 21] = {};
-// Renvoie le bon sprite
-static SDL_Surface *sprite_at(Point pos) {
-    // Convertis les coordonnés 2d en index pour un array 1d
-    int index = 21 * pos.y + pos.x;
-    // Le 2 correspond à l'offset pour avoir les sprites des murs
-    return sprites[2 + voisins_murs[index]];
-}
-
+ 
 char on_grid(Partie *p, int l, int c) {
     if (l >= 0 && c >= 0 && l < p->L && c < p->C)
         return p->plateau[l][c];
@@ -186,34 +138,6 @@ char on_grid(Partie *p, int l, int c) {
 
 int aligne_grille(Partie *p, Posf pos) {
     return (int)(fmod(pos.l, CASE)) <= 1 && (int)(fmod(pos.c, CASE)) <= 1;
-}
-
-void calculer_voisins(Partie *p) {
-    for (int i = 0; i < p->L; i++) {
-        for (int j = 0; j < p->C; j++) {
-            short voisins = 0;
-            /*
-             Ici on encode les voisins mais au lieu de stocker si un mur a des voisins
-             dans 4 variables pour chaque direction, on stocke tous les voisins dans une seule variable
-             Cela permet d'économiser beaucoup de mémoire
-             Un int est encodé sur 4 bytes (du moins sur ma machine), ce qui donne :
-             27 * 21 * 4 (int) * 4 (voisins) = 9,072 bytes
-             En utilisant d'un seul short de 2 bytes, ça donne
-             27 * 21 * 2 (short) * 1 (une seule variable) = 1,134 bytes
-             Cela permet en plus de plus facilement déterminer quel sprite doit être afficher
-             pour chaque mur
-            */
-            if (on_grid(p, i - 1, j) == '*')
-                voisins |= 0b0001;
-            if (on_grid(p, i + 1, j) == '*')
-                voisins |= 0b0010;
-            if (on_grid(p, i, j - 1) == '*')
-                voisins |= 0b0100;
-            if (on_grid(p, i, j + 1) == '*')
-                voisins |= 0b1000;
-            voisins_murs[21 * i + j] = voisins;
-        }
-    }
 }
 
 
@@ -230,16 +154,6 @@ char case_direction(Partie *p, Entite *e, int direction) {
     return on_grid(p, pos.l, pos.c);
 }
 
-int deplacement(int touche, int direction){
-    switch (touche) {
-        case SDLK_UP: return DIR_HAUT;
-        case SDLK_DOWN: return DIR_BAS;
-        case SDLK_LEFT: return DIR_GAUCHE;
-        case SDLK_RIGHT: return DIR_DROITE;
-        default: return direction;
-    }
-}
-
 void maj_etat(Partie *p){
     Pos pos_pacman = ecran_vers_grille(p->pacman.pos); 
     for (int i = 0; i != p->nbf; i++) {
@@ -250,7 +164,8 @@ void maj_etat(Partie *p){
             if (!(p->fantomes[i].etat.fuite)){
                 p->pacman.etat.nb_vie-=1;
                 if (p->pacman.etat.nb_vie == 0) {
-                    terminer_partie(p);
+                    envoyer_score(p);
+                    charger_accueil();
                     return;
                 }
 
@@ -268,20 +183,19 @@ void maj_etat(Partie *p){
     }
 }
 
-
 void actualiser_partie(Partie *p, Timer *timer) {
     int touche = nouvelle_touche();
     if (touche == SDLK_q) {
         charger_accueil();
     }
-    p->pacman.etat.prochaine_direction = deplacement(touche, p->pacman.etat.prochaine_direction);
 
-    bouger_pacman(p, timer->dt);
+    bouger_pacman(p, timer->dt, touche);
     bouger_fantomes(p, timer->dt);
     maj_etat(p);
 
     if (p->nbbonus == 0) {
-        terminer_partie(p);
+        envoyer_score(p);
+        charger_accueil();
     }
 }
 
@@ -298,11 +212,11 @@ void dessiner_grille(Partie *p, int dans_editeur) {
             }
             // Bonbon
             else if (type == '.') {
-                afficher_surface(sprites[0], pos);
+                afficher_surface(sprite_index(0), pos);
             }
             // Bonus
             else if (type == 'B') {
-                afficher_surface(sprites[1], pos);
+                afficher_surface(sprite_index(1), pos);
             }
             if (dans_editeur) {
                 if (type == 'P') {
@@ -352,100 +266,5 @@ void dessiner_partie(Partie *p) {
     dessiner_pacman(p);
     dessiner_fantomes(p);
     dessiner_texte(p);
-    actualiser();
-}
-
-
-void terminer_partie(Partie *p) {
-    char *nom = entrer_nom();
-
-    const char *post_req =
-        "POST / HTTP/1.0\r\n"
-        "Host: pacman-leaderboard.herokuapp.com\r\n"
-        "Content-Type: application/x-www-form-urlencoded\r\n"
-        "Content-Length: %d\r\n\r\n"
-        "%s\r\n";
-    const char post_params[] = "joueur=%s&points=%d";
-    char params[64] = {};
-    sprintf(params, post_params, nom, p->pacman.etat.score);
-    char req[2048] = {};
-    sprintf(req, post_req, strlen(params), params);
-
-    //char *reponse = envoyer_requete("localhost", 3000, req);
-    char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, req);
-    if (reponse != NULL) {
-        free(reponse);
-    }
-    free(nom);
-    charger_accueil();
-}
-
-char * entrer_nom() {
-    // Nom a 5 lettres + \0
-    char nom[6] = "AAAAA";
-    int touche = 0, index = 0;
-    afficher_nom(nom, index);
-    while (touche != SDLK_RETURN) {
-        traiter_evenements();
-        touche = nouvelle_touche();
-        if (touche == SDLK_RIGHT)
-            index = (index + 1) % 5;
-        else if (touche == SDLK_LEFT) {
-            index--;
-            if (index < 0) index = 4;
-        }
-        // Autorise que les lettres majuscules
-        else if (touche == SDLK_UP) {
-            if (nom[index] - 1 >= 'A')
-                nom[index]--;
-        }
-        else if (touche == SDLK_DOWN) {
-            if (nom[index] + 1 <= 'Z')
-                nom[index]++;
-        }
-        afficher_nom(nom, index);
-        reinitialiser_evenements();
-        attente(100);
-    }
-    return strdup(nom);
-}
-
-Point centrer_boite(Point centre, Point taille) {
-    return (Point) {
-        centre.x - (taille.x / 2),
-        centre.y - (taille.y / 2),
-    };
-}
-
-void afficher_nom(char *nom, int index) {
-    // Dessine la boite autour du texte au centre de l'écran
-    Point coin = centrer_boite((Point){ECRAN_W / 2, ECRAN_H / 2}, (Point){5 * 46, 60});
-    dessiner_rectangle(coin, 5 * 46, 60, noir);
-    // Ligne haut
-    dessiner_ligne(coin, (Point){coin.x + 5 * 46, coin.y}, blanc);
-    // Ligne bas
-    dessiner_ligne((Point){coin.x, coin.y + 60}, (Point){coin.x + 5 * 46, coin.y + 60}, blanc);
-    // Ligne droite
-    dessiner_ligne((Point){coin.x + 5 * 46, coin.y}, (Point){coin.x + 5 * 46, coin.y + 60}, blanc);
-    // Ligne gauche
-    dessiner_ligne(coin, (Point){coin.x, coin.y + 60}, blanc);
-
-    // Permet de dessiner chaque caractère du texte dans une position fixe au lieu de le texte change de taille
-    for (int i = 0; i < 5; i++) {
-        // La lettre a affichée
-        char c = nom[i];
-        // Fabrique un string contenant seulement la lettre à affiche, on ne peut pas directement afficher
-        // &c car le buffer ne se serait pas terminé par un \0 et
-        char buff[2];
-        sprintf(buff, "%c", c);
-        // Détermine la position de la lettre
-        Point pos = (Point){coin.x + i * 46 + 5, coin.y};
-        // Affiche la lettre
-        afficher_texte(buff, 46, pos, blanc);
-        // Souligne la lettre en cours de modification
-        if (i == index) {
-            dessiner_ligne((Point){pos.x, pos.y + 50}, (Point){pos.x + 35, pos.y + 50}, blanc);
-        }
-    }
     actualiser();
 }
