@@ -145,7 +145,8 @@ static Uint8 croix_manette() {
 
 int nouvelle_touche() {
     static int derniere_touche = 0;
-    static int derniere_croix  = 0;
+    static Uint8 derniere_croix  = 0;
+    static int dernier_bouton = 0;
 
     int touches[] = {SDLK_DOWN, SDLK_UP, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_q};
     int croix[] = {SDL_HAT_DOWN, SDL_HAT_UP, SDL_HAT_LEFT, SDL_HAT_RIGHT};
@@ -154,12 +155,12 @@ int nouvelle_touche() {
     int touche = attendre_touche_duree(10);
     Uint8 croix_presse = croix_manette();
 
-    // Vérifie les autres touches
-    // On peut le mettre en dehors du prochain if car dès qu'un bouton est pressé, il y a
-    // un changement de menu et donc la fonctin ne sera pas rappelée directement
+    // Détecte le pression des touches entrer et q ou 0 et 1 sur manette tout en évidant la répétition
+    int bouton = 0;
     for (int i = 0; i < 2; i++) {
-        if (touche == touches[4 + i] || touche_manete(boutons[i])) {
-            return touches[4 + i];
+        if (touches[4 + i] != dernier_bouton && (touche == touches[4 + i] || touche_manete(boutons[i]))) {
+            bouton = touches[4 + i];
+            break;
         }
     }
 
@@ -177,7 +178,7 @@ int nouvelle_touche() {
         }
     }
     // Aucune touche pressée
-    return 0;
+    return bouton;
 }
 
 void actualiser_accueil(Partie *p, Timer *t) {
