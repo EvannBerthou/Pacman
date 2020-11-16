@@ -208,7 +208,8 @@ void activer_bouton(Partie *p, Timer *t) {
         // Charge le niveau
         if (charger_niveau(p, chemin)) {
             printf("Erreur lors du chargement du niveau\n");
-            exit(1);
+            free(chemin);
+            break;
         }
         scene_active = SCENE_NIVEAU;
         // Arrete la musique de l'accueil
@@ -269,12 +270,15 @@ int charger_niveau(Partie *p, char *chemin) {
     printf("Chargement du plan...\n");
     char chemin_complet[100];
     sprintf(chemin_complet, "data/maps/%s", chemin);
-    *p = charge_plan(chemin_complet);
-    /* Si problème lors du chargement du plan...                                  */
-    if (p->plateau == NULL)
+    int err = charger_plan(chemin_complet, p);
+    if (err == -1) {
+        charger_accueil();
         return 1;
-    calculer_voisins(p);
-    reset_timer_fantomes();
+    }
+    else {
+        calculer_voisins(p);
+        reset_timer_fantomes();
+    }
 
 #ifdef DEBUG
     /* Affichage du plan lu                                                       */

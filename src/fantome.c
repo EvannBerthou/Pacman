@@ -94,7 +94,7 @@ void reset_timer_fantomes() {
 }
 
 void bouger_fantomes(Partie *p, float dt) {
-    for (int i = 0; i < NBFANTOMES; i++) {
+    for (int i = 0; i < p->nbf; i++) {
 
         if (timer_fantomes[i] > 0) {
             timer_fantomes[i] -= dt;
@@ -168,7 +168,7 @@ void bouger_fantomes(Partie *p, float dt) {
 }
 
 void dessiner_fantomes(Partie *p) {
-    for (int i = 0; i < NBFANTOMES; i++) {
+    for (int i = 0; i < p->nbf; i++) {
         Entite *fantome = &p->fantomes[i];
         Point pos = {fantome->pos.c, fantome->pos.l};
         int dir = fantome->etat.direction;

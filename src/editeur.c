@@ -4,8 +4,6 @@
 #include "editeur.h"
 
 char selected_char = '*';
-int pacman_place = 0;
-int nb_fantomes = 0;
 char chemin_fichier[100];
 
 const char bouton_editeurs[] = {'*', '.', 'B', ' ', 'P', 'F'};
@@ -35,134 +33,44 @@ static Partie partie_vide() {
     return p;
 }
 // Très fortement inspiré du charger_plan fournis
-Partie charger_plan_editeur(char *chemin) {
+
+Partie charger_editeur() {
     Partie p;
-    FILE *f = fopen(chemin, "r");
-    if (f == NULL) {
-        fprintf(stderr, "Erreur dans l'ouverture de %s", chemin);
-        return partie_vide();
-    }
-
-    int res = fscanf(f,"%d %d\n", &p.L, &p.C); // Lecture de deux entiers
-
-    // Si on n'a pas pu lire deux entiers ou s'ils sont incorrects
-    if (res != 2 || p.C < 2 || p.L < 2 || p.C > 800 || p.L > 600) {
-        fprintf(stderr, "Dimensions du tableau lues dans '%s' incorrectes\n", chemin);
-        fclose(f);
-        return partie_vide();
-    }
-
-    /* ALLOCATION DYNAMIQUE                                                       */
-    /* Allocation du tableau de *L pointeurs sur lignes                           */
-    p.plateau = malloc(p.L * sizeof(char *));
-    if(p.plateau == NULL) {
-        fprintf(stderr, "Allocation dynamique impossible\n");
-        fclose(f);
-        exit(1);
-    }
-/* Allocation des tableaux de *C caractères                                   */
-    for (int l = 0; l != p.L; l++) {
-        p.plateau[l] = malloc(p.C * sizeof(char));
-        if(p.plateau[l] == NULL) {
-            fprintf(stderr, "Allocation dynamique impossible\n");
-            fclose(f);
-            exit(1);
-        }
-    }
-
-    int l = 0;
-    res = 0;
-    char ch;
-    while(res != EOF) { // Lecture de chaque ligne
-        int c = 0;
-        while(1) {
-            res = fscanf(f,"%c", &ch); // Lecture d'un caractère
-            if (res == EOF) // Si fin de fichier
-                break; // Quittons la boucle interne
-
-            if(c>p.C) { // Si trop de colonnes...
-                fprintf(stderr, "Ligne %d colonne %d: trop de colonnes\n", l, c);
-                fclose(f);
-                return partie_vide();
-            }
-
-            if(c==p.C) { // Si fin de ligne supposée...
-                if(ch=='\n') { // Si fin de ligne réelle, on quitte la boucle
-                    break;
-                }
-                else { // Sinon trop de caractères
-                    fprintf(stderr, "Ligne %d: trop de caractères\n", l);
-                    fclose(f);
-                    return partie_vide();
-                }
-            }
-            /* ...sinon, nous ne sommes pas à la fin de la ligne.                         */
-            /* Si on lit un caractère interdit...                                         */
-            if (ch != '.' && ch != ' ' && ch != '*' && ch != 'P' && ch != 'F' && ch != 'B' && ch != 'C') {
-                if(ch=='\n') // Si c'est un saut de ligne
-                    printf("Ligne %d: trop peu de caractères\n",l);
-                else
-                    printf("Ligne %d: caractère '%c' incorrect\n",l,ch);
-
-                fclose(f);
-                return partie_vide();
-            }
-            else if (ch == 'P') {
-                if (pacman_place == 1) { 
-                    c++;
-                    continue;
-                }
-                pacman_place = 1;
-            }
-            else if (ch == 'F') {
-                if (nb_fantomes >= 4) {
-                    fprintf(stderr, "Ligne %d:  un fantôme de trop!\n", l);
-                    c++;
-                    continue;
-                }
-                nb_fantomes++;
-            }
-
-            p.plateau[l][c] = ch; // Ecriture dans le plan
-
-            c++; // caractère suivant
-        }
-        l++; // ligne suivante
-    }
-
-    fclose(f); // Fermeture du flux de lecture du fichier
-
-    /* Si à la lecture de EOF on n'est pas sur la *V+1 ème ligne...               */
-    if(l != p.L+1) {
-        fprintf(stderr, "Ligne %d: nb de lignes incorrect\n", l);
+    int err = charger_plan(chemin_fichier, &p);
+    if (err == -1) {
         return partie_vide();
     }
     return p;
 }
 
-Partie charger_editeur() {
-    nb_fantomes = 0;
-    pacman_place = 0;
-    return charger_plan_editeur(chemin_fichier);
-}
-
 int sauvegarder_niveau(Partie *p) {
+    static int en_sauvegarde = 0;
+    if (en_sauvegarde) {
+        return 1;
+    }
+
+    en_sauvegarde = 1;
     printf("Début de la sauvegarde\n");
     // Ouvre le fichier
     FILE *f = fopen(chemin_fichier, "w");
     if (f == NULL) {
         fprintf(stderr, "Erreur lors de l'ouverture du fichier\n");
+        en_sauvegarde = 0;
         return 1;
     }
 
     // Ne pas sauvegarder si pacman n'est pas placé sur la grille
-    if (pacman_place == 0) {
+    if (p->pacman_place == 0) {
         printf("Pacman n'est pas sur la grille\n");
+        fclose(f);
+        en_sauvegarde = 0;
         return 1;
     }
 
-    if (nb_fantomes < 4) {
+    if (p->nbf < 4) {
         printf("Il manque des fantomes\n");
+        fclose(f);
+        en_sauvegarde = 0;
         return 1;
     }
 
@@ -178,6 +86,7 @@ int sauvegarder_niveau(Partie *p) {
 
     fclose(f);
     printf("Sauvegarde terminée\n");
+    en_sauvegarde = 0;
     return 0;
 }
 
@@ -197,19 +106,19 @@ static void dessiner_boutons() {
 static void placer_case(Partie *p, Point grille) {
     char celulle = p->plateau[grille.y][grille.x];
     if (selected_char == 'P') {
-        if (pacman_place) return;
-        pacman_place = 1;
+        if (p->pacman_place) return;
+        p->pacman_place = 1;
     }
     if (celulle == 'P' && selected_char != 'P') {
-        pacman_place = 0;
+        p->pacman_place = 0;
     }
 
     if (selected_char == 'F') {
-        if (nb_fantomes == 4) return;
-        nb_fantomes++;
+        if (p->nbf == 4) return;
+        p->nbf++;
     }
     if (celulle == 'F' && selected_char != 'F') {
-        nb_fantomes--;
+        p->nbf--;
     }
 
     p->plateau[grille.y][grille.x] = selected_char;
@@ -238,8 +147,6 @@ static void entourner_case(Point souris) {
 }
 
 void lancer_editeur(char *chemin) {
-    pacman_place = 0;
-    nb_fantomes = 0;
     sprintf(chemin_fichier, "data/maps/%s", chemin);
     Partie p = charger_editeur(chemin_fichier);
     calculer_voisins(&p);
