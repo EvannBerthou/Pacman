@@ -387,7 +387,7 @@ char * entrer_nom() {
     afficher_nom(nom, index);
     while (touche != SDLK_RETURN) {
         traiter_evenements();
-        touche = attendre_touche();
+        touche = nouvelle_touche();
         if (touche == SDLK_RIGHT)
             index = (index + 1) % 5;
         else if (touche == SDLK_LEFT) {
