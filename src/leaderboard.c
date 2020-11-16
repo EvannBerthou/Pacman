@@ -108,7 +108,7 @@ Point centrer_texte(char *texte, Point centre, int taille) {
     return (Point) {centre.x - (t.x / 2), centre.y - (t.y / 2)};
 }
 
-void afficher_leaderboard(SDL_Joystick *manette) {
+void afficher_leaderboard() {
     afficher_message_leaderboard("Chargement du classement", 26);
     const char *get_req =
             "GET / HTTP/1.0\r\n"
@@ -150,7 +150,7 @@ void afficher_leaderboard(SDL_Joystick *manette) {
         y += 45;
     }
     actualiser();
-    while (nouvelle_touche(manette) != SDLK_q);
+    while (nouvelle_touche() != SDLK_q);
     free(reponse);
 }
 

@@ -34,7 +34,7 @@ char on_grid(Partie *p, int l, int c);
 int aligne_grille(Partie *p, Posf pos);
 void calculer_voisins(Partie *p);
 char case_direction(Partie *p, Entite *e, int direction);
-void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette);
+void actualiser_partie(Partie *p, Timer *timer);
 void dessiner_grille(Partie *p, int dans_editeur);
 void dessiner_texte(Partie *p);
 void dessiner_partie(Partie *p);

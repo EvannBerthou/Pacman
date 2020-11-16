@@ -309,8 +309,8 @@ void maj_etat(Partie *p){
 }
 
 
-void actualiser_partie(Partie *p, Timer *timer, SDL_Joystick *manette) {
-    int touche = nouvelle_touche(manette);
+void actualiser_partie(Partie *p, Timer *timer) {
+    int touche = nouvelle_touche();
     if (touche == SDLK_q) {
         charger_accueil();
     }
@@ -432,7 +432,7 @@ char * entrer_nom() {
             index = (index + 1) % 5;
         else if (touche == SDLK_LEFT) {
             index--;
-            if (index < 0) index = 5;
+            if (index < 0) index = 4;
         }
         // Autorise que les lettres majuscules
         else if (touche == SDLK_UP) {
