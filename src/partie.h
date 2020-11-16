@@ -11,16 +11,16 @@
 #include "timer.h"
 #include "entite.h"
 
-#define NBFANTOMES  4 // nombres de fantômes dans les plateaux chargés
-
 // STRUCTURES
 /* Structure Partie:  permet de stocker les paramètres d'une partie           */
 typedef struct partie {
     char ** plateau; // le tableau de caractères contenant le plateau de jeu
     int     L; // le nb de lignes du plateau de jeu
     int     C; // le nb de colonne du plateau de jeu
+    int pacman_place;
     Entite  pacman; // l'entité pacman
-    Entite  fantomes[NBFANTOMES]; // Liste des entités fantomes
+    int nbf;
+    Entite  fantomes[4]; // Liste des entités fantomes
     int     nbbonus; // le nombre de bonus restants à manger
     // ...et vous pouvez ajouter tout ce dont vous avez besoin
 } Partie;
@@ -28,7 +28,7 @@ typedef struct partie {
 // PROTOTYPES
 /* charge_plan : lit un fichier contenant un plateau de jeu et le charge
                     en mémoire, dans le champ 'plateau' d'une Partie */
-Partie charge_plan(char *fichier);
+int charger_plan(char *chemin, Partie *p);
 int charger_sprites();
 char on_grid(Partie *p, int l, int c);
 int aligne_grille(Partie *p, Posf pos);

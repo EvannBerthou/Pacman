@@ -115,7 +115,7 @@ void bouger_pacman(Partie *p, float dt) {
         }
         else if (on_grid(p, grille.l, grille.c) == 'B') {
             p->pacman.etat.score+=50;
-            for (int i=0;i!=NBFANTOMES;i++){
+            for (int i=0;i!=p->nbf;i++){
                 p->fantomes[i].etat.fuite=1;
             }
             p->nbbonus--;

@@ -36,158 +36,118 @@ SDL_Surface* sprites[SPRITE_COUNT];
 /******************************************************************************/
  /* CHARGE PLAN                                                                */
 /******************************************************************************/
-Partie charge_plan(char *fichier)
-    {
-    Partie  p;
-    FILE    *f = fopen(fichier,"r"); // Ouverture en lecture du fichier
-    p.plateau = NULL;   // Le futur plan, à allouer dynamiquement.
-    int     res, l, c;
-    int     nbf;        // Nb de fantômes trouvés sur le plan
-    int     nbb;        // Nb de bonus trouvés sur le plan
-    char    ch;
+int charger_plan(char *chemin, Partie *p) {
+    FILE *f = fopen(chemin, "r");
+    if (f == NULL) {
+        fprintf(stderr, "Erreur dans l'ouverture de %s", chemin);
+        return -1;
+    }
 
-    if(!f) // Si f== NULL, ouverture ratée
-        {
-        printf("Impossible d'ouvrir '%s'\n",fichier);
-        exit(0);
-        }
+    int res = fscanf(f,"%d %d\n", &p->L, &p->C); // Lecture de deux entiers
 
-/* Lecture des dimensions du plan en en-tête                                  */
-    res = fscanf(f,"%d %d\n",&p.L,&p.C); // Lecture de deux entiers
-
-// Si on n'a pas pu lire deux entiers ou s'ils sont incorrects
-    if(res !=2 || p.C<2 || p.L<2 || p.C >800 || p.L>ECRAN_W)
-        {
-        printf("Dimensions du tableau lues dans '%s' incorrectes\n",fichier);
+    // Si on n'a pas pu lire deux entiers ou s'ils sont incorrects
+    if (res != 2 || p->C < 2 || p->L < 2 || p->C > 800 || p->L > 600) {
+        fprintf(stderr, "Dimensions du tableau lues dans '%s' incorrectes\n", chemin);
         fclose(f);
-        exit(0);
-        }
-    printf("Dimensions lues: %d x %d\n",p.L,p.C);
+        return -1;
+    }
 
-/* ALLOCATION DYNAMIQUE                                                       */
-/* Allocation du tableau de *L pointeurs sur lignes                           */
-    p.plateau = (char **) malloc(p.L * sizeof(char *));
-    if(p.plateau == NULL)
-        {
-        printf("Allocation dynamique impossible\n");
+    /* ALLOCATION DYNAMIQUE                                                       */
+    /* Allocation du tableau de *L pointeurs sur lignes                           */
+    p->plateau = malloc(p->L * sizeof(char *));
+    if(p->plateau == NULL) {
+        fprintf(stderr, "Allocation dynamique impossible\n");
         fclose(f);
-        exit(0);
-        }
-
+        exit(1);
+    }
 /* Allocation des tableaux de *C caractères                                   */
-    for(l=0;l!=p.L;l++)
-        {
-        p.plateau[l] = (char *) malloc(p.C * sizeof(char));
-        if(p.plateau[l] == NULL)
-            {
-            printf("Allocation dynamique impossible\n");
+    for (int l = 0; l != p->L; l++) {
+        p->plateau[l] = malloc(p->C * sizeof(char));
+        if(p->plateau[l] == NULL) {
+            fprintf(stderr, "Allocation dynamique impossible\n");
             fclose(f);
-            exit(0);
-            }
+            exit(1);
         }
+    }
 
-
-/* LECTURE DES LIGNES DU PLAN                                                 */
-    l = 0;
+    int l = 0;
     res = 0;
-    nbf = 0;
-    nbb = 0;
-    while(res != EOF) // Lecture de chaque ligne
-        {
-        c=0;
-        while(1)
-            {
-            res = fscanf(f,"%c",&ch); // Lecture d'un caractère
+    char ch;
+    while(res != EOF) { // Lecture de chaque ligne
+        int c = 0;
+        while(1) {
+            res = fscanf(f,"%c", &ch); // Lecture d'un caractère
             if (res == EOF) // Si fin de fichier
                 break; // Quittons la boucle interne
 
-            if(c>p.C) // Si trop de colonnes...
-                {
-                printf("Ligne %d colonne %d: trop de colonnes\n",l,c);
+            if(c>p->C) { // Si trop de colonnes...
+                fprintf(stderr, "Ligne %d colonne %d: trop de colonnes\n", l, c);
                 fclose(f);
-                exit(0);
-                }
+                return -1;
+            }
 
-            if(c==p.C) // Si fin de ligne supposée...
-                {
-                if(ch=='\n') // Si fin de ligne réelle, on quitte la boucle
-                    {
+            if(c==p->C) { // Si fin de ligne supposée...
+                if(ch=='\n') { // Si fin de ligne réelle, on quitte la boucle
                     break;
-                    }
-                else // Sinon trop de caractères
-                    {
-                    printf("Ligne %d: trop de caractères\n",l);
-                    fclose(f);
-                    //exit(0);
-                    }
                 }
-/* ...sinon, nous ne sommes pas à la fin de la ligne.                         */
-/* Si on lit un caractère interdit...                                         */
-            if(ch!='.' && ch!=' ' && ch!= '*' && ch!='P' && ch!='F' && ch!='B' && ch!='C')
-                {
+                else { // Sinon trop de caractères
+                    fprintf(stderr, "Ligne %d: trop de caractères\n", l);
+                    fclose(f);
+                    return -1;
+                }
+            }
+            /* ...sinon, nous ne sommes pas à la fin de la ligne.                         */
+            /* Si on lit un caractère interdit...                                         */
+            if (ch != '.' && ch != ' ' && ch != '*' && ch != 'P' && ch != 'F' && ch != 'B' && ch != 'C') {
                 if(ch=='\n') // Si c'est un saut de ligne
                     printf("Ligne %d: trop peu de caractères\n",l);
                 else
                     printf("Ligne %d: caractère '%c' incorrect\n",l,ch);
-
                 fclose(f);
-                exit(0);
+                return -1;
+            }
+            else if (ch == 'P') {
+                if (p->pacman_place == 0) {
+                    p->pacman = nouvelle_entite((Posf){l * CASE, c * CASE}, (Posf){l * CASE, c * CASE}, ENTITE_PACMAN);
+                    p->pacman_place = 1;
                 }
+                else {
+                    fprintf(stderr, "Ligne %d: Pacman en trop!\n", l);
+                    c++;
+                    continue;
+                }
+            }
+            else if (ch == 'F') {
+                if (p->nbf >= 4) {
+                    fprintf(stderr, "Ligne %d:  un fantôme de trop!\n", l);
+                    c++;
+                    continue;
+                }
+                p->fantomes[p->nbf] = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, p->nbf);
+                p->nbf++;
+            }
 
-            if(ch=='P')
-                {
-                    p.pacman = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, ENTITE_PACMAN);
-                }
-            else if(ch=='F')
-                {
-                if(nbf>NBFANTOMES)
-                    {
-                    printf("Ligne %d:  un fantôme de trop!\n",l);
-                    fclose(f);
-                    exit(0);
-                    }
-                p.fantomes[nbf] = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, nbf);
-                nbf++;
-                }
-            else if(ch=='B' || ch == '.')
-                nbb++;
-
-            p.plateau[l][c] = ch; // Ecriture dans le plan
+            p->plateau[l][c] = ch; // Ecriture dans le plan
 
             c++; // caractère suivant
-            }
-        l++; // ligne suivante
         }
+        l++; // ligne suivante
+    }
 
     fclose(f); // Fermeture du flux de lecture du fichier
 
-/* Si à la lecture de EOF on n'est pas sur la *V+1 ème ligne...               */
-    if(l != p.L+1)
-        {
-        printf("Ligne %d: nb de lignes incorrect\n",l);
-        exit(0);
-        }
-
-/* Si nb de fantômes incorrect...                                             */
-    if(nbf!=NBFANTOMES)
-        {
-        printf("Nb de fantômes incorrect sur le plan\n");
-        fclose(f);
-        exit(0);
-        }
-
-/* Si pas de bonus....                                                       */
-    if(nbb==0)
-        {
-        printf("Aucun bonus sur le plan!\n");
-        fclose(f);
-        exit(0);
-        }
-    p.nbbonus = nbb;
-
-    return p;
+    /* Si à la lecture de EOF on n'est pas sur la *V+1 ème ligne...               */
+    if(l != p->L+1) {
+        fprintf(stderr, "Ligne %d: nb de lignes incorrect\n", l);
+        return -1;
     }
 
+    if (p->pacman_place == 0 || p->nbf == 0) {
+        fprintf(stderr, "Aucun pacman ou fantôme sur la grille\n");
+    }
+
+    return 0;
+}
 
 int charger_sprites() {
     for (int i = 0; i < SPRITE_COUNT; i++) {
@@ -282,7 +242,7 @@ int deplacement(int touche, int direction){
 
 void maj_etat(Partie *p){
     Pos pos_pacman = ecran_vers_grille(p->pacman.pos); 
-    for (int i = 0; i != NBFANTOMES; i++) {
+    for (int i = 0; i != p->nbf; i++) {
         Pos pos_fantome = ecran_vers_grille(p->fantomes[i].pos);
 
         // Détection de la collision entre fantome et pacman
@@ -295,7 +255,7 @@ void maj_etat(Partie *p){
                 }
 
                 p->pacman.pos = p->pacman.pos_init;
-                for (int b =0;b!=NBFANTOMES;b++ ){
+                for (int b =0;b!=p->nbf;b++ ){
                     p->fantomes[b].pos=p->fantomes[b].pos_init;
                     p->fantomes[b].pos_cible=(Posf){0,0};
                     reset_timer_fantomes();
