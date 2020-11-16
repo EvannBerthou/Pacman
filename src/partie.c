@@ -281,7 +281,7 @@ int deplacement(int touche, int direction){
 }
 
 void maj_etat(Partie *p){
-    Pos pos_pacman = ecran_vers_grille(p->pacman.pos); 
+    Pos pos_pacman = ecran_vers_grille(p->pacman.pos);
     for (int i = 0; i != NBFANTOMES; i++) {
         Pos pos_fantome = ecran_vers_grille(p->fantomes[i].pos);
 
@@ -427,7 +427,7 @@ char * entrer_nom() {
     afficher_nom(nom, index);
     while (touche != SDLK_RETURN) {
         traiter_evenements();
-        touche = attendre_touche();
+        touche = nouvelle_touche();
         if (touche == SDLK_RIGHT)
             index = (index + 1) % 5;
         else if (touche == SDLK_LEFT) {
