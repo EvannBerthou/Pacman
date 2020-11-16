@@ -20,6 +20,7 @@ SCENE scene_active = SCENE_ACCUEIL;
 #define NOMBRE_BOUTONS 4
 BoutonAccueil boutons[NOMBRE_BOUTONS];
 int bouton_selectionne = 0;
+SDL_Joystick *manette = NULL;
 
 static Uint8 *audio_pos; // avance de la lecture du fichier audio
 static Uint32 audio_len; // taille restante à être lue
@@ -42,7 +43,6 @@ int main(int argc, char **argv) {
 
     // Chargement de la manette si disponible
     int num_joy = SDL_NumJoysticks();
-    SDL_Joystick *manette = NULL;
 
 #ifdef DEBUG
     printf("%d manettes détectés\n", num_joy);
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
         print_fps(&timer);
 #endif
         traiter_evenements();
-        actualiser_jeu(&p, &timer, manette);
+        actualiser_jeu(&p, &timer);
         dessiner_jeu(&p);
         reinitialiser_evenements();
     }
@@ -109,13 +109,13 @@ int main(int argc, char **argv) {
 }
 
 // Actualise la scene active
-void actualiser_jeu(Partie *p, Timer *t, SDL_Joystick *manette) {
+void actualiser_jeu(Partie *p, Timer *t) {
     switch(scene_active) {
     case SCENE_ACCUEIL:
-        actualiser_accueil(p, t, manette);
+        actualiser_accueil(p, t);
         break;
     case SCENE_NIVEAU:
-        actualiser_partie(p, t, manette);
+        actualiser_partie(p, t);
         break;
     }
 }
@@ -133,17 +133,17 @@ void dessiner_jeu(Partie *p) {
 }
 
 // Fonctions d'aide pour vérifier si une manette est branchée et qu'une touche est appuyée
-static int touche_manete(SDL_Joystick *manette, int bouton) {
+static int touche_manete(int bouton) {
     if (manette == NULL) return 0;
     return SDL_JoystickGetButton(manette, bouton);
 }
 
-static Uint8 croix_manette(SDL_Joystick *manette) {
+static Uint8 croix_manette() {
     if (manette == NULL) return 0;
     return SDL_JoystickGetHat(manette, 0);
 }
 
-int nouvelle_touche(SDL_Joystick *manette) {
+int nouvelle_touche() {
     static int derniere_touche = 0;
     static int derniere_croix  = 0;
 
@@ -152,13 +152,13 @@ int nouvelle_touche(SDL_Joystick *manette) {
     int boutons[] = {0,1};
 
     int touche = attendre_touche_duree(10);
-    Uint8 croix_presse = croix_manette(manette);
+    Uint8 croix_presse = croix_manette();
 
     // Vérifie les autres touches
     // On peut le mettre en dehors du prochain if car dès qu'un bouton est pressé, il y a
     // un changement de menu et donc la fonctin ne sera pas rappelée directement
     for (int i = 0; i < 2; i++) {
-        if (touche == touches[4 + i] || touche_manete(manette, boutons[i])) {
+        if (touche == touches[4 + i] || touche_manete(boutons[i])) {
             return touches[4 + i];
         }
     }
@@ -180,8 +180,8 @@ int nouvelle_touche(SDL_Joystick *manette) {
     return 0;
 }
 
-void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette) {
-    int touche = nouvelle_touche(manette);
+void actualiser_accueil(Partie *p, Timer *t) {
+    int touche = nouvelle_touche();
     if (touche == SDLK_DOWN) {
         bouton_selectionne = (bouton_selectionne + 1) % NOMBRE_BOUTONS;
     }
@@ -191,17 +191,17 @@ void actualiser_accueil(Partie *p, Timer *t, SDL_Joystick *manette) {
             bouton_selectionne = NOMBRE_BOUTONS - 1;
     }
     else if (touche == SDLK_RETURN) {
-        activer_bouton(p, t, manette);
+        activer_bouton(p, t);
     }
 }
 
-void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
+void activer_bouton(Partie *p, Timer *t) {
     // Animation de pacman qui mange le bouton avant de changer de menu
     manger_bouton();
     // Transition écran noir
     switch(bouton_selectionne) {
     case 0: {
-        char *chemin = selectionner_niveau(manette);
+        char *chemin = selectionner_niveau();
         if (chemin == NULL) {
             break;
         }
@@ -217,9 +217,9 @@ void activer_bouton(Partie *p, Timer *t, SDL_Joystick *manette) {
         free(chemin);
         break;
     }
-    case 1: afficher_leaderboard(manette); break;
+    case 1: afficher_leaderboard(); break;
     case 2: {
-        char *chemin = selectionner_niveau(manette);
+        char *chemin = selectionner_niveau();
         if (chemin == NULL) {
             break;
         }
@@ -295,7 +295,7 @@ void charger_accueil() {
     scene_active = SCENE_ACCUEIL;
 }
 
-char* selectionner_niveau(SDL_Joystick *manette) {
+char* selectionner_niveau() {
     // Chargement des fichiers
     char *niveaux[100]; // TODO: Probleme de taille fixe
     int nb = 0; // nombre de niveaux dans la liste
@@ -318,7 +318,7 @@ char* selectionner_niveau(SDL_Joystick *manette) {
     int curseur = 0; // Quel niveau est selectionné
     while (1) {
         traiter_evenements();
-        int touche = nouvelle_touche(manette);
+        int touche = nouvelle_touche();
         if (touche == SDLK_DOWN) {
             curseur = (curseur + 1) % nb;
         }
