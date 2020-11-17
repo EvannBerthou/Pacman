@@ -9,7 +9,6 @@ Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
         .prochaine_direction = DIR_INCONNUE,
         .score = 0,
         .fuite = 0,
-        .tmp_fuite=0,
         .nb_vie =2,
         .manger=0,
         .suiv=0,
@@ -37,7 +36,7 @@ Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
 
 Pos ecran_vers_grille(Posf pos) {
     // Convertis taille en Posf pour ne pas perdre la précision lors de la division
-    Posf taille_f = { CASE, CASE }; 
+    Posf taille_f = { CASE, CASE };
     return (Pos) {
         (int)(roundf (pos.l  / taille_f.l)),
         (int)(roundf (pos.c  / taille_f.c))
