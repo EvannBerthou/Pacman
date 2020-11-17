@@ -168,21 +168,28 @@ void bouger_fantomes(Partie *p, float dt) {
 }
 
 void dessiner_fantomes(Partie *p) {
-    for (int i = 0; i < p->nbf; i++) {
+    // Dessine les fantomes dans l'ordre inverse pour pas que le premier fantome
+    // a sortir de la base soit dessiné sous les autres
+    for (int i = p->nbf - 1; i >= 0; i--) {
         Entite *fantome = &p->fantomes[i];
         Point pos = {fantome->pos.c, fantome->pos.l};
         int dir = fantome->etat.direction;
         int frame = (int)fantome->animation_time;
+        // Regarde vers le bas par défaut
         if (fantome->etat.direction == DIR_INCONNUE)  {
             afficher_surface(sprite_fantome(fantome->type, 1, 0), pos);
         }
+        // Si le fantome s'est fait manger
         else if (fantome->etat.manger) {
             afficher_surface(sprites_fantomes[6][dir][frame], pos);
         }
+        // Si le fantome fuit
         else if (fantome->etat.fuite > 0) {
+            // Détermine l'image a dessiner en fonction du temps restant
             int sprite = fantome->etat.tmp_fuite < 5000 ? 4 : 5;
             afficher_surface(sprites_fantomes[sprite][dir][frame], pos);
         }
+        // Fantome en mode poursuite
         else {
             SDL_Surface *sprite = sprite_fantome(fantome->type, dir, frame);
             afficher_surface(sprite, pos);

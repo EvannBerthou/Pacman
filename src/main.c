@@ -227,6 +227,7 @@ int charger_niveau(Partie *p, char *chemin) {
     printf("Chargement du plan...\n");
     char chemin_complet[100];
     sprintf(chemin_complet, "data/maps/%s", chemin);
+    vider_partie(p);
     int err = charger_plan(chemin_complet, p);
     if (err == -1) {
         charger_accueil();
@@ -320,3 +321,4 @@ void afficher_liste_niveaux(char **liste, int n, int curseur) {
         afficher_texte(liste[i], font, p, c);
     }
 }
+

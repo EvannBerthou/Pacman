@@ -278,3 +278,8 @@ void dessiner_partie(Partie *p) {
     dessiner_texte(p);
     actualiser();
 }
+
+void vider_partie(Partie *p) {
+    p->pacman_place = 0;
+    p->nbf = 0;
+}
