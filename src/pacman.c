@@ -2,6 +2,7 @@
 #include "pacman.h"
 #include "partie.h"
 #include "main.h"
+#include "fantome.h"
 
 const char *pacman_sprite_path[4][2] = {
     {"data/sprites/pacman00.bmp", "data/sprites/pacman01.bmp"},
@@ -129,7 +130,7 @@ void bouger_pacman(Partie *p, float dt, int touche) {
         else if (on_grid(p, grille.l, grille.c) == 'B') {
             p->pacman.etat.score+=50;
             for (int i=0;i!=p->nbf;i++){
-                p->fantomes[i].etat.fuite = 10.f;
+                fuite_fantome(&p->fantomes[i]);
             }
             p->nbbonus--;
             //metre compteur de temps a 0
