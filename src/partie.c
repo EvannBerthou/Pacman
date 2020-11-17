@@ -187,7 +187,7 @@ void maj_etat(Partie *p){
                 }
             }
             else {
-                p->fantomes[i].etat.manger=1;
+                a_ete_mange(&p->fantomes[i]);
             }
         }
     }

@@ -36,7 +36,7 @@ typedef struct {
     int score; // score de pacman
     float fuite; // temps restant de fuite
     int nb_vie; // nombre de vie de pacman
-    int manger; // si le fantome s'est fait manger
+    int mange; // si le fantome s'est fait manger
     int suiv; //suivre ke cchemin
 } Etat;
 

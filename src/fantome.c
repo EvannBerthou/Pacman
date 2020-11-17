@@ -107,16 +107,15 @@ void bouger_fantomes(Partie *p, float dt) {
         // Si le fantome est rentré à la base
         // TODO: Détecte que le fantome est à la base
         if (current_pos.l == pos_init_f.l && current_pos.c == pos_init_f.c
-                && (fantome->etat.manger || fantome->etat.fuite > 0)){
-            fantome->etat.manger=0;
-            fantome->etat.fuite=0;
+                && (fantome->etat.mange || fantome->etat.fuite > 0)){
+            revivre(fantome);
         }
         // Si le fantome est en mode fuite, le faire se déplacer vers sa base
         if (fantome->etat.fuite > 0){
             fantome->etat.fuite -= dt;
             find_path(p,current_pos,ecran_vers_grille(fantome->pos_init),fantome);
         }
-        else if (fantome->etat.manger){
+        else if (fantome->etat.mange){
             find_path(p,current_pos,ecran_vers_grille(fantome->pos_init),fantome);
         }
         else {
@@ -178,7 +177,7 @@ void dessiner_fantomes(Partie *p) {
             afficher_surface(sprite_fantome(fantome->type, 1, 0), pos);
         }
         // Si le fantome s'est fait manger
-        else if (fantome->etat.manger) {
+        else if (fantome->etat.mange) {
             afficher_surface(sprites_fantomes[6][dir][frame], pos);
         }
         // Si le fantome fuit
@@ -195,4 +194,19 @@ void dessiner_fantomes(Partie *p) {
             afficher_surface(sprite, pos);
         }
     }
+}
+
+void fuite_fantome(Entite *fantome) {
+    fantome->etat.fuite = TEMPS_FUITE;
+}
+
+void a_ete_mange(Entite *fantome) {
+    fantome->etat.mange = 1;
+    fantome->vitesse = 35;
+}
+
+void revivre(Entite *fantome) {
+    fantome->etat.fuite = 0;
+    fantome->etat.mange = 0;
+    fantome->vitesse = 50;
 }

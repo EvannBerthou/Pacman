@@ -9,9 +9,9 @@ Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
         .prochaine_direction = DIR_INCONNUE,
         .score = 0,
         .fuite = 0,
-        .nb_vie =2,
-        .manger=0,
-        .suiv=0,
+        .nb_vie = 2,
+        .mange = 0,
+        .suiv = 0,
     };
     Entite result = {
         .pos = pos,
