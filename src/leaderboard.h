@@ -2,6 +2,7 @@
 #define LEADERBOARD_H
 
 #include "../lib/libgraphique.h"
+#include "partie.h"
 
 int status(char *reponse);
 char *envoyer_requete(const char *host, int port, const char *req);

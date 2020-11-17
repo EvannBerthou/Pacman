@@ -106,6 +106,9 @@ int charger_plan(char *chemin, Partie *p) {
                 p->fantomes[p->nbf] = nouvelle_entite((Posf){l * CASE, c * CASE},(Posf){l * CASE, c * CASE}, p->nbf);
                 p->nbf++;
             }
+            else if (ch == '.' || ch == 'B') {
+                p->nbbonus++;
+            }
 
             p->plateau[l][c] = ch; // Ecriture dans le plan
 
@@ -129,7 +132,7 @@ int charger_plan(char *chemin, Partie *p) {
     return 0;
 }
 
- 
+
 char on_grid(Partie *p, int l, int c) {
     if (l >= 0 && c >= 0 && l < p->L && c < p->C)
         return p->plateau[l][c];
@@ -155,7 +158,7 @@ char case_direction(Partie *p, Entite *e, int direction) {
 }
 
 void maj_etat(Partie *p){
-    Pos pos_pacman = ecran_vers_grille(p->pacman.pos); 
+    Pos pos_pacman = ecran_vers_grille(p->pacman.pos);
     for (int i = 0; i != p->nbf; i++) {
         Pos pos_fantome = ecran_vers_grille(p->fantomes[i].pos);
 
