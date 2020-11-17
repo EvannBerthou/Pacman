@@ -50,3 +50,7 @@ int nouvelle_touche() {
     // Aucune touche pressée
     return bouton;
 }
+
+int manette_active() {
+    return !(manette == NULL);
+}

@@ -12,6 +12,7 @@
 #include "pacman.h"
 #include "fantome.h"
 #include "entrer.h"
+#include "affichage.h"
 
 /******************************************************************************/
 /* MAIN                                                                       */
@@ -198,6 +199,7 @@ void dessiner_accueil() {
             afficher_image("data/sprites/pacman30.bmp", (Point){b.rect.x - 30, b.rect.y + 7});
         }
     }
+    afficher_bouton_selectionner();
     actualiser();
 }
 
@@ -302,6 +304,9 @@ char* selectionner_niveau() {
         }
 
         afficher_liste_niveaux(niveaux, nb, curseur);
+        afficher_bouton_selectionner();
+        afficher_bouton_retour();
+        actualiser();
         reinitialiser_evenements();
     }
 }
@@ -314,5 +319,4 @@ void afficher_liste_niveaux(char **liste, int n, int curseur) {
         Couleur c = i == curseur ? rouge : blanc;
         afficher_texte(liste[i], font, p, c);
     }
-    actualiser();
 }

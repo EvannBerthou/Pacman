@@ -1,6 +1,8 @@
+#include "main.h"
 #include "affichage.h"
 #include "fantome.h"
 #include "pacman.h"
+#include "entrer.h"
 
 #define SPRITE_COUNT 18
 const char *sprites_paths[SPRITE_COUNT] = {
@@ -86,4 +88,18 @@ void calculer_voisins(Partie *p) {
             voisins_murs[21 * i + j] = voisins;
         }
     }
+}
+
+void afficher_bouton_selectionner() {
+    int manette = manette_active(); // 1 si manette branchée sinon 0
+    char *texte_boutons[] = {"Entrer : Selectionner", "X : Selectionner"};
+    Point info_bouton = {0, ECRAN_H - 26};
+    afficher_texte(texte_boutons[manette] , 18, info_bouton, blanc);
+}
+
+void afficher_bouton_retour() {
+    int manette = manette_active(); // 1 si manette branchée sinon 0
+    char *texte_boutons[] = {"Q : Retour", "O : Retour"};
+    Point info_bouton = {0, ECRAN_H - 52};
+    afficher_texte(texte_boutons[manette] , 18, info_bouton, blanc);
 }
