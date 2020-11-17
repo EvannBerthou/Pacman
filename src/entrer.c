@@ -70,7 +70,7 @@ int nouvelle_touche() {
     if (touche != 0) {
         avancer_konami_code(touche);
     }
-    return 0;
+    return touche;
 }
 
 int manette_active() {
