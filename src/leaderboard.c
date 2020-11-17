@@ -9,6 +9,7 @@
 #include "main.h"
 #include "leaderboard.h"
 #include "entrer.h"
+#include "affichage.h"
 
 /*
 Ces macros servent a quitter la fonction envoyer_requete en cas d'erreur dans la requête
@@ -150,6 +151,7 @@ void afficher_leaderboard() {
         line = strtok_r(NULL, "\r\n", &state);
         y += 45;
     }
+    afficher_bouton_retour();
     actualiser();
     while (nouvelle_touche() != SDLK_q);
     free(reponse);
