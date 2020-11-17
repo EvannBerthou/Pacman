@@ -123,7 +123,9 @@ void afficher_leaderboard() {
     // En cas d'erreur dans la requête
     if (reponse == NULL) {
         afficher_message_leaderboard("Erreur lors du chargement du classement", 26);
-        attendre_clic();
+        afficher_bouton_retour();
+        actualiser();
+        while(nouvelle_touche() != SDLK_q);
         return;
     }
 
@@ -169,7 +171,6 @@ void afficher_ligne(char *joueur, char *score, int y) {
 void afficher_message_leaderboard(char *message, int font) {
     dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
     afficher_texte(message, font, centrer_texte(message, (Point){ECRAN_W / 2, ECRAN_H / 2}, font), blanc);
-    actualiser();
 }
 
 void envoyer_score(Partie *p) {

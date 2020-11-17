@@ -6,54 +6,54 @@
 #define SPRITE_FANTOME_COUNT 7
 const char *fantome_sprite_path[SPRITE_FANTOME_COUNT][4][2] = {
     {
-        //sprite de fantomes en mode normale O pour fantome orange 
+        //sprite de fantomes en mode normale O pour fantome orange
 
-        {"data/sprites/fantomeO00.bmp","data/sprites/fantomeO01.bmp"},  
-        {"data/sprites/fantomeO10.bmp","data/sprites/fantomeO11.bmp"}, 
+        {"data/sprites/fantomeO00.bmp","data/sprites/fantomeO01.bmp"},
+        {"data/sprites/fantomeO10.bmp","data/sprites/fantomeO11.bmp"},
         {"data/sprites/fantomeO20.bmp","data/sprites/fantomeO21.bmp"},
         {"data/sprites/fantomeO30.bmp","data/sprites/fantomeO31.bmp"},
     },
     {
-        //sprite de fantomes en mode normale P pour fantome pink 
+        //sprite de fantomes en mode normale P pour fantome pink
 
-        {"data/sprites/fantomeP00.bmp","data/sprites/fantomeP01.bmp"},  
-        {"data/sprites/fantomeP10.bmp","data/sprites/fantomeP11.bmp"}, 
+        {"data/sprites/fantomeP00.bmp","data/sprites/fantomeP01.bmp"},
+        {"data/sprites/fantomeP10.bmp","data/sprites/fantomeP11.bmp"},
         {"data/sprites/fantomeP20.bmp","data/sprites/fantomeP21.bmp"},
         {"data/sprites/fantomeP30.bmp","data/sprites/fantomeP31.bmp"},
     },
     {
-        //sprite de fantomes en mode normale R pour fantome red 
+        //sprite de fantomes en mode normale R pour fantome red
 
-        {"data/sprites/fantomeR00.bmp","data/sprites/fantomeR01.bmp"},  
-        {"data/sprites/fantomeR10.bmp","data/sprites/fantomeR11.bmp"}, 
+        {"data/sprites/fantomeR00.bmp","data/sprites/fantomeR01.bmp"},
+        {"data/sprites/fantomeR10.bmp","data/sprites/fantomeR11.bmp"},
         {"data/sprites/fantomeR20.bmp","data/sprites/fantomeR21.bmp"},
         {"data/sprites/fantomeR30.bmp","data/sprites/fantomeR31.bmp"},
     },
     {
-        //sprite de fantomes en mode normale B pour fantome orange 
+        //sprite de fantomes en mode normale B pour fantome orange
 
-        {"data/sprites/fantomeB00.bmp","data/sprites/fantomeB01.bmp"},  
-        {"data/sprites/fantomeB10.bmp","data/sprites/fantomeB11.bmp"}, 
+        {"data/sprites/fantomeB00.bmp","data/sprites/fantomeB01.bmp"},
+        {"data/sprites/fantomeB10.bmp","data/sprites/fantomeB11.bmp"},
         {"data/sprites/fantomeB20.bmp","data/sprites/fantomeB21.bmp"},
         {"data/sprites/fantomeB30.bmp","data/sprites/fantomeB31.bmp"},
     },
     {
         //sprites fantome mode fuite avec tmp_fuite <5000ms
-        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"}, 
-        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"}, 
-        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"}, 
-        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"}, 
+        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"},
+        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"},
+        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"},
+        {"data/sprites/fantome_fuite_bleu0.bmp","data/sprites/fantome_fuite_bleu1.bmp"},
     },
     {
-        //sprite fantome mode fuite avec tmp > 5000 ms 
+        //sprite fantome mode fuite avec tmp > 5000 ms
         //alerne entre celui la et le precedant a une frequence de plus en plus rapite jusqu'a tmp_fuite >=10000
-        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"}, 
-        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"}, 
-        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"}, 
-        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"}, 
+        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"},
+        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"},
+        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"},
+        {"data/sprites/fantome_fuite_blanc0.bmp","data/sprites/fantome_fuite_blanc1.bmp"},
     },
     {
-        //sprite fantome mode manger 
+        //sprite fantome mode manger
         {"data/sprites/fantome_manger0.bmp", "data/sprites/fantome_manger0.bmp"},
         {"data/sprites/fantome_manger1.bmp", "data/sprites/fantome_manger1.bmp"},
         {"data/sprites/fantome_manger2.bmp", "data/sprites/fantome_manger2.bmp"},
@@ -87,10 +87,10 @@ SDL_Surface *sprite_fantome(TypeEntite t, int dir, int frame) {
 float timer_fantomes[4];
 
 void reset_timer_fantomes() {
-    timer_fantomes[0] = 1000.f;
-    timer_fantomes[1] = 1000.f;
-    timer_fantomes[2] = 1000.f;
-    timer_fantomes[3] = 1000.f;
+    timer_fantomes[0] = 1.f;
+    timer_fantomes[1] = 5.f;
+    timer_fantomes[2] = 10.f;
+    timer_fantomes[3] = 15.f;
 }
 
 void bouger_fantomes(Partie *p, float dt) {
