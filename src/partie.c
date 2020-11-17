@@ -157,13 +157,20 @@ char case_direction(Partie *p, Entite *e, int direction) {
     return on_grid(p, pos.l, pos.c);
 }
 
-void maj_etat(Partie *p){
-    Pos pos_pacman = ecran_vers_grille(p->pacman.pos);
-    for (int i = 0; i != p->nbf; i++) {
-        Pos pos_fantome = ecran_vers_grille(p->fantomes[i].pos);
+static int collision_pacman_fantome(Posf pacman, Posf fantome) {
+    // Collision entre 2 rectangles
+    return (
+        pacman.c < fantome.c + CASE &&
+        pacman.c + CASE > fantome.c &&
+        pacman.l < fantome.l + CASE &&
+        pacman.l + CASE > fantome.l
+    );
+}
 
+void maj_etat(Partie *p){
+    for (int i = 0; i != p->nbf; i++) {
         // Détection de la collision entre fantome et pacman
-        if ((pos_pacman.l == pos_fantome.l) && (pos_pacman.c == pos_fantome.c)){
+        if (collision_pacman_fantome(p->pacman.pos, p->fantomes[i].pos)) {
             if (!(p->fantomes[i].etat.fuite)){
                 p->pacman.etat.nb_vie-=1;
                 if (p->pacman.etat.nb_vie == 0) {
