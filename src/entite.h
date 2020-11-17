@@ -31,14 +31,13 @@ typedef enum {
 
 /* Structure element permet de stocker la direction de deplacement, le score de pacman et mode chase des fantome */
 typedef struct {
-    int direction;
-    int prochaine_direction;
-    int score;
-    int fuite;
-    float tmp_fuite;
-    int nb_vie;
-    int manger;
-    int suiv; //suivre ke cchemin 
+    int direction; // Direction de l'entité
+    int prochaine_direction; // Direction de l'entité à la prochaine intersection
+    int score; // score de pacman
+    float fuite; // temps restant de fuite
+    int nb_vie; // nombre de vie de pacman
+    int manger; // si le fantome s'est fait manger
+    int suiv; //suivre ke cchemin
 } Etat;
 
 

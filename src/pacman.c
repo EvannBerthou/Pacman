@@ -28,8 +28,8 @@ int charger_sprites_pacman() {
 }
 
 static void reculer_pacman(Partie *p, Pos grille) {
-    // temps que pacmman est dans un mur faire demitour 
-    // bug résultant 
+    // temps que pacmman est dans un mur faire demitour
+    // bug résultant
     while (on_grid(p, grille.l, grille.c) == '*'){
         switch (p->pacman.etat.direction){
             case DIR_HAUT:   grille.l++; break;
@@ -129,7 +129,7 @@ void bouger_pacman(Partie *p, float dt, int touche) {
         else if (on_grid(p, grille.l, grille.c) == 'B') {
             p->pacman.etat.score+=50;
             for (int i=0;i!=p->nbf;i++){
-                p->fantomes[i].etat.fuite=1;
+                p->fantomes[i].etat.fuite = 10.f;
             }
             p->nbbonus--;
             //metre compteur de temps a 0

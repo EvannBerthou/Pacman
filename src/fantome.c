@@ -106,16 +106,14 @@ void bouger_fantomes(Partie *p, float dt) {
         Pos pos_init_f= ecran_vers_grille(fantome->pos_init);
         // Si le fantome est rentré à la base
         // TODO: Détecte que le fantome est à la base
-        if (((current_pos.l == pos_init_f.l) && (current_pos.c == pos_init_f.c)) && ( fantome->etat.manger|| fantome->etat.fuite)){
+        if (current_pos.l == pos_init_f.l && current_pos.c == pos_init_f.c
+                && (fantome->etat.manger || fantome->etat.fuite > 0)){
             fantome->etat.manger=0;
             fantome->etat.fuite=0;
         }
-        if  (fantome->etat.tmp_fuite>=10000.0)
-            fantome->etat.fuite=0;
-
         // Si le fantome est en mode fuite, le faire se déplacer vers sa base
-        if (fantome->etat.fuite ){
-            fantome->etat.tmp_fuite+=dt;
+        if (fantome->etat.fuite > 0){
+            fantome->etat.fuite -= dt;
             find_path(p,current_pos,ecran_vers_grille(fantome->pos_init),fantome);
         }
         else if (fantome->etat.manger){
@@ -185,8 +183,10 @@ void dessiner_fantomes(Partie *p) {
         }
         // Si le fantome fuit
         else if (fantome->etat.fuite > 0) {
-            // Détermine l'image a dessiner en fonction du temps restant
-            int sprite = fantome->etat.tmp_fuite < 5000 ? 4 : 5;
+            // Change d'image toutes les 0.5s
+            double integral;
+            double rem = modf(fantome->etat.fuite, &integral);
+            int sprite = rem > 0.5f ? 4 : 5;
             afficher_surface(sprites_fantomes[sprite][dir][frame], pos);
         }
         // Fantome en mode poursuite
