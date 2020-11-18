@@ -176,7 +176,7 @@ void maj_etat(Partie *p){
                 p->pacman.etat.nb_vie-=1;
                 if (p->pacman.etat.nb_vie == 0) {
                     envoyer_score(p);
-                    charger_accueil();
+                    changer_scene(SCENE_ACCUEIL);
                     return;
                 }
 
@@ -197,7 +197,7 @@ void maj_etat(Partie *p){
 void actualiser_partie(Partie *p, Timer *timer) {
     int touche = nouvelle_touche();
     if (touche == SDLK_q) {
-        charger_accueil();
+        changer_scene(SCENE_ACCUEIL);
     }
 
     bouger_pacman(p, timer->dt, touche);
@@ -206,7 +206,7 @@ void actualiser_partie(Partie *p, Timer *timer) {
 
     if (p->nbbonus == 0) {
         envoyer_score(p);
-        charger_accueil();
+        changer_scene(SCENE_ACCUEIL);
     }
 }
 

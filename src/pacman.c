@@ -3,6 +3,9 @@
 #include "partie.h"
 #include "main.h"
 #include "fantome.h"
+#include "audio.h"
+
+#define son_pacman 1
 
 const char *pacman_sprite_path[4][2] = {
     {"data/sprites/pacman00.bmp", "data/sprites/pacman01.bmp"},
@@ -87,6 +90,7 @@ void bouger_pacman(Partie *p, float dt, int touche) {
 
     // Si pacman est contre un mur alors ne pas bouger
     if (aligne_grille(p, p->pacman.pos) && case_direction(p, &p->pacman, p->pacman.etat.direction) == '*') {
+        pause_son(son_pacman, 0);
         return;
     }
 
@@ -145,6 +149,8 @@ void bouger_pacman(Partie *p, float dt, int touche) {
             p->plateau[grille.l][grille.c] = ' ';
         }
     }
+
+    pause_son(son_pacman, 1);
 }
 
 SDL_Surface* sprite_pacman(int dir, int frame) {
