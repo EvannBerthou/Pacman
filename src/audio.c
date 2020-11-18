@@ -1,9 +1,17 @@
 #include <stdlib.h>
 #include "audio.h"
 
+static void *merr(void *p) {
+    if (p == NULL) {
+        fprintf(stderr, "Erreur malloc dans audio.c\n");
+        exit(1);
+    }
+    return p;
+}
+
 // Le code lié à l'audio est directement pris depuis la doc de la SDL1
 static SDL_AudioSpec wav_spec; // Caractéristique du fichier audio
-static Sons playing;
+static Sons playing = {.data = NULL, .len = 0, .max_size = 10};
 static Sons samples;
 
 #define SAMPLES_COUNT 2
@@ -40,15 +48,14 @@ static void retour_audio(void *userdata, Uint8 *stream, int len) {
 }
 
 void init_sons() {
-    playing.data = malloc(sizeof(Son*) * 10);
-    for (int i = 0; i < 10; i++) {
-        playing.data[i] = malloc(sizeof(Son));
+    playing.data = merr(malloc(sizeof(Son*) * playing.max_size));
+    for (int i = 0; i < playing.max_size; i++) {
+        playing.data[i] = merr(malloc(sizeof(Son)));
     }
-    playing.len = 0;
 
-    samples.data = malloc(sizeof(Son*) * SAMPLES_COUNT);
+    samples.data = merr(malloc(sizeof(Son*) * SAMPLES_COUNT));
     for (int i = 0; i < SAMPLES_COUNT; i++) {
-        samples.data[i] = calloc(1, sizeof(Son));
+        samples.data[i] = merr(calloc(1, sizeof(Son)));
     }
     samples.len = SAMPLES_COUNT;
     for (int i = 0; i < SAMPLES_COUNT; i++) {
@@ -71,7 +78,15 @@ void init_sons() {
     SDL_PauseAudio(0);
 }
 
+static void resize_playing() {
+    playing.max_size *= 2;
+    playing.data = merr(realloc(playing.data, sizeof(Son*) * playing.max_size));
+}
+
 int charger_fichier_audio(int id) {
+    if (playing.len == playing.max_size) {
+        resize_playing();
+    }
     memcpy(playing.data[playing.len], samples.data[id], sizeof(Son));
     playing.data[playing.len]->playing = 1;
     playing.len++;

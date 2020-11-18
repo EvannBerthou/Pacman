@@ -14,6 +14,7 @@ typedef struct {
 typedef struct {
     Son **data;
     int len;
+    int max_size;
 } Sons;
 
 void init_sons();
