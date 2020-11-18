@@ -19,6 +19,7 @@ SDL_Joystick *manette = NULL;
 
 int main(int argc, char **argv) {
     ouvrir_fenetre(ECRAN_W, ECRAN_H);
+    SDL_EnableKeyRepeat(0,0);
 
     // Chargement de la manette si disponible
     int num_joy = SDL_NumJoysticks();
@@ -57,6 +58,7 @@ int main(int argc, char **argv) {
         traiter_evenements();
         actualiser_jeu(&p, &timer);
         dessiner_jeu(&p);
+        actualiser();
         reinitialiser_evenements();
     }
     return 0;

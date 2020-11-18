@@ -88,7 +88,7 @@ void _test_arret() {
 // actualise l'affichage des modifications graphiques
 // sans appel à cet fonction les modifications sont non apparentes
 void actualiser(){
-    SDL_PollEvent(&lastevent) ;
+    //SDL_PollEvent(&lastevent) ;
     _test_arret();
     SDL_Flip(ecran) ;
 }

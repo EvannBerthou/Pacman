@@ -21,19 +21,30 @@ static void boutons_manette(int *res) {
 }
 
 int nouvelle_touche() {
-    static int derniere_touche = 0;
     static Uint8 derniere_croix  = 0;
     static int derniers_boutons[NOMBRE_BOUTON] = {0,0,0,0};
 
     int touches[] = {SDLK_DOWN, SDLK_UP, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_q, SDLK_b, SDLK_a};
     int croix[] = {SDL_HAT_DOWN, SDL_HAT_UP, SDL_HAT_LEFT, SDL_HAT_RIGHT};
 
-    int touche = attendre_touche_duree(10);
     Uint8 croix_presse = croix_manette();
+
+    // Vérifie les directions
+    for (int i = 0; i < 4; i++) {
+        if (touche_a_ete_pressee(touches[i]) || croix_presse & croix[i]) {
+            if ((derniere_croix & croix[i]) > 0) {
+                continue;
+            }
+            avancer_konami_code(touches[i]);
+            derniere_croix = croix_presse;
+            return touches[i];
+        }
+    }
+    derniere_croix = croix_presse;
+
     // Boutons de la manette pressé cette frame
     int boutons[NOMBRE_BOUTON];
     boutons_manette(boutons);
-
 
     // Détermine la nouvelle touche de la manette pressée
     int res_bouton = 0;
@@ -53,24 +64,7 @@ int nouvelle_touche() {
         return res_bouton;
     }
 
-    // Vérifie si la touche détecté était déjà appuyé lors du dernier appel, évite
-    // la répétition de la touche (ou de la croix)
-    if (touche == derniere_touche && croix_presse == derniere_croix) return 0;
-
-    derniere_touche = touche;
-    derniere_croix = croix_presse;
-
-    // Vérifie les directions
-    for (int i = 0; i < 4; i++) {
-        if (touche == touches[i] || croix_presse & croix[i]) {
-            avancer_konami_code(touches[i]);
-            return touches[i];
-        }
-    }
-    if (touche != 0) {
-        avancer_konami_code(touche);
-    }
-    return touche;
+    return 0;
 }
 
 int manette_active() {

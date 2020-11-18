@@ -88,7 +88,6 @@ void dessiner_accueil() {
         }
     }
     afficher_bouton_selectionner();
-    actualiser();
 }
 
 void manger_bouton() {
