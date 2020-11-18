@@ -11,6 +11,9 @@ const char *sons_chemin[SAMPLES_COUNT] = {
     "music.wav",
     "pacman_chomp.wav"
 };
+const int looping[SAMPLES_COUNT] = {
+    1, 1
+};
 
 // Permet d'avancer la lecture du fichier audio
 // Provient de la doc SDL1
@@ -19,8 +22,13 @@ static void retour_audio(void *userdata, Uint8 *stream, int len) {
 
     for (int i = 0; i < sons->len; i++) {
         Son *s = sons->data[i];
-        if (s->curr == s->len) {
-            continue;
+        if (s->playing && s->curr == s->len) {
+            if (s->loop == 1) {
+                s->curr = 0;
+            }
+            else {
+                s->playing = 0;
+            }
         }
         len = ( s->curr + len > s->len ? s->len - s->curr : len);
         SDL_MixAudio(stream, s->buff + s->curr, len, SDL_MIX_MAXVOLUME);
@@ -42,6 +50,7 @@ void init_sons() {
     samples.len = SAMPLES_COUNT;
     for (int i = 0; i < SAMPLES_COUNT; i++) {
         if (SDL_LoadWAV(sons_chemin[i], &wav_spec, &samples.data[i]->buff, &samples.data[i]->len) != NULL ){
+            samples.data[i]->loop = looping[i];
             wav_spec.callback = retour_audio;
             wav_spec.userdata = &playing;
         }
@@ -60,5 +69,7 @@ void init_sons() {
 }
 
 void charger_fichier_audio(int id) {
-    memcpy(playing.data[playing.len++], samples.data[id], sizeof(Son));
+    memcpy(playing.data[playing.len], samples.data[id], sizeof(Son));
+    playing.data[playing.len]->playing = 1;
+    playing.len++;
 }

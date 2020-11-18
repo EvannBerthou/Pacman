@@ -7,6 +7,8 @@ typedef struct {
     Uint8 *buff;
     Uint32 len;
     Uint32 curr;
+    int playing;
+    int loop;
 } Son;
 
 typedef struct {
