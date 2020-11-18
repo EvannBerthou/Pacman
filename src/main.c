@@ -8,6 +8,7 @@
 #include "entrer.h"
 #include "affichage.h"
 #include "accueil.h"
+#include "audio.h"
 
 /******************************************************************************/
 /* MAIN                                                                       */
@@ -15,22 +16,6 @@
 
 SCENE scene_active = SCENE_ACCUEIL;
 SDL_Joystick *manette = NULL;
-
-static Uint8 *audio_pos; // avance de la lecture du fichier audio
-static Uint32 audio_len; // taille restante à être lue
-
-// Permet d'avancer la lecture du fichier audio
-// Provient de la doc SDL1
-void my_audio_callback(void *userdata, Uint8 *stream, int len) {
-	if (audio_len == 0)
-		return;
-
-	len = ( len > audio_len ? audio_len : len );
-	SDL_MixAudio(stream, audio_pos, len, SDL_MIX_MAXVOLUME);// mix from one buffer into another
-
-	audio_pos += len;
-	audio_len -= len;
-}
 
 int main(int argc, char **argv) {
     ouvrir_fenetre(ECRAN_W, ECRAN_H);
@@ -52,27 +37,13 @@ int main(int argc, char **argv) {
     }
 
 
-    // Le code lié à l'audio est directement pris depuis la doc de la SDL1
-	static Uint32 wav_length; // taille du fichier audio
-	static Uint8 *wav_buffer; // contenue du fichier audio
-	static SDL_AudioSpec wav_spec; // Caractéristique du fichier audio
+    if (charger_fichier_audio("music.wav") != NULL) {
+        jouer_fichier_audio();
+    }
+    attente(1000);
 
-    // Charge le fichier musique
-	if (SDL_LoadWAV("music.wav", &wav_spec, &wav_buffer, &wav_length) != NULL ){
-        wav_spec.callback = my_audio_callback;
-        wav_spec.userdata = NULL;
-        audio_pos = wav_buffer;
-        audio_len = wav_length;
-
-        // Ouvre le périphérique audio
-        if (SDL_OpenAudio(&wav_spec, NULL) < 0 ){
-        #ifdef DEBUG
-          fprintf(stderr, "Erreur lors de l'ouverture de l'audio: %s\n", SDL_GetError());
-        #endif
-        }
-        else {
-            SDL_PauseAudio(0);
-        }
+    if (charger_fichier_audio("music.wav") != NULL) {
+        jouer_fichier_audio();
     }
 
     // Création des boutons
