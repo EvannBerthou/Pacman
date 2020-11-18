@@ -62,6 +62,23 @@ const char *fantome_sprite_path[SPRITE_FANTOME_COUNT][4][2] = {
 };
 SDL_Surface *sprites_fantomes[SPRITE_FANTOME_COUNT][4][2];
 
+
+
+static void reculer_fantome(Partie *p,Entite *fantome,Pos current_pos,DirEntite direction ) {
+    // temps que pacmman est dans un mur faire demitour
+    // bug résultant
+    while (on_grid(p, current_pos.l, current_pos.c) == '*'){
+        switch (direction){
+            case DIR_HAUT:   current_pos.l++; break;
+            case DIR_BAS:    current_pos.l--; break;
+            case DIR_GAUCHE: current_pos.c++; break;
+            case DIR_DROITE: current_pos.c--; break;
+            default: break;
+        }
+    }
+    fantome->pos = (Posf){current_pos.l * CASE, current_pos.c * CASE};
+}
+
 int charger_sprites_fantomes() {
     for (int i = 0; i < SPRITE_FANTOME_COUNT; i++) {
         for (int j = 0; j < 4; j++) {
@@ -100,7 +117,6 @@ void bouger_fantomes(Partie *p, float dt) {
             timer_fantomes[i] -= dt;
             continue;
         }
-
         Entite *fantome = &p->fantomes[i];
         Pos current_pos = ecran_vers_grille(fantome->pos);
         Pos pos_init_f= ecran_vers_grille(fantome->pos_init);
@@ -120,10 +136,35 @@ void bouger_fantomes(Partie *p, float dt) {
         }
         else {
             // Ici on gère les différentes IA de chaque fantome car ils ont une case cible differente
-            //if (fantome->type==ENTITE_FANTOME_R){
-                fantome->pos_cible = p->pacman.pos;
-                find_path(p,current_pos,ecran_vers_grille(p->pacman.pos),fantome);
-            //}
+            fantome->pos_cible = ecran_vers_grille(p->pacman.pos);
+
+            //printf("type : %d\n , cible x: %d y: %d",fantome->type,fantome->pos_cible.c,fantome->pos_cible.l );
+
+            if (fantome->type==ENTITE_FANTOME_P){
+                for (int delta=3;delta!=-1;delta--){
+                    Pos prochaine_case = fantome->pos_cible;
+                    switch (p->pacman.etat.direction){
+                        case DIR_HAUT:   prochaine_case.l-=delta; break;
+                        case DIR_BAS:    prochaine_case.l+=delta; break;
+                        case DIR_GAUCHE: prochaine_case.c-=delta; break;
+                        case DIR_DROITE: prochaine_case.c+=delta; break;
+                    }
+                    char prochaine_case_type = on_grid(p,fantome->pos_cible.l,fantome->pos_cible.c);
+                    if (prochaine_case_type != '*' || prochaine_case_type != 'x') {
+                        break;
+                    }
+                    fantome->pos_cible = prochaine_case;
+                }
+                //printf("pos cible Frose x: %d y: %d \n",fantome->pos_cible.c,fantome->pos_cible.l);
+            }
+            else if (fantome->type==ENTITE_FANTOME_O){
+                if (distance_pac(p->pacman.pos,fantome->pos) < 64.f) {
+                    Pos liste_coin[4]={{1,1},{1,20},{26,1},{26,21}};
+                    // TODO: Déterminer le coin vers lequel le fantome doit aller
+                    fantome->pos_cible=liste_coin[0];
+                }
+            }
+            find_path(p,current_pos,fantome->pos_cible,fantome);
         }
 
         DirEntite direction = DIR_INCONNUE;
@@ -161,6 +202,10 @@ void bouger_fantomes(Partie *p, float dt) {
         if (fantome->animation_time >= 2) {
             fantome->animation_time = 0;
         }
+
+        if (on_grid(p, current_pos.l, current_pos.c) == '*') {
+            reculer_fantome(p,fantome, current_pos,direction);
+        }
     }
 }
 
@@ -196,13 +241,22 @@ void dessiner_fantomes(Partie *p) {
     }
 }
 
+
+
+float distance_pac(Posf A,Posf B){
+    return sqrt((A.c-B.c)*(A.c-B.c)+(A.l-B.l)*(A.l-B.l));
+
+}
+
+
 void fuite_fantome(Entite *fantome) {
     fantome->etat.fuite = TEMPS_FUITE;
+    fantome->vitesse=35;
 }
 
 void a_ete_mange(Entite *fantome) {
     fantome->etat.mange = 1;
-    fantome->vitesse = 35;
+    fantome->vitesse = 70;
 }
 
 void revivre(Entite *fantome) {

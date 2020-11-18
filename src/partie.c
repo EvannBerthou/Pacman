@@ -137,7 +137,7 @@ int charger_plan(char *chemin, Partie *p) {
 char on_grid(Partie *p, int l, int c) {
     if (l >= 0 && c >= 0 && l < p->L && c < p->C)
         return p->plateau[l][c];
-    return ' ';
+    return 'x';
 }
 
 int aligne_grille(Partie *p, Posf pos) {
@@ -183,7 +183,7 @@ void maj_etat(Partie *p){
                 p->pacman.pos = p->pacman.pos_init;
                 for (int b =0;b!=p->nbf;b++ ){
                     p->fantomes[b].pos=p->fantomes[b].pos_init;
-                    p->fantomes[b].pos_cible=(Posf){0,0};
+                    p->fantomes[b].pos_cible=(Pos){0,0};
                     reset_timer_fantomes();
                 }
             }
@@ -283,4 +283,5 @@ void dessiner_partie(Partie *p) {
 void vider_partie(Partie *p) {
     p->pacman_place = 0;
     p->nbf = 0;
+    p->nbbonus = 0;
 }

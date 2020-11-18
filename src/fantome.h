@@ -16,5 +16,6 @@ void dessiner_fantomes(Partie *p);
 void fuite_fantome(Entite *fantome);
 void a_ete_mange(Entite *fantome);
 void revivre(Entite *fantome);
+float distance_pac(Posf A,Posf B);
 
 #endif
