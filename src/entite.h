@@ -14,10 +14,10 @@ typedef struct posf {
 } Posf;
 
 typedef enum {
-    ENTITE_FANTOME_R,// fantome red
+    ENTITE_FANTOME_O,// fantome orange
     ENTITE_FANTOME_P,// fantome pink
     ENTITE_FANTOME_C,// fantome cyan
-    ENTITE_FANTOME_O,// fantome orange
+    ENTITE_FANTOME_R,// fantome red
     ENTITE_PACMAN,
 } TypeEntite;
 
@@ -53,7 +53,7 @@ typedef struct Noeud{
 typedef struct {
     Posf pos;
     Posf pos_init;
-    Posf pos_cible;
+    Pos pos_cible;
     TypeEntite type;
     Etat etat;
     Noeud* chemin_noeud[500];

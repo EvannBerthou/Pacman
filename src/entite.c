@@ -16,7 +16,7 @@ Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
     Entite result = {
         .pos = pos,
         .pos_init = pos_init,
-        .pos_cible=(Posf){0,0},
+        .pos_cible=(Pos){0,0},
         .type = type,
         .etat = etat,
         .animation_time = 0,
