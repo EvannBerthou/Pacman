@@ -6,9 +6,10 @@ static SDL_AudioSpec wav_spec; // Caractéristique du fichier audio
 static Sons playing;
 static Sons samples;
 
-#define SAMPLES_COUNT 1
+#define SAMPLES_COUNT 2
 const char *sons_chemin[SAMPLES_COUNT] = {
-    "music.wav"
+    "music.wav",
+    "pacman_chomp.wav"
 };
 
 // Permet d'avancer la lecture du fichier audio
@@ -17,15 +18,13 @@ static void retour_audio(void *userdata, Uint8 *stream, int len) {
     Sons *sons = (Sons*) userdata;
 
     for (int i = 0; i < sons->len; i++) {
-        printf("%d\n", i);
         Son *s = sons->data[i];
-        if (s->len == 0) {
+        if (s->curr == s->len) {
             continue;
         }
-        len = ( len > s->len ? s->len : len);
+        len = ( s->curr + len > s->len ? s->len - s->curr : len);
         SDL_MixAudio(stream, s->buff + s->curr, len, SDL_MIX_MAXVOLUME);
         s->curr += len;
-        s->len -= len;
     }
 }
 
@@ -42,7 +41,7 @@ void init_sons() {
     }
     samples.len = SAMPLES_COUNT;
     for (int i = 0; i < SAMPLES_COUNT; i++) {
-        if (SDL_LoadWAV("music.wav", &wav_spec, &samples.data[i]->buff, &samples.data[i]->len) != NULL ){
+        if (SDL_LoadWAV(sons_chemin[i], &wav_spec, &samples.data[i]->buff, &samples.data[i]->len) != NULL ){
             wav_spec.callback = retour_audio;
             wav_spec.userdata = &playing;
         }
