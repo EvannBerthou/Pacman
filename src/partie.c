@@ -136,7 +136,7 @@ int charger_plan(char *chemin, Partie *p) {
 char on_grid(Partie *p, int l, int c) {
     if (l >= 0 && c >= 0 && l < p->L && c < p->C)
         return p->plateau[l][c];
-    return ' ';
+    return 'x';
 }
 
 int aligne_grille(Partie *p, Posf pos) {
@@ -282,4 +282,5 @@ void dessiner_partie(Partie *p) {
 void vider_partie(Partie *p) {
     p->pacman_place = 0;
     p->nbf = 0;
+    p->nbbonus = 0;
 }

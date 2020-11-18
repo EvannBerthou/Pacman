@@ -73,6 +73,7 @@ static void reculer_fantome(Partie *p,Entite *fantome,Pos current_pos,DirEntite 
             case DIR_BAS:    current_pos.l--; break;
             case DIR_GAUCHE: current_pos.c++; break;
             case DIR_DROITE: current_pos.c--; break;
+            default: break;
         }
     }
     fantome->pos = (Posf){current_pos.l * CASE, current_pos.c * CASE};
@@ -141,31 +142,29 @@ void bouger_fantomes(Partie *p, float dt) {
 
             if (fantome->type==ENTITE_FANTOME_P){
                 for (int delta=3;delta!=-1;delta--){
+                    Pos prochaine_case = fantome->pos_cible;
                     switch (p->pacman.etat.direction){
-                        case DIR_HAUT:   fantome->pos_cible.l-=delta; break;
-                        case DIR_BAS:    fantome->pos_cible.l+=delta; break;
-                        case DIR_GAUCHE: fantome->pos_cible.c-=delta; break;
-                        case DIR_DROITE: fantome->pos_cible.c+=delta; break;
+                        case DIR_HAUT:   prochaine_case.l-=delta; break;
+                        case DIR_BAS:    prochaine_case.l+=delta; break;
+                        case DIR_GAUCHE: prochaine_case.c-=delta; break;
+                        case DIR_DROITE: prochaine_case.c+=delta; break;
                     }
-                    if (on_grid(p,fantome->pos_cible.l,fantome->pos_cible.c)!='*'){
+                    char prochaine_case_type = on_grid(p,fantome->pos_cible.l,fantome->pos_cible.c);
+                    if (prochaine_case_type != '*' || prochaine_case_type != 'x') {
                         break;
                     }
+                    fantome->pos_cible = prochaine_case;
                 }
                 //printf("pos cible Frose x: %d y: %d \n",fantome->pos_cible.c,fantome->pos_cible.l);
             }
             else if (fantome->type==ENTITE_FANTOME_O){
-                if (distance_pac(p->pacman.pos,fantome->pos)<6.0){
+                if (distance_pac(p->pacman.pos,fantome->pos) < 64.f) {
                     Pos liste_coin[4]={{1,1},{1,20},{26,1},{26,21}};
-                    for (int i=0;i!=4;i++){
-                        if (distance_pac((Posf){liste_coin[i].l,liste_coin[i].c},p->pacman.pos)>6.0){
-                            fantome->pos_cible=liste_coin[i];
-                            break;
-                        }
-                    }
+                    // TODO: Déterminer le coin vers lequel le fantome doit aller
+                    fantome->pos_cible=liste_coin[0];
                 }
-                //printf("pos cible Forange x: %d y: %d \n",fantome->pos_cible.c,fantome->pos_cible.l);
             }
-            find_path(p,current_pos,fantome->pos_cible,fantome);   
+            find_path(p,current_pos,fantome->pos_cible,fantome);
         }
 
         DirEntite direction = DIR_INCONNUE;
