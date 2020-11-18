@@ -57,7 +57,7 @@ void activer_bouton(Partie *p, Timer *t) {
         changer_scene(SCENE_NIVEAU);
         // Arrete la musique de l'accueil
         stop_son(0);
-        printf("%d\n", charger_fichier_audio(1));
+        charger_fichier_audio(1);
         free(chemin);
         break;
     }
