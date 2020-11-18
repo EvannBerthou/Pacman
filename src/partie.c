@@ -182,7 +182,7 @@ void maj_etat(Partie *p){
                 p->pacman.pos = p->pacman.pos_init;
                 for (int b =0;b!=p->nbf;b++ ){
                     p->fantomes[b].pos=p->fantomes[b].pos_init;
-                    p->fantomes[b].pos_cible=(Posf){0,0};
+                    p->fantomes[b].pos_cible=(Pos){0,0};
                     reset_timer_fantomes();
                 }
             }

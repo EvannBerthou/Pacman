@@ -53,7 +53,7 @@ typedef struct Noeud{
 typedef struct {
     Posf pos;
     Posf pos_init;
-    Posf pos_cible;
+    Pos pos_cible;
     TypeEntite type;
     Etat etat;
     Noeud* chemin_noeud[500];
