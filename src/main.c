@@ -36,15 +36,10 @@ int main(int argc, char **argv) {
         SDL_JoystickEventState(SDL_ENABLE);
     }
 
-
-    if (charger_fichier_audio("music.wav") != NULL) {
-        jouer_fichier_audio();
-    }
+    init_sons();
+    charger_fichier_audio(0);
     attente(1000);
-
-    if (charger_fichier_audio("music.wav") != NULL) {
-        jouer_fichier_audio();
-    }
+    charger_fichier_audio(0);
 
     // Création des boutons
     if (charger_sprites() == -1)

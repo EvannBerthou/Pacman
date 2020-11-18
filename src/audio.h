@@ -9,7 +9,12 @@ typedef struct {
     Uint32 curr;
 } Son;
 
-Son *charger_fichier_audio(const char *fichier);
-int jouer_fichier_audio();
+typedef struct {
+    Son **data;
+    int len;
+} Sons;
+
+void init_sons();
+void charger_fichier_audio(int id);
 
 #endif
