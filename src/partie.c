@@ -277,7 +277,6 @@ void dessiner_partie(Partie *p) {
     dessiner_pacman(p);
     dessiner_fantomes(p);
     dessiner_texte(p);
-    actualiser();
 }
 
 void vider_partie(Partie *p) {
