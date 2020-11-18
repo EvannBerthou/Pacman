@@ -10,6 +10,7 @@
 #include "leaderboard.h"
 #include "editeur.h"
 #include "partie.h"
+#include "audio.h"
 
 #define NOMBRE_BOUTONS 4
 static BoutonAccueil boutons[NOMBRE_BOUTONS];
@@ -55,8 +56,8 @@ void activer_bouton(Partie *p, Timer *t) {
         }
         changer_scene(SCENE_NIVEAU);
         // Arrete la musique de l'accueil
-        if (SDL_GetAudioStatus() == SDL_AUDIO_PLAYING)
-            SDL_PauseAudio(1);
+        stop_son(0);
+        printf("%d\n", charger_fichier_audio(1));
         free(chemin);
         break;
     }

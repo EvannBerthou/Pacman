@@ -37,9 +37,7 @@ int main(int argc, char **argv) {
     }
 
     init_sons();
-    //charger_fichier_audio(0);
-    attente(1000);
-    charger_fichier_audio(1);
+    charger_fichier_audio(0);
 
     // Création des boutons
     if (charger_sprites() == -1)

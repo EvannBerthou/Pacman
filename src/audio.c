@@ -22,15 +22,18 @@ static void retour_audio(void *userdata, Uint8 *stream, int len) {
 
     for (int i = 0; i < sons->len; i++) {
         Son *s = sons->data[i];
-        if (s->playing && s->curr == s->len) {
-            if (s->loop == 1) {
+        if (!s->playing) continue;
+        if (s->curr >= s->len) {
+            if (s->loop) {
                 s->curr = 0;
             }
             else {
                 s->playing = 0;
+                continue;
             }
         }
         len = ( s->curr + len > s->len ? s->len - s->curr : len);
+        //len = len > s->len ? s->len : len;
         SDL_MixAudio(stream, s->buff + s->curr, len, SDL_MIX_MAXVOLUME);
         s->curr += len;
     }
@@ -68,8 +71,22 @@ void init_sons() {
     SDL_PauseAudio(0);
 }
 
-void charger_fichier_audio(int id) {
+int charger_fichier_audio(int id) {
     memcpy(playing.data[playing.len], samples.data[id], sizeof(Son));
     playing.data[playing.len]->playing = 1;
     playing.len++;
+    return playing.len - 1;
+}
+
+void pause_son(int index, int pause) {
+    playing.data[index]->playing = pause;
+}
+
+int is_playing(int index) {
+    return playing.data[index]->playing;
+}
+
+void stop_son(int index) {
+    playing.data[index]->playing = 0;
+    playing.data[index]->curr = 0;
 }
