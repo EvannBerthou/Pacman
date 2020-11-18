@@ -11,6 +11,7 @@
 #include "main.h"
 #include "entrer.h"
 #include "affichage.h"
+#include "accueil.h"
 
 
 /******************************************************************************/
