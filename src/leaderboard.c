@@ -1,11 +1,15 @@
-#ifndef __WIN32
+#ifdef __WIN32
+#include <winsock.h>
+#else
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
 
 #include "main.h"
 #include "leaderboard.h"
@@ -49,6 +53,62 @@ int status(char *reponse) {
     return res;
 }
 
+#ifdef __WIN32
+char *envoyer_requete(const char *host, int port, const char *req) {
+    WSADATA WSAData;
+    WSAStartup(MAKEWORD(2,0), &WSAData);
+
+    SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    struct hostent *server = gethostbyname(host);
+
+    SOCKADDR_IN sin;
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons(port);
+    memcpy(&sin.sin_addr.s_addr, server->h_addr, server->h_length);
+
+    // Connection au serveur
+    int res;
+    ERR(connect(sockfd,(SOCKADDR *)&sin, sizeof(sin)), "Erreur lors de la connection", &res);
+
+    // Envoie de la requete tout en gérant les éventuelles paquets perdus
+    int total = strlen(req);
+    int envoye = 0;
+    do {
+        int bytes;
+        ERR(send(sockfd, req + envoye, total - envoye, 0), "Erreur lors de l'envoie", &bytes);
+        if (bytes == 0) break; // Connection au serveur perdue
+        envoye+=bytes;
+    } while (envoye < total);
+
+    // Réponse du serveur
+    total = 4096;
+    char *reponse = calloc(total, sizeof(char)); // Memory leak, reponse n'est pas free en cas d'erreur dans recv
+    int recu = 0;
+    do {
+        int bytes;
+        ERR(recv(sockfd, reponse + recu, total - recu, 0), "Erreur lors de la lecture", &bytes);
+        if (bytes == 0) break; // Connection au serveur perdue
+        recu += bytes;
+    } while (recu < total);
+
+    // Fermeture du socket
+    closesocket(sockfd);
+
+#ifdef DEBUG
+    printf("Envoyé : %s\nReçu : %s\n", req, reponse);
+#endif
+
+    if (status(reponse) != 200) {
+        free(reponse);
+        return NULL;
+    }
+
+    WSACleanup();
+
+    return reponse;
+
+}
+#else
 // Envoie une requete à un serveur et renvoie la réponse du serveur
 char *envoyer_requete(const char *host, int port, const char *req) {
     #ifdef __WIN32
@@ -108,6 +168,7 @@ char *envoyer_requete(const char *host, int port, const char *req) {
 
     return reponse;
 }
+#endif
 
 Point centrer_texte(char *texte, Point centre, int taille) {
     Point t = taille_texte(texte, taille);
@@ -269,14 +330,3 @@ void afficher_nom(char *nom, int index) {
     }
     actualiser();
 }
-#else 
-#include "partie.h"
-void envoyer_score(Partie *p) {
-    return;
-}
-
-void afficher_leaderboard() {
-    return;
-}
-
-#endif

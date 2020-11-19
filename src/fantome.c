@@ -121,7 +121,6 @@ void bouger_fantomes(Partie *p, float dt) {
         Pos current_pos = ecran_vers_grille(fantome->pos);
         Pos pos_init_f= ecran_vers_grille(fantome->pos_init);
         // Si le fantome est rentré à la base
-        // TODO: Détecte que le fantome est à la base
         if (current_pos.l == pos_init_f.l && current_pos.c == pos_init_f.c
                 && (fantome->etat.mange || fantome->etat.fuite > 0)){
             revivre(fantome);
