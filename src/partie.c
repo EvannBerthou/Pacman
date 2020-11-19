@@ -196,8 +196,11 @@ void maj_etat(Partie *p){
 
 void actualiser_partie(Partie *p, Timer *timer) {
     int touche = nouvelle_touche();
+    toggle_volume(touche);
     if (touche == SDLK_q) {
+        stop_son(p->son_pacman);
         changer_scene(SCENE_ACCUEIL);
+        return;
     }
 
     bouger_pacman(p, timer->dt, touche);
@@ -269,6 +272,12 @@ void dessiner_texte(Partie *p) {
     char vies[2];
     sprintf(vies, "%d", p->pacman.etat.nb_vie); // Converties les vies de pacman de int à string
     afficher_texte(vies, 26, point_affichage, blanc);
+
+    // Son
+    // Titre vies
+    point_affichage.y += (26 + padding) * 2; // Grand espace entre les deux sections
+    char *texte = volume() == 0 ? "Son coupé" : "Son actif";
+    afficher_texte(texte, 26, point_affichage, blanc);
 }
 
 void dessiner_partie(Partie *p) {
@@ -285,7 +294,7 @@ void vider_partie(Partie *p) {
 }
 
 void terminer_partie(Partie *p) {
-    stop_son(1);
+    stop_son(p->son_pacman);
     envoyer_score(p);
     changer_scene(SCENE_ACCUEIL);
 }

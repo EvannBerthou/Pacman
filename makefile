@@ -7,8 +7,8 @@ OBJ = $(subst $(SRCDIR),$(OBJDIR),$(SOURCES:.c=.o))
 OUTPUT = resultat
 LIB = -lm -lSDL -lSDL_ttf
 OPT = -Wall 
-#SDL_CFLAGS = $(shell sdl-config --cflags)
-#SDL_LDFLAGS = $(shell sdl-config --libs)
+SDL_CFLAGS = $(shell sdl-config --cflags)
+SDL_LDFLAGS = $(shell sdl-config --libs)
 VERBOSE = TRUE
 
 all: release

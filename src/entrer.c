@@ -1,5 +1,6 @@
 #include "../lib/libgraphique.h"
 #include "entrer.h"
+#include "audio.h"
 
 extern SDL_Joystick *manette;
 
@@ -25,13 +26,15 @@ int nouvelle_touche() {
     static int derniers_boutons[NOMBRE_BOUTON] = {0,0,0,0};
     static int derniere_touche = 0;
 
-    int touches[] = {SDLK_DOWN, SDLK_UP, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_q, SDLK_b, SDLK_a};
+    #define NOMBRE_DIRECTIONS 4
+    #define NOMBRE_TOUCHES 5
+    int touches[] = {SDLK_DOWN, SDLK_UP, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_q, SDLK_b, SDLK_a, SDLK_m};
     int croix[] = {SDL_HAT_DOWN, SDL_HAT_UP, SDL_HAT_LEFT, SDL_HAT_RIGHT};
 
     Uint8 croix_presse = croix_manette();
 
     // Vérifie les directions
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < NOMBRE_DIRECTIONS; i++) {
         if (touche_a_ete_pressee(touches[i]) || croix_presse & croix[i]) {
             if ((derniere_croix & croix[i]) > 0) {
                 continue;
@@ -43,7 +46,7 @@ int nouvelle_touche() {
     }
     derniere_croix = croix_presse;
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < NOMBRE_TOUCHES; i++) {
         if (touche_a_ete_pressee(touches[4 + i])) {
             if (touches[4 + i] == derniere_touche) {
                 continue;
@@ -107,6 +110,7 @@ void attendre_sortie() {
     while (touche != SDLK_q) {
         traiter_evenements();
         touche = nouvelle_touche();
+        toggle_volume(touche);
         reinitialiser_evenements();
     }
 }

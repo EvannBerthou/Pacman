@@ -30,6 +30,7 @@ void charger_boutons() {
 
 void actualiser_accueil(Partie *p, Timer *t) {
     int touche = nouvelle_touche();
+    toggle_volume(touche);
     if (touche == SDLK_DOWN) {
         bouton_selectionne = (bouton_selectionne + 1) % NOMBRE_BOUTONS;
     }
@@ -62,7 +63,8 @@ void activer_bouton(Partie *p, Timer *t) {
         changer_scene(SCENE_NIVEAU);
         // Arrete la musique de l'accueil
         stop_son(0);
-        charger_fichier_audio(1);
+        p->son_pacman = charger_fichier_audio(1);
+        printf("p : %d\n", p->son_pacman);
         free(chemin);
         break;
     }
@@ -207,6 +209,7 @@ char* selectionner_niveau() {
     while (1) {
         traiter_evenements();
         int touche = nouvelle_touche();
+        toggle_volume(touche);
         if (touche == SDLK_DOWN) {
             curseur = (curseur + 1) % nb;
         }
