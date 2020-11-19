@@ -17,7 +17,11 @@
 SCENE scene_active = SCENE_ACCUEIL;
 SDL_Joystick *manette = NULL;
 
+#ifdef __WIN32
+int WinMain(int argc, char **argv) {
+#else
 int main(int argc, char **argv) {
+#endif
     ouvrir_fenetre(ECRAN_W, ECRAN_H);
     SDL_EnableKeyRepeat(0,0);
 

@@ -1,4 +1,6 @@
+#ifndef __WIN32
 #include <dirent.h>
+#endif
 #include "../lib/libgraphique.h"
 #include "main.h"
 #include "accueil.h"
@@ -140,6 +142,8 @@ int charger_niveau(Partie *p, char *chemin) {
 }
 
 char* selectionner_niveau() {
+#ifndef __WIN32
+
     // Chargement des fichiers
     char *niveaux[100]; // TODO: Probleme de taille fixe
     int nb = 0; // nombre de niveaux dans la liste
@@ -192,6 +196,7 @@ char* selectionner_niveau() {
         actualiser();
         reinitialiser_evenements();
     }
+#endif
 }
 
 void afficher_liste_niveaux(char **liste, int n, int curseur) {

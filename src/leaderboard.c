@@ -1,3 +1,4 @@
+#ifndef __WIN32
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,6 +51,9 @@ int status(char *reponse) {
 
 // Envoie une requete à un serveur et renvoie la réponse du serveur
 char *envoyer_requete(const char *host, int port, const char *req) {
+    #ifdef __WIN32
+    return NULL;
+    #endif
 
     // Création du socket
     int sockfd;
@@ -265,3 +269,14 @@ void afficher_nom(char *nom, int index) {
     }
     actualiser();
 }
+#else 
+#include "partie.h"
+void envoyer_score(Partie *p) {
+    return;
+}
+
+void afficher_leaderboard() {
+    return;
+}
+
+#endif
