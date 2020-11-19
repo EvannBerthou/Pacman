@@ -196,8 +196,11 @@ void maj_etat(Partie *p){
 
 void actualiser_partie(Partie *p, Timer *timer) {
     int touche = nouvelle_touche();
+    toggle_volume(touche);
     if (touche == SDLK_q) {
+        stop_son(p->son_pacman);
         changer_scene(SCENE_ACCUEIL);
+        return;
     }
 
     bouger_pacman(p, timer->dt, touche);
@@ -285,7 +288,7 @@ void vider_partie(Partie *p) {
 }
 
 void terminer_partie(Partie *p) {
-    stop_son(1);
+    stop_son(p->son_pacman);
     envoyer_score(p);
     changer_scene(SCENE_ACCUEIL);
 }

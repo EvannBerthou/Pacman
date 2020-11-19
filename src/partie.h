@@ -19,6 +19,7 @@ typedef struct partie {
     int     C; // le nb de colonne du plateau de jeu
     int pacman_place;
     Entite  pacman; // l'entité pacman
+    int son_pacman;
     int nbf;
     Entite  fantomes[4]; // Liste des entités fantomes
     int     nbbonus; // le nombre de bonus restants à manger

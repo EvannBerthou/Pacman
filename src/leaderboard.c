@@ -21,6 +21,7 @@ https://gist.github.com/FedericoPonzi/2a37799b6c601cce6c1b
 #include "leaderboard.h"
 #include "entrer.h"
 #include "affichage.h"
+#include "audio.h"
 
 /*
 Ces macros servent a quitter la fonction envoyer_requete en cas d'erreur dans la requête
@@ -228,6 +229,7 @@ char * entrer_nom() {
     while (touche != SDLK_RETURN) {
         traiter_evenements();
         touche = nouvelle_touche();
+        toggle_volume(touche);
         if (touche == SDLK_RIGHT)
             index = (index + 1) % 5;
         else if (touche == SDLK_LEFT) {
