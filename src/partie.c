@@ -12,6 +12,7 @@
 #include "entrer.h"
 #include "affichage.h"
 #include "accueil.h"
+#include "audio.h"
 
 
 /******************************************************************************/
@@ -175,8 +176,7 @@ void maj_etat(Partie *p){
             if (!(p->fantomes[i].etat.fuite)){
                 p->pacman.etat.nb_vie-=1;
                 if (p->pacman.etat.nb_vie == 0) {
-                    envoyer_score(p);
-                    changer_scene(SCENE_ACCUEIL);
+                    terminer_partie(p);
                     return;
                 }
 
@@ -205,8 +205,7 @@ void actualiser_partie(Partie *p, Timer *timer) {
     maj_etat(p);
 
     if (p->nbbonus == 0) {
-        envoyer_score(p);
-        changer_scene(SCENE_ACCUEIL);
+        terminer_partie(p);
     }
 }
 
@@ -283,4 +282,10 @@ void vider_partie(Partie *p) {
     p->pacman_place = 0;
     p->nbf = 0;
     p->nbbonus = 0;
+}
+
+void terminer_partie(Partie *p) {
+    stop_son(1);
+    envoyer_score(p);
+    changer_scene(SCENE_ACCUEIL);
 }

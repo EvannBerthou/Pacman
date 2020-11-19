@@ -4,7 +4,7 @@ https://gist.github.com/FedericoPonzi/2a37799b6c601cce6c1b
 */
 
 #ifdef __WIN32
-#include <winsock.h>
+#include <winsock2.h>
 #else
 #define closesocket close
 #include <sys/socket.h>

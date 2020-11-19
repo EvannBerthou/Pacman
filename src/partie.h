@@ -39,5 +39,6 @@ void dessiner_grille(Partie *p, int dans_editeur);
 void dessiner_texte(Partie *p);
 void dessiner_partie(Partie *p);
 void vider_partie(Partie *p);
+void terminer_partie(Partie *p);
 
 #endif

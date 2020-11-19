@@ -32,4 +32,4 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/%.h
 
 windows: $(wildcard src/*.c) $(wildcard src/*.h) 
 	gcc -c -L ./lib -I ./include $(LIBGRDIR)/libgraphique.c -o $(LIBGRDIR)/libgraphique.o 
-	gcc -L ./lib -I ./include $^ $(LIBGRDIR)/libgraphique.o -o w.exe -lmingw32 $(LIB)
+	gcc -L ./lib -I ./include $^ $(LIBGRDIR)/libgraphique.o -o w.exe -lmingw32 -lws2_32 $(LIB)
