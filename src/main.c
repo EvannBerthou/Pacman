@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
 
     charger_boutons();
     Timer timer = nouveau_timer();
-    Partie p;
+    Partie p = {0};
     // Boucle principale
     // On peut faire une boucle infinie car lorsque le signal d'arrêt est envoyé, la libgraphique
     // termine directement le programme, toute la mémoire alloué est directement libérée par le système

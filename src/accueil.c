@@ -64,7 +64,6 @@ void activer_bouton(Partie *p, Timer *t) {
         // Arrete la musique de l'accueil
         stop_son(0);
         p->son_pacman = charger_fichier_audio(1);
-        printf("p : %d\n", p->son_pacman);
         free(chemin);
         break;
     }
@@ -117,35 +116,6 @@ void manger_bouton() {
     }
 }
 
-int charger_niveau(Partie *p, char *chemin) {
-    /* Chargement du plan à partir du fichier fourni en paramètre                 */
-    printf("Chargement du plan...\n");
-    char chemin_complet[100];
-    sprintf(chemin_complet, "data/maps/%s", chemin);
-    vider_partie(p);
-    int err = charger_plan(chemin_complet, p);
-    if (err == -1) {
-        charger_accueil();
-        return 1;
-    }
-    else {
-        calculer_voisins(p);
-        reset_timer_fantomes();
-    }
-
-#ifdef DEBUG
-    /* Affichage du plan lu                                                       */
-    int i, j;
-    printf("Affichage du plan...\n");
-    for (i = 0; i != p->L; i++) {
-        for (j = 0; j != p->C; j++)
-            printf("%c", p->plateau[i][j]);
-        printf("\n");
-    }
-    printf("Bonbons et bonus : %d\n", p->nbbonus);
-#endif
-    return 0;
-}
 
 #ifndef __WIN32
 // VERSION LINUX
