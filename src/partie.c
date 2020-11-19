@@ -134,6 +134,38 @@ int charger_plan(char *chemin, Partie *p) {
     return 0;
 }
 
+int charger_niveau(Partie *p, char *chemin) {
+    /* Chargement du plan à partir du fichier fourni en paramètre                 */
+    printf("Chargement du plan...\n");
+    char chemin_complet[100];
+    sprintf(chemin_complet, "data/maps/%s", chemin);
+    vider_partie(p);
+    int err = charger_plan(chemin_complet, p);
+    if (err == -1) {
+        charger_accueil();
+        return 1;
+    }
+    else {
+        calculer_voisins(p);
+        reset_timer_fantomes();
+        if (p->nom_fichier == NULL) {
+            p->nom_fichier = strdup(chemin);
+        }
+    }
+
+#ifdef DEBUG
+    /* Affichage du plan lu                                                       */
+    int i, j;
+    printf("Affichage du plan...\n");
+    for (i = 0; i != p->L; i++) {
+        for (j = 0; j != p->C; j++)
+            printf("%c", p->plateau[i][j]);
+        printf("\n");
+    }
+    printf("Bonbons et bonus : %d\n", p->nbbonus);
+#endif
+    return 0;
+}
 
 char on_grid(Partie *p, int l, int c) {
     if (l >= 0 && c >= 0 && l < p->L && c < p->C)
@@ -208,7 +240,7 @@ void actualiser_partie(Partie *p, Timer *timer) {
     maj_etat(p);
 
     if (p->nbbonus == 0) {
-        terminer_partie(p);
+        relancer_niveau(p);
     }
 }
 
@@ -291,10 +323,27 @@ void vider_partie(Partie *p) {
     p->pacman_place = 0;
     p->nbf = 0;
     p->nbbonus = 0;
+    p->niveau = 0;
 }
 
 void terminer_partie(Partie *p) {
     stop_son(p->son_pacman);
     envoyer_score(p);
     changer_scene(SCENE_ACCUEIL);
+    free(p->nom_fichier);
+    p->nom_fichier = NULL;
+}
+
+void relancer_niveau(Partie *p) {
+    int ancien_niveau = p->niveau;
+    int ancien_score = p->pacman.etat.score;
+    int ancien_vie = p->pacman.etat.nb_vie;
+
+    vider_partie(p);
+    charger_niveau(p, p->nom_fichier);
+
+    p->niveau = ancien_niveau + 1;
+    p->pacman.etat.score = ancien_score;
+    p->pacman.etat.nb_vie = ancien_vie;
+    calculer_vitesse_niveau(p);
 }

@@ -3,7 +3,7 @@
 
 #include <SDL/SDL.h>
 
-/* Structure Pos: permet de stocker un couple ligne/colonne                   */
+/* Structure Pos: permet de stocker un couple ligne/colonne */
 typedef struct pos {
     int     l;
     int     c;
@@ -14,10 +14,10 @@ typedef struct posf {
 } Posf;
 
 typedef enum {
+    ENTITE_FANTOME_R,// fantome red
     ENTITE_FANTOME_O,// fantome orange
     ENTITE_FANTOME_P,// fantome pink
     ENTITE_FANTOME_C,// fantome cyan
-    ENTITE_FANTOME_R,// fantome red
     ENTITE_PACMAN,
 } TypeEntite;
 
@@ -43,24 +43,23 @@ typedef struct {
 
 
 typedef struct Noeud{
-    Pos pos;
-    int cout_g, cout_h, cout_t ;
-    struct Noeud * parent;
+    Pos pos; //position du noeud
+    struct Noeud * parent; // filiation des noeud 
 } Noeud;
 
 
 
 typedef struct {
-    Posf pos;
-    Posf pos_init;
-    Pos pos_cible;
-    TypeEntite type;
-    Etat etat;
-    Noeud* chemin_noeud[500];
-    int nombre_noeud;
-    int nombre_frames;
-    float vitesse;
-    float animation_time;
+    Posf pos; // position en float 
+    Posf pos_init; // position initial en float 
+    Pos pos_cible; // position de la cible du fantome sur le plateau 
+    TypeEntite type; // type de l'entite
+    Etat etat; // etat de l'entite 
+    Noeud* chemin_noeud[500]; // chemin ver cible 
+    int nombre_noeud; //nombre noeud dans chemin
+    int nombre_frames; // nombre frame 
+    float vitesse; //vitesse de l'entite 
+    float animation_time; //temps d'animatin
 } Entite;
 
 

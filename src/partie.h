@@ -23,13 +23,15 @@ typedef struct partie {
     int nbf;
     Entite  fantomes[4]; // Liste des entités fantomes
     int     nbbonus; // le nombre de bonus restants à manger
-    // ...et vous pouvez ajouter tout ce dont vous avez besoin
+    int niveau;
+    char *nom_fichier;
 } Partie;
 
 // PROTOTYPES
 /* charge_plan : lit un fichier contenant un plateau de jeu et le charge
                     en mémoire, dans le champ 'plateau' d'une Partie */
 int charger_plan(char *chemin, Partie *p);
+int charger_niveau(Partie *p, char *chemin);
 int charger_sprites();
 char on_grid(Partie *p, int l, int c);
 int aligne_grille(Partie *p, Posf pos);
@@ -41,5 +43,6 @@ void dessiner_texte(Partie *p);
 void dessiner_partie(Partie *p);
 void vider_partie(Partie *p);
 void terminer_partie(Partie *p);
+void relancer_niveau(Partie *p);
 
 #endif
