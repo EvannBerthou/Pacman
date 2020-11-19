@@ -443,7 +443,7 @@ void afficher_texte(char *texte, int taille, Point coin, Couleur couleur)
         SDL_Color coul_police ;
         SDL_GetRGB(couleur,ecran->format,&(coul_police.r),&(coul_police.g),&(coul_police.b));
 
-        SDL_Surface *surftexte= TTF_RenderText_Blended(__police, texte, coul_police);
+        SDL_Surface *surftexte= TTF_RenderUTF8_Blended(__police, texte, coul_police);
         SDL_Rect position;
         position.x = coin.x;
         position.y=  coin.y;
@@ -456,7 +456,7 @@ void afficher_texte(char *texte, int taille, Point coin, Couleur couleur)
 Point taille_texte(char *texte, int taille)
 {   Point p = {-10, -10};
     afficher_texte("", taille, p, noir) ; //pour fixer __police
-    TTF_SizeText(__police, texte, &p.x, &p.y);
+    TTF_SizeUTF8(__police, texte, &p.x, &p.y);
     return p;
 }
 
