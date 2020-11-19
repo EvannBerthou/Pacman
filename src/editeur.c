@@ -151,8 +151,7 @@ void lancer_editeur(char *chemin) {
     Partie p = charger_editeur(chemin_fichier);
     calculer_voisins(&p);
 
-    int en_cours = 1;
-    while (en_cours) {
+    while (1) {
         traiter_evenements();
 
         Point souris = deplacement_souris_a_eu_lieu();
@@ -179,8 +178,10 @@ void lancer_editeur(char *chemin) {
 
         else if (touche_a_ete_pressee(SDLK_s))
             sauvegarder_niveau(&p);
-        else if (touche_a_ete_pressee(SDLK_q))
-            en_cours = 0;
+        else if (touche_a_ete_pressee(SDLK_q)) {
+            changer_scene(SCENE_ACCUEIL);
+            return;
+        }
 
         dessiner_grille(&p, 1);
         entourner_case(souris); // Permet de montrer quelle case est survolée

@@ -72,6 +72,7 @@ void activer_bouton(Partie *p, Timer *t) {
         if (chemin == NULL) {
             break;
         }
+        stop_son(0);
         lancer_editeur(chemin);
         free(chemin);
         break;
@@ -248,5 +249,6 @@ void afficher_liste_niveaux(char **liste, int n, int curseur) {
 }
 
 void charger_accueil() {
-     bouton_selectionne = 0;
+    bouton_selectionne = 0;
+    pause_son(0, 1);
 }
