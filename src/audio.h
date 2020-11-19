@@ -23,5 +23,6 @@ void pause_son(int index, int pause);
 int is_playing(int index);
 void stop_son(int index);
 void toggle_volume(int touche);
+int volume();
 
 #endif

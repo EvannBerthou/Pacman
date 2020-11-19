@@ -272,6 +272,12 @@ void dessiner_texte(Partie *p) {
     char vies[2];
     sprintf(vies, "%d", p->pacman.etat.nb_vie); // Converties les vies de pacman de int à string
     afficher_texte(vies, 26, point_affichage, blanc);
+
+    // Son
+    // Titre vies
+    point_affichage.y += (26 + padding) * 2; // Grand espace entre les deux sections
+    char *texte = volume() == 0 ? "Son coupé" : "Son actif";
+    afficher_texte(texte, 26, point_affichage, blanc);
 }
 
 void dessiner_partie(Partie *p) {

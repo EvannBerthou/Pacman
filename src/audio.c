@@ -13,7 +13,7 @@ static void *merr(void *p) {
 static SDL_AudioSpec wav_spec; // Caractéristique du fichier audio
 static Sons playing = {.data = NULL, .len = 0, .max_size = 10};
 static Sons samples;
-static int volume = SDL_MIX_MAXVOLUME;
+static int _volume = SDL_MIX_MAXVOLUME;
 
 #define SAMPLES_COUNT 2
 const char *sons_chemin[SAMPLES_COUNT] = {
@@ -45,7 +45,7 @@ static void retour_audio(void *userdata, Uint8 *stream, int len) {
         }
         len = ( s->curr + len > s->len ? s->len - s->curr : len);
         //len = len > s->len ? s->len : len;
-        SDL_MixAudio(stream, s->buff + s->curr, len, volume);
+        SDL_MixAudio(stream, s->buff + s->curr, len, _volume);
         s->curr += len;
     }
 }
@@ -111,6 +111,10 @@ void stop_son(int index) {
 
 void toggle_volume(int touche) {
     if (touche == SDLK_f) {
-        volume = (volume == 0) ? SDL_MIX_MAXVOLUME : 0; // Echange le volume entre volume max et coupé
+        _volume = (_volume == 0) ? SDL_MIX_MAXVOLUME : 0; // Echange le volume entre volume max et coupé
     }
+}
+
+int volume() {
+    return _volume;
 }
