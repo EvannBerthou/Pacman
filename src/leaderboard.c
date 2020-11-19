@@ -1,6 +1,12 @@
+/*
+Code de socket inspiré de ce gist pour plus de portabilité
+https://gist.github.com/FedericoPonzi/2a37799b6c601cce6c1b
+*/
+
 #ifdef __WIN32
 #include <winsock.h>
 #else
+#define closesocket close
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -27,6 +33,7 @@ pour la vérification de chaque erreur dans la fonction
   if (retval < 0) { \
     fprintf(stderr, msg); \
     close(sockfd); \
+    CleanSocket(); \
     return NULL /* or throw or whatever */; \
   } \
   if (r != NULL) { \
@@ -39,11 +46,17 @@ pour la vérification de chaque erreur dans la fonction
   if (retval == NULL) { \
     fprintf(stderr, msg); \
     close(sockfd); \
+    CleanSocket(); \
     return NULL /* or throw or whatever */; \
   } \
   (*r) = retval; \
 } while (0)
 
+static void CleanSocket() {
+#ifdef __WIN32
+    WSACleanup();
+#endif
+}
 
 // Extrait le code de statut de la réponse (code 200 = ok)
 int status(char *reponse) {
@@ -52,68 +65,15 @@ int status(char *reponse) {
     sscanf(statut, "%d", &res);
     return res;
 }
-
-#ifdef __WIN32
-char *envoyer_requete(const char *host, int port, const char *req) {
-    WSADATA WSAData;
-    WSAStartup(MAKEWORD(2,0), &WSAData);
-
-    SOCKET sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    struct hostent *server = gethostbyname(host);
-
-    SOCKADDR_IN sin;
-    sin.sin_family = AF_INET;
-    sin.sin_port = htons(port);
-    memcpy(&sin.sin_addr.s_addr, server->h_addr, server->h_length);
-
-    // Connection au serveur
-    int res;
-    ERR(connect(sockfd,(SOCKADDR *)&sin, sizeof(sin)), "Erreur lors de la connection", &res);
-
-    // Envoie de la requete tout en gérant les éventuelles paquets perdus
-    int total = strlen(req);
-    int envoye = 0;
-    do {
-        int bytes;
-        ERR(send(sockfd, req + envoye, total - envoye, 0), "Erreur lors de l'envoie", &bytes);
-        if (bytes == 0) break; // Connection au serveur perdue
-        envoye+=bytes;
-    } while (envoye < total);
-
-    // Réponse du serveur
-    total = 4096;
-    char *reponse = calloc(total, sizeof(char)); // Memory leak, reponse n'est pas free en cas d'erreur dans recv
-    int recu = 0;
-    do {
-        int bytes;
-        ERR(recv(sockfd, reponse + recu, total - recu, 0), "Erreur lors de la lecture", &bytes);
-        if (bytes == 0) break; // Connection au serveur perdue
-        recu += bytes;
-    } while (recu < total);
-
-    // Fermeture du socket
-    closesocket(sockfd);
-
-#ifdef DEBUG
-    printf("Envoyé : %s\nReçu : %s\n", req, reponse);
-#endif
-
-    if (status(reponse) != 200) {
-        free(reponse);
-        return NULL;
-    }
-
-    WSACleanup();
-
-    return reponse;
-
-}
-#else
 // Envoie une requete à un serveur et renvoie la réponse du serveur
 char *envoyer_requete(const char *host, int port, const char *req) {
-    #ifdef __WIN32
-    return NULL;
-    #endif
+#if defined WIN32
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2 ,2), &wsaData) != 0) {
+        printf("Erreur dans WSAStartup\n");
+        return NULL;
+    }
+#endif
 
     // Création du socket
     int sockfd;
@@ -155,7 +115,7 @@ char *envoyer_requete(const char *host, int port, const char *req) {
     } while (recu < total);
 
     // Fermeture du socket
-    close(sockfd);
+    closesocket(sockfd);
 
 #ifdef DEBUG
     printf("Envoyé : %s\nReçu : %s\n", req, reponse);
@@ -168,7 +128,6 @@ char *envoyer_requete(const char *host, int port, const char *req) {
 
     return reponse;
 }
-#endif
 
 Point centrer_texte(char *texte, Point centre, int taille) {
     Point t = taille_texte(texte, taille);
