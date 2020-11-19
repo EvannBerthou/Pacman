@@ -1,10 +1,21 @@
+/*
+Code de socket inspiré de ce gist pour plus de portabilité
+https://gist.github.com/FedericoPonzi/2a37799b6c601cce6c1b
+*/
+
+#ifdef __WIN32
+#include <winsock.h>
+#else
+#define closesocket close
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
 
 #include "main.h"
 #include "leaderboard.h"
@@ -22,6 +33,7 @@ pour la vérification de chaque erreur dans la fonction
   if (retval < 0) { \
     fprintf(stderr, msg); \
     close(sockfd); \
+    CleanSocket(); \
     return NULL /* or throw or whatever */; \
   } \
   if (r != NULL) { \
@@ -34,11 +46,17 @@ pour la vérification de chaque erreur dans la fonction
   if (retval == NULL) { \
     fprintf(stderr, msg); \
     close(sockfd); \
+    CleanSocket(); \
     return NULL /* or throw or whatever */; \
   } \
   (*r) = retval; \
 } while (0)
 
+static void CleanSocket() {
+#ifdef __WIN32
+    WSACleanup();
+#endif
+}
 
 // Extrait le code de statut de la réponse (code 200 = ok)
 int status(char *reponse) {
@@ -47,9 +65,15 @@ int status(char *reponse) {
     sscanf(statut, "%d", &res);
     return res;
 }
-
 // Envoie une requete à un serveur et renvoie la réponse du serveur
 char *envoyer_requete(const char *host, int port, const char *req) {
+#if defined WIN32
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2 ,2), &wsaData) != 0) {
+        printf("Erreur dans WSAStartup\n");
+        return NULL;
+    }
+#endif
 
     // Création du socket
     int sockfd;
@@ -91,7 +115,7 @@ char *envoyer_requete(const char *host, int port, const char *req) {
     } while (recu < total);
 
     // Fermeture du socket
-    close(sockfd);
+    closesocket(sockfd);
 
 #ifdef DEBUG
     printf("Envoyé : %s\nReçu : %s\n", req, reponse);

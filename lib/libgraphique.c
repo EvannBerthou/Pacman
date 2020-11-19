@@ -45,7 +45,7 @@ void ouvrir_fenetre(int largeur, int hauteur){
     FILE *f=fopen(NOM_POLICE,"r");
     if(!f)
         {
-        fprintf(stderr,"Erreur: le chemin '%s' ne permet pas de trouver le dossier 'lib' et la police 'verdana.ttf'\n",NOM_POLICE);
+        printf("Erreur: le chemin '%s' ne permet pas de trouver le dossier 'lib' et la police 'verdana.ttf'\n",NOM_POLICE);
         exit(1);
         }
     fclose(f);

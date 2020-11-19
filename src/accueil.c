@@ -1,4 +1,9 @@
+#ifndef __WIN32
 #include <dirent.h>
+#else
+#include <windows.h>
+#endif
+
 #include "../lib/libgraphique.h"
 #include "main.h"
 #include "accueil.h"
@@ -67,6 +72,7 @@ void activer_bouton(Partie *p, Timer *t) {
         if (chemin == NULL) {
             break;
         }
+        stop_son(0);
         lancer_editeur(chemin);
         free(chemin);
         break;
@@ -139,9 +145,9 @@ int charger_niveau(Partie *p, char *chemin) {
     return 0;
 }
 
-char* selectionner_niveau() {
-    // Chargement des fichiers
-    char *niveaux[100]; // TODO: Probleme de taille fixe
+#ifndef __WIN32
+// VERSION LINUX
+int liste_fichiers(char **resultat) {
     int nb = 0; // nombre de niveaux dans la liste
     DIR *dossier;
     struct dirent *fichier;
@@ -149,13 +155,51 @@ char* selectionner_niveau() {
     if (dossier != NULL) {
         while ((fichier = readdir(dossier)) != NULL) {
             if (fichier->d_type == DT_REG) { // Si fichier (et non dossier)
-                niveaux[nb] = strdup(fichier->d_name);
+                resultat[nb] = strdup(fichier->d_name);
                 nb++;
             }
         }
         closedir(dossier);
+        return nb;
     }
-    else {
+    return -1;
+}
+// VERSION WINDOWS
+#else
+int liste_fichiers(char **resultat) {
+    int nb = 0;
+    WIN32_FIND_DATA ffd;
+    LARGE_INTEGER filesize;
+    WCHAR szDir[] = L"data/maps";
+    size_t length_of_arg;
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+    DWORD dwError = 0;
+
+    hFind = FindFirstFile("data\\maps\\*.*", &ffd);
+
+    // List all the files in the directory with some info about them
+    do {
+        if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            continue;
+        }
+        else {
+            resultat[nb++] = strdup(ffd.cFileName);
+        }
+    } while (FindNextFile(hFind, &ffd) != 0);
+    FindClose(hFind);
+
+    if (nb == 0)
+        return -1;
+    return nb;
+}
+#endif
+
+char* selectionner_niveau() {
+    // Chargement des fichiers
+    char *niveaux[100]; // TODO: Probleme de taille fixe
+    int nb;
+    nb = liste_fichiers(niveaux);
+    if (nb == -1) {
         return NULL;
     }
 
@@ -205,5 +249,6 @@ void afficher_liste_niveaux(char **liste, int n, int curseur) {
 }
 
 void charger_accueil() {
-     bouton_selectionne = 0;
+    bouton_selectionne = 0;
+    pause_son(0, 1);
 }

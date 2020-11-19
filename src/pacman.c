@@ -145,7 +145,7 @@ void bouger_pacman(Partie *p, float dt, int touche) {
         if (on_grid(p, grille.l, grille.c) == '*') {
             reculer_pacman(p, grille);
         }
-        else if (on_grid(p, grille.l, grille.c) != ' ') {
+        else if (on_grid(p, grille.l, grille.c) != 'x') {
             p->plateau[grille.l][grille.c] = ' ';
         }
     }
