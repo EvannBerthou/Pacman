@@ -23,6 +23,7 @@ static void boutons_manette(int *res) {
 int nouvelle_touche() {
     static Uint8 derniere_croix  = 0;
     static int derniers_boutons[NOMBRE_BOUTON] = {0,0,0,0};
+    static int derniere_touche = 0;
 
     int touches[] = {SDLK_DOWN, SDLK_UP, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_q, SDLK_b, SDLK_a};
     int croix[] = {SDL_HAT_DOWN, SDL_HAT_UP, SDL_HAT_LEFT, SDL_HAT_RIGHT};
@@ -41,6 +42,17 @@ int nouvelle_touche() {
         }
     }
     derniere_croix = croix_presse;
+
+    for (int i = 0; i < 4; i++) {
+        if (touche_a_ete_pressee(touches[4 + i])) {
+            if (touches[4 + i] == derniere_touche) {
+                continue;
+            }
+            derniere_touche = touches[4 + i];
+            avancer_konami_code(touches[4 + i]);
+            return touches[4 + i];
+        }
+    }
 
     // Boutons de la manette pressé cette frame
     int boutons[NOMBRE_BOUTON];
@@ -63,7 +75,7 @@ int nouvelle_touche() {
         avancer_konami_code(res_bouton);
         return res_bouton;
     }
-
+    derniere_touche = 0;
     return 0;
 }
 
@@ -87,5 +99,14 @@ void avancer_konami_code(int touche) {
     }
     else {
         index = 0;
+    }
+}
+
+void attendre_sortie() {
+    int touche = 0;
+    while (touche != SDLK_q) {
+        traiter_evenements();
+        touche = nouvelle_touche();
+        reinitialiser_evenements();
     }
 }

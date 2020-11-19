@@ -125,7 +125,7 @@ void afficher_leaderboard() {
         afficher_message_leaderboard("Erreur lors du chargement du classement", 26);
         afficher_bouton_retour();
         actualiser();
-        while(nouvelle_touche() != SDLK_q);
+        attendre_sortie();
         return;
     }
 
@@ -155,7 +155,7 @@ void afficher_leaderboard() {
     }
     afficher_bouton_retour();
     actualiser();
-    while (nouvelle_touche() != SDLK_q);
+    attendre_sortie();
     free(reponse);
 }
 
