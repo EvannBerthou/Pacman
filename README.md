@@ -29,7 +29,8 @@ entre 4 options
 Lorsque le joueur lance une partie, il peut déplacer Pac-man à l'aide des flèches du clavier, en se
 déplaçant dans le niveau en temps réel, il ramasse des billes qui augmentent son score. En même temps,
 les fantômes partent à la poursuite de pacman en utilisant l'algorithme A\* afin de déterminer le
-chemin le plus court pour l'atteindre.
+chemin le plus court pour l'atteindre. Cependant la taille du plateau n'étant pas particulièrement grande,
+nous avons legerement modifier le code pour obtenir un Breadth-first search (BFS).
 
 En cas de collision entre un fantôme et Pac-man, deux évènements peuvent se produire.
 Si Pac-man n'a pas mangé de Pacgum, alors il pert une ville et retourne à sa position d'origine,

@@ -5,6 +5,15 @@
 
 #define SPRITE_FANTOME_COUNT 7
 const char *fantome_sprite_path[SPRITE_FANTOME_COUNT][4][2] = {
+
+    {
+        //sprite de fantomes en mode normale R pour fantome red
+
+        {"data/sprites/fantomeR00.bmp","data/sprites/fantomeR01.bmp"},
+        {"data/sprites/fantomeR10.bmp","data/sprites/fantomeR11.bmp"},
+        {"data/sprites/fantomeR20.bmp","data/sprites/fantomeR21.bmp"},
+        {"data/sprites/fantomeR30.bmp","data/sprites/fantomeR31.bmp"},
+    },
     {
         //sprite de fantomes en mode normale O pour fantome orange
 
@@ -20,14 +29,6 @@ const char *fantome_sprite_path[SPRITE_FANTOME_COUNT][4][2] = {
         {"data/sprites/fantomeP10.bmp","data/sprites/fantomeP11.bmp"},
         {"data/sprites/fantomeP20.bmp","data/sprites/fantomeP21.bmp"},
         {"data/sprites/fantomeP30.bmp","data/sprites/fantomeP31.bmp"},
-    },
-    {
-        //sprite de fantomes en mode normale R pour fantome red
-
-        {"data/sprites/fantomeR00.bmp","data/sprites/fantomeR01.bmp"},
-        {"data/sprites/fantomeR10.bmp","data/sprites/fantomeR11.bmp"},
-        {"data/sprites/fantomeR20.bmp","data/sprites/fantomeR21.bmp"},
-        {"data/sprites/fantomeR30.bmp","data/sprites/fantomeR31.bmp"},
     },
     {
         //sprite de fantomes en mode normale B pour fantome orange
@@ -66,7 +67,6 @@ SDL_Surface *sprites_fantomes[SPRITE_FANTOME_COUNT][4][2];
 
 static void reculer_fantome(Partie *p,Entite *fantome,Pos current_pos,DirEntite direction ) {
     // temps que pacmman est dans un mur faire demitour
-    // bug résultant
     while (on_grid(p, current_pos.l, current_pos.c) == '*'){
         switch (direction){
             case DIR_HAUT:   current_pos.l++; break;
@@ -142,8 +142,10 @@ void bouger_fantomes(Partie *p, float dt) {
         }
         else {
             // Ici on gère les différentes IA de chaque fantome car ils ont une case cible differente
+            // fantome rouge Bliky 
             fantome->pos_cible = ecran_vers_grille(p->pacman.pos);
 
+            // fantome rose Pinky
             if (fantome->type==ENTITE_FANTOME_P){
                 for (int delta=3;delta!=-1;delta--){
                     Pos prochaine_case = fantome->pos_cible;
@@ -159,14 +161,18 @@ void bouger_fantomes(Partie *p, float dt) {
                     }
                     fantome->pos_cible = prochaine_case;
                 }
-                //printf("pos cible Frose x: %d y: %d \n",fantome->pos_cible.c,fantome->pos_cible.l);
-            }
-            else if (fantome->type==ENTITE_FANTOME_O){
-                if (distance_pac(p->pacman.pos,fantome->pos) < 64.f) {
+            }//fantome bleu Inky
+            else if (fantome->type==ENTITE_FANTOME_C){
+                if (entier_aleatoire(10)>7){
                     Pos liste_coin[4]={{1,1},{1,20},{26,1},{26,21}};
-                    // TODO: Déterminer le coin vers lequel le fantome doit aller
-                    fantome->pos_cible=liste_coin[0];
+                    fantome->pos_cible=liste_coin[entier_aleatoire(4)];
                 }
+            } // fantome orange Clyde
+            else if (fantome->type==ENTITE_FANTOME_O){
+                if (distance_pac(p->pacman.pos,fantome->pos) < 80.f) {
+                    select_coin(fantome);                    
+                }
+                  //fantome->pos_cible=liste_coin[0];
             }
             find_path(p,current_pos,fantome->pos_cible,fantome);
         }
@@ -247,11 +253,25 @@ void dessiner_fantomes(Partie *p) {
 
 
 
+
 float distance_pac(Posf A,Posf B){
     return sqrt((A.c-B.c)*(A.c-B.c)+(A.l-B.l)*(A.l-B.l));
 
 }
 
+
+void select_coin(Entite *fantome){
+    Pos liste_coin[4]={{1,1},{1,20},{26,1},{26,21}};
+    int pos_coin=0;
+    float dist=distance_pac((Posf){liste_coin[pos_coin].l,liste_coin[pos_coin].c},fantome->pos);
+    for (int i=0;i!=4;i++){
+        if (distance_pac((Posf){liste_coin[i].l,liste_coin[i].c},fantome->pos)>dist){
+            pos_coin=i;
+            dist=distance_pac((Posf){liste_coin[pos_coin].l,liste_coin[pos_coin].c},fantome->pos);
+        }
+    }
+    fantome->pos_cible=liste_coin[pos_coin];
+}
 
 void fuite_fantome(Entite *fantome) {
     fantome->etat.fuite = TEMPS_FUITE;
