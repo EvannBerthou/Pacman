@@ -86,7 +86,6 @@ int manette_active() {
 static const int konami_code[] = {SDLK_UP, SDLK_UP, SDLK_DOWN, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_LEFT, SDLK_RIGHT, SDLK_b, SDLK_a};
 void avancer_konami_code(int touche) {
     static int index = 0;
-
     if (touche == konami_code[index + 1]) {
         index++;
         if (index == 9) {
