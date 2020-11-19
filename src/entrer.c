@@ -28,7 +28,7 @@ int nouvelle_touche() {
 
     #define NOMBRE_DIRECTIONS 4
     #define NOMBRE_TOUCHES 5
-    int touches[] = {SDLK_DOWN, SDLK_UP, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_q, SDLK_b, SDLK_a, SDLK_f};
+    int touches[] = {SDLK_DOWN, SDLK_UP, SDLK_LEFT, SDLK_RIGHT, SDLK_RETURN, SDLK_q, SDLK_b, SDLK_a, SDLK_m};
     int croix[] = {SDL_HAT_DOWN, SDL_HAT_UP, SDL_HAT_LEFT, SDL_HAT_RIGHT};
 
     Uint8 croix_presse = croix_manette();

@@ -110,7 +110,7 @@ void stop_son(int index) {
 }
 
 void toggle_volume(int touche) {
-    if (touche == SDLK_f) {
+    if (touche == SDLK_m) {
         _volume = (_volume == 0) ? SDL_MIX_MAXVOLUME : 0; // Echange le volume entre volume max et coupé
     }
 }
