@@ -337,12 +337,13 @@ void terminer_partie(Partie *p) {
 void relancer_niveau(Partie *p) {
     int ancien_niveau = p->niveau;
     int ancien_score = p->pacman.etat.score;
-    int ancien_vie = p->pacman.etat.vie;
+    int ancien_vie = p->pacman.etat.nb_vie;
 
     vider_partie(p);
     charger_niveau(p, p->nom_fichier);
 
     p->niveau = ancien_niveau + 1;
     p->pacman.etat.score = ancien_score;
-    p->pacman.etat.vie = ancien_vie;
+    p->pacman.etat.nb_vie = ancien_vie;
+    calculer_vitesse_niveau(p);
 }

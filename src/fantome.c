@@ -117,6 +117,13 @@ void bouger_fantomes(Partie *p, float dt) {
             timer_fantomes[i] -= dt;
             continue;
         }
+
+        // Lors du premier niveau, seulement 2 fantomes (Orange et rose) se déplacent
+        // Tous les fantômes sont ensuite présent à partir du premier redémarrage
+        if (p->niveau == 0 && i >= 2) {
+            continue;
+        }
+
         Entite *fantome = &p->fantomes[i];
         Pos current_pos = ecran_vers_grille(fantome->pos);
         Pos pos_init_f= ecran_vers_grille(fantome->pos_init);
@@ -136,8 +143,6 @@ void bouger_fantomes(Partie *p, float dt) {
         else {
             // Ici on gère les différentes IA de chaque fantome car ils ont une case cible differente
             fantome->pos_cible = ecran_vers_grille(p->pacman.pos);
-
-            //printf("type : %d\n , cible x: %d y: %d",fantome->type,fantome->pos_cible.c,fantome->pos_cible.l );
 
             if (fantome->type==ENTITE_FANTOME_P){
                 for (int delta=3;delta!=-1;delta--){
@@ -262,4 +267,27 @@ void revivre(Entite *fantome) {
     fantome->etat.fuite = 0;
     fantome->etat.mange = 0;
     fantome->vitesse = 50;
+}
+
+static int formule_vitesse(int x) {
+    return (x * x) + x + VITESSE_FANTOME;
+}
+
+void calculer_vitesse_niveau(Partie *p) {
+    for (int i = 0; i < p->nbf; i++) {
+        Entite *fantome = &p->fantomes[i];
+        switch (fantome->type) {
+        case ENTITE_FANTOME_O:
+        case ENTITE_FANTOME_P:
+        case ENTITE_FANTOME_C: {
+            fantome->vitesse = formule_vitesse(p->niveau);
+            break;
+        }
+        case ENTITE_FANTOME_R: {
+            fantome->vitesse = formule_vitesse(p->niveau + 1);
+            break;
+        }
+        default: break;
+        }
+    }
 }
