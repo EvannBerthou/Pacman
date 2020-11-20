@@ -5,7 +5,6 @@
 #include "path_finding.h"
 #include "entite.h"
 
-#define TEMPS_FUITE 10.f
 #define VITESSE_FANTOME 50
 
 // Sprites

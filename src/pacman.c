@@ -160,6 +160,7 @@ void pacman_manger(Partie *p) {
                 fuite_fantome(&p->fantomes[i]);
             }
             p->nbbonus--;
+            activer_bonbon(p);
             #if DEBUG
             printf("bonbons : %d\n", p->nbbonus);
             #endif
@@ -186,4 +187,10 @@ void dessiner_pacman(Partie *p) {
     else {
         afficher_surface(sprite_pacman(p->pacman.etat.direction, (int)p->pacman.animation_time), pos);
     }
+}
+
+void pacman_mange_fantome(Partie *p) {
+    p->fantomes_manges++;
+    int score = pow(2, p->fantomes_manges) * 100;
+    p->pacman.etat.score += score;
 }
