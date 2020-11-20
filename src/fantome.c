@@ -136,82 +136,31 @@ void bouger_fantomes(Partie *p, float dt) {
         }
 
         Entite *fantome = &p->fantomes[i];
+
+        if (fantome->etat.fuite > 0) {
+            fantome->etat.fuite -= dt;
+        }
+
         Pos current_pos = ecran_vers_grille(fantome->pos);
         Pos pos_init_f= ecran_vers_grille(fantome->pos_init);
+
         // Si le fantome est rentré à la base
         if (current_pos.l == pos_init_f.l && current_pos.c == pos_init_f.c
                 && (fantome->etat.mange || fantome->etat.fuite > 0)){
             revivre(fantome);
         }
-        // Si le fantome est en mode fuite, le faire se déplacer vers sa base
-        if (fantome->etat.fuite > 0){
-            fantome->etat.fuite -= dt;
-            find_path(p,current_pos,ecran_vers_grille(fantome->pos_init),fantome);
-        }
-        else if (fantome->etat.mange){
-            find_path(p,current_pos,ecran_vers_grille(fantome->pos_init),fantome);
-        }
-        else {
-            // Ici on gère les différentes IA de chaque fantome car ils ont une case cible differente
-            // fantome rouge Bliky
-            fantome->pos_cible = ecran_vers_grille(p->pacman.pos);
 
-            // fantome rose Pinky
-            if (fantome->type==ENTITE_FANTOME_P){
-                for (int delta=3;delta!=-1;delta--){
-                    Pos prochaine_case = fantome->pos_cible;
-                    switch (p->pacman.etat.direction){
-                        case DIR_HAUT:   prochaine_case.l-=delta; break;
-                        case DIR_BAS:    prochaine_case.l+=delta; break;
-                        case DIR_GAUCHE: prochaine_case.c-=delta; break;
-                        case DIR_DROITE: prochaine_case.c+=delta; break;
-                    }
-                    char prochaine_case_type = on_grid(p,fantome->pos_cible.l,fantome->pos_cible.c);
-                    if (prochaine_case_type != '*' || prochaine_case_type != 'x') {
-                        break;
-                    }
-                    fantome->pos_cible = prochaine_case;
-                }
-            }//fantome bleu Inky
-            else if (fantome->type==ENTITE_FANTOME_C){
-                if (entier_aleatoire(10)>7){
-                    Pos liste_coin[4]={{1,1},{1,20},{26,1},{26,21}};
-                    fantome->pos_cible=liste_coin[entier_aleatoire(4)];
-                }
-            } // fantome orange Clyde
-            else if (fantome->type==ENTITE_FANTOME_O){
-                if (distance_pac(p->pacman.pos,fantome->pos) < 80.f) {
-                    select_coin(fantome);
-                }
-                  //fantome->pos_cible=liste_coin[0];
-            }
-            find_path(p,current_pos,fantome->pos_cible,fantome);
+        determiner_cible(p, fantome);
+        // Trouve le chemin le plus cours entre le fantome et sa case cible
+        find_path(p,current_pos,fantome->pos_cible,fantome); 
+
+        // Change la direction du fantôme ssi il est aligné à la grille pour éviter qu'il traverse les murs
+        if (aligne_grille(p, fantome->pos)) {
+            fantome->etat.direction = determiner_direction(fantome);
         }
 
-        DirEntite direction = DIR_INCONNUE;
-        if (fantome->chemin_noeud[0] != NULL) {
-            if (current_pos.l > fantome->chemin_noeud[0]->pos.l) {
-                direction = DIR_HAUT;
-            }
-            else if (current_pos.l < fantome->chemin_noeud[0]->pos.l) {
-                direction = DIR_BAS;
-            }
-            else if (current_pos.c > fantome->chemin_noeud[0]->pos.c) {
-                direction = DIR_GAUCHE;
-            }
-            else if (current_pos.c < fantome->chemin_noeud[0]->pos.c) {
-                direction = DIR_DROITE;
-            }
-            // Change la direction du fantôme ssi il est aligné à la grille pour éviter qu'il traverse les murs
-            if (aligne_grille(p, fantome->pos)) {
-                fantome->etat.direction = direction;
-            }
-        }
-        else {
-            direction = fantome->etat.direction;
-        }
-
-        // Déplace le fantôme dt * vitesse
+        // Détermine la prochaine case où le fantome est censé ce trouver,
+        // On ne change pas directement la position car cela risquerait de faire travers le mur
         Posf prochaine_pos = fantome->pos;
         switch (fantome->etat.direction) {
             case DIR_HAUT:   prochaine_pos.l -= dt * fantome->vitesse; break;
@@ -225,9 +174,84 @@ void bouger_fantomes(Partie *p, float dt) {
             fantome->animation_time = 0;
         }
 
-        prochaine_pos = traverse_mur(p, fantome, fantome->pos, prochaine_pos);
-        fantome->pos = prochaine_pos;
+        // Renvoie la première position entre la position précédente du fantome et la nouvelle où 
+        // il n'y a pas de mur (évite aux fantomes de traverser les murs lorsque les FPS sont bas)
+        fantome->pos = traverse_mur(p, fantome, fantome->pos, prochaine_pos);
     }
+}
+
+void determiner_cible(Partie *p, Entite *fantome) {
+    // Si le fantome est en mode fuite, le faire se déplacer vers sa base
+    if (fantome->etat.fuite > 0 || fantome->etat.mange) {
+        fantome->pos_cible = ecran_vers_grille(fantome->pos_init);
+    }
+    else {
+        // Ici on gère les différentes IA de chaque fantome car ils ont une case cible differente
+        fantome->pos_cible = ecran_vers_grille(p->pacman.pos);
+
+        // fantome rose Pinky
+        if (fantome->type == ENTITE_FANTOME_P) {
+            IA_PINK(p, fantome);
+        }
+        else if (fantome->type == ENTITE_FANTOME_C) {
+            IA_CYAN(fantome);
+        } 
+        else if (fantome->type == ENTITE_FANTOME_O) {
+            IA_ORANGE(p, fantome);
+        }
+    }
+}
+
+// Lorsque le fantome orange est trop près de pacman, il se déplace vers le coin le plus loin
+void IA_ORANGE(Partie *p, Entite *fantome) {
+    if (distance_pac(p->pacman.pos, fantome->pos) < 80.f) {
+        select_coin(fantome);
+    }
+}
+
+// Le fantome rose esssaie de se déplacer 2 cases en face de pacman
+void IA_PINK(Partie *p, Entite *fantome) {
+    for (int delta = 3; delta > 0; delta--){
+        Pos prochaine_case = fantome->pos_cible;
+        switch (p->pacman.etat.direction){
+            case DIR_HAUT:   prochaine_case.l -= delta; break;
+            case DIR_BAS:    prochaine_case.l += delta; break;
+            case DIR_GAUCHE: prochaine_case.c -= delta; break;
+            case DIR_DROITE: prochaine_case.c += delta; break;
+        }
+        char prochaine_case_type = on_grid(p,fantome->pos_cible.l,fantome->pos_cible.c);
+        if (prochaine_case_type != '*' || prochaine_case_type != 'x') {
+            break;
+        }
+        fantome->pos_cible = prochaine_case;
+    }
+}
+
+void IA_CYAN(Entite *fantome) {
+    if (entier_aleatoire(10)>7){
+        Pos liste_coin[4]={{1,1},{1,20},{26,1},{26,21}};
+        fantome->pos_cible=liste_coin[entier_aleatoire(4)];
+    }
+}
+
+DirEntite determiner_direction(Entite *fantome) {
+    Pos current_pos = ecran_vers_grille(fantome->pos);
+    DirEntite direction = fantome->etat.direction;
+    if (fantome->chemin_noeud[0] != NULL) {
+        if (current_pos.l > fantome->chemin_noeud[0]->pos.l) {
+            direction = DIR_HAUT;
+        }
+        else if (current_pos.l < fantome->chemin_noeud[0]->pos.l) {
+            direction = DIR_BAS;
+        }
+        else if (current_pos.c > fantome->chemin_noeud[0]->pos.c) {
+            direction = DIR_GAUCHE;
+        }
+        else if (current_pos.c < fantome->chemin_noeud[0]->pos.c) {
+            direction = DIR_DROITE;
+        }
+    }
+    return direction;
 }
 
 void dessiner_fantomes(Partie *p) {
@@ -264,24 +288,24 @@ void dessiner_fantomes(Partie *p) {
 
 
 
-
+#define CARRE(x) ((x) * (x))
 float distance_pac(Posf A,Posf B){
-    return sqrt((A.c-B.c)*(A.c-B.c)+(A.l-B.l)*(A.l-B.l));
-
+    return CARRE(A.c - B.c) + CARRE(A.l - B.l);
 }
 
 
 void select_coin(Entite *fantome){
-    Pos liste_coin[4]={{1,1},{1,20},{26,1},{26,21}};
-    int pos_coin=0;
-    float dist=distance_pac((Posf){liste_coin[pos_coin].l,liste_coin[pos_coin].c},fantome->pos);
-    for (int i=0;i!=4;i++){
-        if (distance_pac((Posf){liste_coin[i].l,liste_coin[i].c},fantome->pos)>dist){
-            pos_coin=i;
-            dist=distance_pac((Posf){liste_coin[pos_coin].l,liste_coin[pos_coin].c},fantome->pos);
+    Pos liste_coin[4] = {{1,1}, {1,20}, {26,1}, {26,21}};
+    int pos_coin = 0;
+    float dist_max = 0;
+    for (int i = 0; i < 4; i++){
+        float distance_i = distance_pac((Posf){liste_coin[i].l,liste_coin[i].c}, fantome->pos);
+        if (distance_i > dist_max){
+            pos_coin = i;
+            dist_max = distance_i;
         }
     }
-    fantome->pos_cible=liste_coin[pos_coin];
+    fantome->pos_cible = liste_coin[pos_coin];
 }
 
 void fuite_fantome(Entite *fantome) {

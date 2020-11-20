@@ -247,6 +247,7 @@ void actualiser_partie(Partie *p, Timer *timer) {
 void dessiner_grille(Partie *p, int dans_editeur) {
     // Efface la grille pour la redessiner de 0
     dessiner_rectangle((Point){0,0}, PLATEAU_W, ECRAN_H, noir);
+    int nbf = 0;
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
             Point pos = {j * CASE, i * CASE};
@@ -268,7 +269,8 @@ void dessiner_grille(Partie *p, int dans_editeur) {
                     afficher_surface(sprite_pacman(0,0), pos);
                 }
                 else if (type == 'F') {
-                    afficher_surface(sprite_fantome(0,0,0), pos);
+                    afficher_surface(sprite_fantome(nbf,0,0), pos);
+                    nbf++;
                 }
             }
         }

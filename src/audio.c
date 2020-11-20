@@ -97,7 +97,7 @@ int charger_fichier_audio(int id) {
 }
 
 void pause_son(int index, int pause) {
-    playing.data[index]->playing = pause;
+    playing.data[index]->playing = !pause;
 }
 
 int is_playing(int index) {
