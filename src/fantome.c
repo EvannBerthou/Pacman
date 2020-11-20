@@ -63,20 +63,31 @@ const char *fantome_sprite_path[SPRITE_FANTOME_COUNT][4][2] = {
 };
 SDL_Surface *sprites_fantomes[SPRITE_FANTOME_COUNT][4][2];
 
+static Posf traverse_mur(Partie *p, Entite *fantome, Posf precf, Posf currf) {
+    Pos prec = ecran_vers_grille(precf);
+    Pos curr = ecran_vers_grille(currf);
 
+    if (prec.l == curr.l && prec.c == curr.c) {
+        return currf;
+    }
 
-static void reculer_fantome(Partie *p,Entite *fantome,Pos current_pos,DirEntite direction ) {
-    // temps que pacmman est dans un mur faire demitour
-    while (on_grid(p, current_pos.l, current_pos.c) == '*'){
-        switch (direction){
-            case DIR_HAUT:   current_pos.l++; break;
-            case DIR_BAS:    current_pos.l--; break;
-            case DIR_GAUCHE: current_pos.c++; break;
-            case DIR_DROITE: current_pos.c--; break;
+    while (prec.l != curr.l || prec.c != curr.c) {
+        Pos prochain = prec;
+        switch (fantome->etat.direction) {
+            case DIR_HAUT:   prochain.l--; break;
+            case DIR_BAS:    prochain.l++; break;
+            case DIR_GAUCHE: prochain.c--; break;
+            case DIR_DROITE: prochain.c++; break;
             default: break;
         }
+        // Si le fantome a traversé un mur alors le faire reculer avant le mur
+        char type_case = on_grid(p, prochain.l, prochain.c);
+        if (type_case == '*' || type_case == 'x') {
+            return (Posf) {prec.l * CASE, prec.c * CASE};
+        }
+        prec = prochain;
     }
-    fantome->pos = (Posf){current_pos.l * CASE, current_pos.c * CASE};
+    return currf;
 }
 
 int charger_sprites_fantomes() {
@@ -142,7 +153,7 @@ void bouger_fantomes(Partie *p, float dt) {
         }
         else {
             // Ici on gère les différentes IA de chaque fantome car ils ont une case cible differente
-            // fantome rouge Bliky 
+            // fantome rouge Bliky
             fantome->pos_cible = ecran_vers_grille(p->pacman.pos);
 
             // fantome rose Pinky
@@ -170,7 +181,7 @@ void bouger_fantomes(Partie *p, float dt) {
             } // fantome orange Clyde
             else if (fantome->type==ENTITE_FANTOME_O){
                 if (distance_pac(p->pacman.pos,fantome->pos) < 80.f) {
-                    select_coin(fantome);                    
+                    select_coin(fantome);
                 }
                   //fantome->pos_cible=liste_coin[0];
             }
@@ -201,11 +212,12 @@ void bouger_fantomes(Partie *p, float dt) {
         }
 
         // Déplace le fantôme dt * vitesse
+        Posf prochaine_pos = fantome->pos;
         switch (fantome->etat.direction) {
-            case DIR_HAUT:   fantome->pos.l -= dt * fantome->vitesse; break;
-            case DIR_BAS:    fantome->pos.l += dt * fantome->vitesse; break;
-            case DIR_GAUCHE: fantome->pos.c -= dt * fantome->vitesse; break;
-            case DIR_DROITE: fantome->pos.c += dt * fantome->vitesse; break;
+            case DIR_HAUT:   prochaine_pos.l -= dt * fantome->vitesse; break;
+            case DIR_BAS:    prochaine_pos.l += dt * fantome->vitesse; break;
+            case DIR_GAUCHE: prochaine_pos.c -= dt * fantome->vitesse; break;
+            case DIR_DROITE: prochaine_pos.c += dt * fantome->vitesse; break;
         }
 
         fantome->animation_time += dt * VITESSE_ANIMATION;
@@ -213,9 +225,8 @@ void bouger_fantomes(Partie *p, float dt) {
             fantome->animation_time = 0;
         }
 
-        if (on_grid(p, current_pos.l, current_pos.c) == '*') {
-            reculer_fantome(p,fantome, current_pos,direction);
-        }
+        prochaine_pos = traverse_mur(p, fantome, fantome->pos, prochaine_pos);
+        fantome->pos = prochaine_pos;
     }
 }
 
