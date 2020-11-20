@@ -212,12 +212,21 @@ char* selectionner_niveau() {
 }
 
 void afficher_liste_niveaux(char **liste, int n, int curseur) {
+    const int limit = 15;
     const int font = 26;
     dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
-    for (int i = 0; i < n; i++) {
+
+    int debut = 0;
+    if (curseur >= limit) {
+        debut = curseur - limit + 1;
+    }
+
+    // Affiche les nom entre liste[debut:debut+10]
+    for (int i = 0; i < limit; i++) {
+        if (debut + i >= n) break;
         Point p = {0, font * i + 10};
-        Couleur c = i == curseur ? rouge : blanc;
-        afficher_texte(liste[i], font, p, c);
+        Couleur c = (debut + i) == curseur ? rouge : blanc;
+        afficher_texte(liste[debut + i], font, p, c);
     }
 }
 
