@@ -14,6 +14,6 @@ void dessiner_pacman(Partie *p);
 SDL_Surface* sprite_pacman(int dir, int frame);
 
 // Outils
-void pacman_mange_fantome(Partie *p);
+void pacman_mange_fantome(Partie *p, Entite *fantome);
 
 #endif

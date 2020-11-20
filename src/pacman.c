@@ -189,8 +189,17 @@ void dessiner_pacman(Partie *p) {
     }
 }
 
-void pacman_mange_fantome(Partie *p) {
+void pacman_mange_fantome(Partie *p, Entite *fantome) {
     p->fantomes_manges++;
     int score = pow(2, p->fantomes_manges) * 100;
     p->pacman.etat.score += score;
+
+    // Affiche le score ajouté quand pacman mange un fantome
+    char texte_score[5];
+    sprintf(texte_score, "%d", score);
+    Point pos = {fantome->pos.c, fantome->pos.l};
+    afficher_texte(texte_score, 18, pos, rouge);
+    //jouer son
+    actualiser();
+    attente(500);
 }

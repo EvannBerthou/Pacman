@@ -201,7 +201,7 @@ static int collision_pacman_fantome(Posf pacman, Posf fantome) {
     );
 }
 
-void maj_etat(Partie *p){
+void maj_etat(Partie *p, Timer *t){
     for (int i = 0; i != p->nbf; i++) {
         // Détection de la collision entre fantome et pacman
         if (collision_pacman_fantome(p->pacman.pos, p->fantomes[i].pos)) {
@@ -221,7 +221,9 @@ void maj_etat(Partie *p){
             }
             else if (p->fantomes[i].etat.mange == 0) {
                 a_ete_mange(&p->fantomes[i]);
-                pacman_mange_fantome(p);
+                tick_timer(t);
+                pacman_mange_fantome(p, &p->fantomes[i]);
+                tick_timer(t);
             }
         }
     }
@@ -239,7 +241,7 @@ void actualiser_partie(Partie *p, Timer *timer) {
     verifier_temps_bonbon_restant(p, timer->dt);
     bouger_pacman(p, timer->dt, touche);
     bouger_fantomes(p, timer->dt);
-    maj_etat(p);
+    maj_etat(p, timer);
 
     if (p->nbbonus == 0) {
         relancer_niveau(p);
