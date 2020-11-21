@@ -151,6 +151,7 @@ int charger_niveau(Partie *p, char *chemin) {
         if (p->nom_fichier == NULL) {
             p->nom_fichier = strdup(chemin);
         }
+
     }
 
 #ifdef DEBUG
@@ -366,4 +367,11 @@ void relancer_niveau(Partie *p) {
     p->pacman.etat.score = ancien_score;
     p->pacman.etat.nb_vie = ancien_vie;
     calculer_vitesse_niveau(p);
+}
+
+void jouer_intro(Partie *p, Timer *t) {
+    dessiner_partie(p);
+    actualiser();
+    int id_audio = charger_fichier_audio(4);
+    while(is_playing(id_audio)) { tick_timer(t);} // attent la fin de la musique d'intro
 }

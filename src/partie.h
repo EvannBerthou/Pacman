@@ -57,5 +57,6 @@ void terminer_partie(Partie *p);
 void relancer_niveau(Partie *p);
 void activer_bonbon(Partie *p);
 void verifier_temps_bonbon_restant(Partie *p, float dt);
+void jouer_intro(Partie *p, Timer *t);
 
 #endif
