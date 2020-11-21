@@ -15,5 +15,6 @@ SDL_Surface* sprite_pacman(int dir, int frame);
 
 // Outils
 void pacman_mange_fantome(Partie *p, Entite *fantome);
+void jouer_mort_pacman(Partie *p, Timer *t);
 
 #endif

@@ -206,20 +206,27 @@ void maj_etat(Partie *p, Timer *t){
     for (int i = 0; i != p->nbf; i++) {
         // Détection de la collision entre fantome et pacman
         if (collision_pacman_fantome(p->pacman.pos, p->fantomes[i].pos)) {
+            // Si le fantome n'était pas en fuite alors pacman perd une vie
             if (!(p->fantomes[i].etat.fuite)){
+                jouer_mort_pacman(p, t);
+
                 p->pacman.etat.nb_vie-=1;
+                // Terminer la partie s'il n'a plus de vie
                 if (p->pacman.etat.nb_vie == 0) {
                     terminer_partie(p);
                     return;
                 }
 
+                // Remettre toutes les entités à leur position d'origine
                 p->pacman.pos = p->pacman.pos_init;
                 for (int b =0;b!=p->nbf;b++ ){
                     p->fantomes[b].pos=p->fantomes[b].pos_init;
                     p->fantomes[b].pos_cible=(Pos){0,0};
-                    reset_timer_fantomes();
                 }
+                reset_timer_fantomes();
+                jouer_intro(p, t);
             }
+            // Si le fantome se fait manger
             else if (p->fantomes[i].etat.mange == 0) {
                 a_ete_mange(&p->fantomes[i]);
                 tick_timer(t);

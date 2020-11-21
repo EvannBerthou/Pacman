@@ -203,3 +203,8 @@ void pacman_mange_fantome(Partie *p, Entite *fantome) {
     charger_fichier_audio(2);
     attente(500);
 }
+
+void jouer_mort_pacman(Partie *p, Timer *t) {
+    int id_audio = charger_fichier_audio(5);
+    while (is_playing(id_audio)) { tick_timer(t); }
+};
