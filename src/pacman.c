@@ -199,7 +199,12 @@ void pacman_mange_fantome(Partie *p, Entite *fantome) {
     sprintf(texte_score, "%d", score);
     Point pos = {fantome->pos.c, fantome->pos.l};
     afficher_texte(texte_score, 18, pos, rouge);
-    //jouer son
     actualiser();
+    charger_fichier_audio(2);
     attente(500);
 }
+
+void jouer_mort_pacman(Partie *p, Timer *t) {
+    int id_audio = charger_fichier_audio(5);
+    while (is_playing(id_audio)) { tick_timer(t); }
+};

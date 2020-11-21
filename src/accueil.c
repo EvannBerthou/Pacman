@@ -64,7 +64,9 @@ void activer_bouton(Partie *p, Timer *t) {
         // Arrete la musique de l'accueil
         stop_son(0);
         p->son_pacman = charger_fichier_audio(1);
+        pause_son(p->son_pacman, 1);
         free(chemin);
+        jouer_intro(p, t);
         break;
     }
     case 1: afficher_leaderboard(); break;
