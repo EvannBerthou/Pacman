@@ -19,10 +19,10 @@ static int _volume = SDL_MIX_MAXVOLUME;
 const char *sons_chemin[SAMPLES_COUNT] = {
     "data/sons/music.wav",
     "data/sons/pacman_chomp.wav",
-    "data/sons/pacman_eatghost (2).wav",
-    "data/sons/pacman_eatfruit (2).wav",
-    "data/sons/pacman_beginning (2).wav",
-    "data/sons/pacman_death (2).wav",
+    "data/sons/pacman_eatghost.wav",
+    "data/sons/pacman_eatfruit.wav",
+    "data/sons/pacman_beginning.wav",
+    "data/sons/pacman_death.wav",
 };
 const int looping[SAMPLES_COUNT] = {
     1, 1, 0, 0, 0, 0
