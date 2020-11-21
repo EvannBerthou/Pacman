@@ -15,13 +15,14 @@ static Sons playing = {.data = NULL, .len = 0, .max_size = 10};
 static Sons samples;
 static int _volume = SDL_MIX_MAXVOLUME;
 
-#define SAMPLES_COUNT 2
+#define SAMPLES_COUNT 3
 const char *sons_chemin[SAMPLES_COUNT] = {
-    "music.wav",
-    "pacman_chomp.wav"
+    "data/sons/music.wav",
+    "data/sons/pacman_chomp.wav",
+    "data/sons/pacman_eatghost (2).wav",
 };
 const int looping[SAMPLES_COUNT] = {
-    1, 1
+    1, 1, 0
 };
 
 // Permet d'avancer la lecture du fichier audio
