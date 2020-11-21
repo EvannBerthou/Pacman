@@ -36,23 +36,21 @@ En cas de collision entre un fantôme et Pac-man, deux évènements peuvent se p
 Si Pac-man n'a pas mangé de Pacgum, alors il pert une ville et retourne à sa position d'origine,
 la partie reprend s'il lui reste des vies (3 au lancement du niveau), sinon elle se termine.
 Si Pac-man à mangé un Pacgum récemment, alors le fantôme se fait manger et il retourne à sa position
-d'origine
+d'origine.
 
-La partie peut se terminer sous 2 conditions :
+Une fois que pacman à mangé toutes les pacgum, le niveau se relance avec une difficulté accrue. Lors du premier niveau seulement 2 fantômes sont présent, au premier relancement tous les fantômes sont là. A chaque relancement, la vitesse de tous les fantômes augmente.
 
-- Pac-man n'a plus de vie
-- Toutes les billes ont étés mangés
-
-Lorsque la partie est terminée, le joueur à la possibilité d'entrer un pseudo à 5 lettres à l'aide des
-flèches du clavier. Ce score est ensuite envoyé dans le classement.
+Quand pacman a épuisé ses 3 vies, la partie est terminée, le joueur a alors la possibilité d'entrer un pseudo à 5 lettres à l'aide des flèches du clavier ou de la manette. Ce score est ensuite envoyé dans le classement.
 
 ### Classement
-Le classement est un moyen qui permet de donner envie aux joueurs de s'améliorer afin de battre le score des autres joueurs. Lorsque la partie se termine et que le joueur a selectioné son pseudo. Le score et le pseudo sont envoyé vers un serveur à l'aide d'une requête HTTP.  Se serveur va ensuite traiter la requête reçu et déterminer si le score doit être ajouté.  Le score est ajouté au classement seulement si le nouveau score est supérieur au score du pseudo déjà présent.  Le jeu ne disposant pas de score, n'importe qui peut choisir le score de quelqu'un d'autre lors d'une fin de partie.
+Le classement est un moyen qui permet de donner envie aux joueurs de s'améliorer afin de battre le score des autres joueurs. Lorsque la partie se termine et que le joueur a selectioné son pseudo. Le score et le pseudo sont envoyé vers un serveur à l'aide d'une requête HTTP.  Se serveur va ensuite traiter la requête reçu et déterminer si le score doit être ajouté. Le score est ajouté au classement seulement si le nouveau score est supérieur au score du pseudo déjà présent. Le jeu ne disposant pas de score, n'importe qui peut choisir le score de quelqu'un d'autre lors d'une fin de partie.
 
 Les scores étant stockés sur un serveur externe au jeu, tous les joueurs voient le même classement, pourvu qu'ils disposent d'une connexion internet.
 
 Le serveur est un serveur NodeJS, hébergé sur le plan gratuit d'Heroku et disponible à l'adresse
 <https://pacman-leaderboard.herokuapp.com>
+
+Ce système ne possède aucune sécurité, il est tout à fait possible d'envoyer une requête manuellement afin d'ajouter n'importe quel score. Nous n'avons pas passé beaucoup de temps sur cette partie car nous ne la jugions pas prioritaire par rapport aux jeu.
 
 ### Editeur
 L'éditeur permet à tout le monde de fabriquer son propre niveau. En choisisant le type de case
@@ -67,7 +65,7 @@ La plus grosse difficulté lors de se projet à été le système de pathfinding
 Nous avons implémentés de nombreuses idées originales dans ce projet :
 
 - Ecran d'accueil
-- Classement
+- Classement en ligne
 - Menu principal avec musique
 - Utilisation d'images partout
 - Support manette
@@ -87,14 +85,23 @@ Nous avons implémentés de nombreuses idées originales dans ce projet :
 - [x] Fantômes fuient quand pacman a mangé un bonus
 - [x] Fantômes qui disparaissent quand pacman les mange en mode bonus
 - [x] Réapparition des fantômes
-- [ ] Différents niveaux
+- [x] Différents niveaux
 
 ## Idées originales
 - [x] Leaderboard en ligne (fait des requêtes à un serveur)
 - [x] Ecran d'accueil
 - [x] Editeur de niveaux
+- [x] Animations
 - [x] Support manette
 - [x] Musique/sons
+- [x] Support natif de Windows
+- [x] Nombre de fantomes dynamique
+- [x] Augmentation du score pour chaque fantôme mangé avec le même Pacgum
+
+## Pas implémentés
+- [ ] Création d'un nouveau fichier depuis l'éditeur (on est obligé créer manuellement un fichier vide dans data/maps puis ensuite de le charger en jeu)
+- [ ] Le jeu à des soucis lorsque les FPS sont très bas ( > 10) : certains fantômes n'arrivent pas à sortir de la grotte
+- [ ] Taille de plateau dynamique ()
 
 
 # Credits
