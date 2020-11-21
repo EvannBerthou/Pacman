@@ -260,6 +260,7 @@ void verifier_temps_bonbon_restant(Partie *p, float dt) {
 
 void activer_bonbon(Partie *p) {
     p->temps_bonbon = TEMPS_FUITE;
+    charger_fichier_audio(3);
 }
 
 void dessiner_grille(Partie *p, int dans_editeur) {
