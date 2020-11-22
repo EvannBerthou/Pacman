@@ -76,7 +76,7 @@ La plus grosse difficulté lors de ce projet à été le système de pathfinding
 - Ecran d'accueil
 - Utilisation d'images
 - Editeur de niveaux
-- Régulation de la vitesse du jeu afin d'assurer aucun changement dans les déplacements peu importe la vitesse d'exécution du programme.
+- Régulation de la vitesse du jeu afin d'assurer aucun changement dans les déplacements peu importe la vitesse d'exécution du programme
 - Déplacement lisse des entités (pas de téléportation entre les cases)
 - Animations
 - Support manette
@@ -85,12 +85,12 @@ La plus grosse difficulté lors de ce projet à été le système de pathfinding
 - Nombre de fantomes dynamique
 - Augmentation du score pour chaque fantôme mangé avec le même Pacgum
 - Taille de plateau dynamique
-- Support du konami code !
+- Support du konami code
 
 ## Pas implémentés
-- [ ] Création d'un nouveau fichier depuis l'éditeur (on est obligé de créer manuellement un fichier vide dans data/maps puis ensuite de le charger en jeu)
-- [ ] Le jeu à des soucis lorsque les FPS sont très bas ( > 10) : certains fantômes n'arrivent pas à sortir de la grotte
-
+- Création d'un nouveau fichier depuis l'éditeur (on est obligé de créer manuellement un fichier vide dans data/maps puis ensuite de le charger en jeu)
+- Le jeu à des soucis lorsque les FPS sont très bas ( > 10) : certains fantômes n'arrivent pas à sortir de la grotte
+- Une bonne IA, les fantômes se regroupent trop souvent
 
 # Crédits
 
