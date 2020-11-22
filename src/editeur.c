@@ -7,7 +7,8 @@ char selected_char = '*';
 char chemin_fichier[100];
 
 const char bouton_editeurs[] = {'*', '.', 'B', ' ', 'P', 'F'};
-const char *boutons_editeur_textes[] = {"Mur", "Bille", "Bonbon", "Vide", "Pacman", "Fantome"};
+const char *boutons_editeur_textes[] = {"Mur (A)", "Bille (Z)", "Bonbon (E)",
+                                        "Vide (R)", "Pacman (T)", "Fantome (Y)"};
 const int n = sizeof(bouton_editeurs) / sizeof(bouton_editeurs[0]);
 
 static Partie partie_vide() {
@@ -191,8 +192,3 @@ void lancer_editeur(char *chemin) {
         attente(16); // Limite la vitesse du programme pour éviter une surutilisation du CPU
     }
 }
-
-/*
-TODO :
-    - Message d'information lors de la sauvegarde en dessous du type selectionné
-*/

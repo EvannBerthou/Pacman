@@ -88,15 +88,20 @@ void init_sons() {
 static void resize_playing() {
     playing.max_size *= 2;
     playing.data = merr(realloc(playing.data, sizeof(Son*) * playing.max_size));
+    for (int i = playing.len; i < playing.max_size; i++) {
+        playing.data[i] = merr(calloc(1, sizeof(Son)));
+    }
 }
 
 int charger_fichier_audio(int id) {
     if (playing.len == playing.max_size) {
+        printf("realloc\n");
         resize_playing();
     }
     memcpy(playing.data[playing.len], samples.data[id], sizeof(Son));
     playing.data[playing.len]->playing = 1;
     playing.len++;
+    printf("%d\n", playing.len);
     return playing.len - 1;
 }
 

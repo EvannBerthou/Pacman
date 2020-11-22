@@ -79,7 +79,7 @@ static int nouvelle_direction(Partie *p) {
     return (
         // Si pacman est alligné à la grille ou part dans le direction opposé
         // Et qu'il ne se déplace pas dans un mur
-        (aligne_grille(p, p->pacman.pos) || direction_opposee(p)) 
+        (aligne_grille(p, p->pacman.pos) || direction_opposee(p))
             && case_direction(p, &p->pacman, p->pacman.etat.prochaine_direction) != '*'
     );
 }
@@ -101,7 +101,7 @@ void bouger_pacman(Partie *p, float dt, int touche) {
 
     // Si pacman est contre un mur alors ne pas bouger
     if (aligne_grille(p, p->pacman.pos) && case_direction(p, &p->pacman, p->pacman.etat.direction) == '*') {
-        // Coupe le son si pacman est contre un mur 
+        // Coupe le son si pacman est contre un mur
         pause_son(p->son_pacman, 1);
         return;
     }
@@ -205,6 +205,7 @@ void pacman_mange_fantome(Partie *p, Entite *fantome) {
 }
 
 void jouer_mort_pacman(Partie *p, Timer *t) {
+    pause_son(p->son_pacman, 1);
     int id_audio = charger_fichier_audio(5);
     while (is_playing(id_audio)) { tick_timer(t); }
 };

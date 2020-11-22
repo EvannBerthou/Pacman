@@ -1,4 +1,3 @@
-#include <unistd.h>
 #include <math.h>
 #include "fantome.h"
 #include "main.h"
@@ -115,8 +114,8 @@ SDL_Surface *sprite_fantome(TypeEntite t, int dir, int frame) {
 float timer_fantomes[4];
 
 void reset_timer_fantomes() {
-    timer_fantomes[0] = 5.f;
-    timer_fantomes[1] = 10.f;
+    timer_fantomes[0] = 1.f;
+    timer_fantomes[1] = 1.f;
     timer_fantomes[2] = 15.f;
     timer_fantomes[3] = 20.f;
 }
@@ -152,7 +151,7 @@ void bouger_fantomes(Partie *p, float dt) {
 
         determiner_cible(p, fantome);
         // Trouve le chemin le plus cours entre le fantome et sa case cible
-        find_path(p,current_pos,fantome->pos_cible,fantome); 
+        find_path(p,current_pos,fantome->pos_cible,fantome);
 
         // Change la direction du fantôme ssi il est aligné à la grille pour éviter qu'il traverse les murs
         if (aligne_grille(p, fantome->pos)) {
@@ -174,7 +173,7 @@ void bouger_fantomes(Partie *p, float dt) {
             fantome->animation_time = 0;
         }
 
-        // Renvoie la première position entre la position précédente du fantome et la nouvelle où 
+        // Renvoie la première position entre la position précédente du fantome et la nouvelle où
         // il n'y a pas de mur (évite aux fantomes de traverser les murs lorsque les FPS sont bas)
         fantome->pos = traverse_mur(p, fantome, fantome->pos, prochaine_pos);
     }
@@ -195,7 +194,7 @@ void determiner_cible(Partie *p, Entite *fantome) {
         }
         else if (fantome->type == ENTITE_FANTOME_C) {
             IA_CYAN(fantome);
-        } 
+        }
         else if (fantome->type == ENTITE_FANTOME_O) {
             IA_ORANGE(p, fantome);
         }
