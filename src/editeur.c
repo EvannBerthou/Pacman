@@ -12,6 +12,7 @@ const int n = sizeof(bouton_editeurs) / sizeof(bouton_editeurs[0]);
 
 static Partie partie_vide() {
     Partie p;
+    memset(&p, 0, sizeof(Partie));
     p.L = 27;
     p.C = 21;
 
@@ -36,6 +37,7 @@ static Partie partie_vide() {
 
 Partie charger_editeur() {
     Partie p;
+    memset(&p, 0, sizeof(Partie));
     int err = charger_plan(chemin_fichier, &p);
     if (err == -1) {
         return partie_vide();

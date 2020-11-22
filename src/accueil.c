@@ -25,7 +25,7 @@ void charger_boutons() {
     boutons[0] = nouveau_bouton((Point){ECRAN_W / 2, 150}, blanc, "Jouer", 26);
     boutons[1] = nouveau_bouton((Point){ECRAN_W / 2, 200}, blanc, "Classement", 26);
     boutons[2] = nouveau_bouton((Point){ECRAN_W / 2, 250}, blanc, "Editeur", 26);
-    boutons[3] = nouveau_bouton((Point){ECRAN_W / 2, 300}, blanc, "Instruction", 26);
+    boutons[3] = nouveau_bouton((Point){ECRAN_W / 2, 300}, blanc, "Instructions", 26);
     boutons[4] = nouveau_bouton((Point){ECRAN_W / 2, 350}, blanc, "Quitter", 26);
 }
 

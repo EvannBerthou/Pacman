@@ -6,7 +6,7 @@ SOURCES = $(shell find $(SRCDIR) -name *.c)
 OBJ = $(subst $(SRCDIR),$(OBJDIR),$(SOURCES:.c=.o))
 OUTPUT = resultat
 LIB = -lm -lSDL -lSDL_ttf
-OPT = -Wall 
+OPT = -Wall -Werror
 SDL_CFLAGS = $(shell sdl-config --cflags)
 SDL_LDFLAGS = $(shell sdl-config --libs)
 VERBOSE = TRUE
