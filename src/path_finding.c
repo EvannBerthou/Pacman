@@ -58,7 +58,7 @@ void get_path(Noeud* last_noeud,int nb_tour,Entite* F){
         if (index <= 0) break;
         local=local->parent;
     }
-    F->chemin_noeud[0] = local; // Segfault
+    F->prochain_noeud = local;
 }
 
 static int sur_grille(Partie *p, Pos pos) {

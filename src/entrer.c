@@ -4,6 +4,7 @@
 
 extern SDL_Joystick *manette;
 
+// Fonctions encapsulement
 static int touche_manette(int bouton) {
     if (manette == NULL) return 0;
     return SDL_JoystickGetButton(manette, bouton);
@@ -21,7 +22,9 @@ static void boutons_manette(int *res) {
     }
 }
 
+// Renvoie la nouvelle touche pressée sinon 0
 int nouvelle_touche() {
+    // Etat des entrés lors du dernier appel (permet d'éviter la répétition)
     static Uint8 derniere_croix  = 0;
     static int derniers_boutons[NOMBRE_BOUTON] = {0,0,0,0};
     static int derniere_touche = 0;
@@ -104,6 +107,7 @@ void avancer_konami_code(int touche) {
     }
 }
 
+// Attendre que l'utilisateur appuie sur la touche retour
 void attendre_sortie() {
     int touche = 0;
     while (touche != SDLK_q) {

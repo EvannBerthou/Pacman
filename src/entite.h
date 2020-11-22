@@ -9,6 +9,7 @@ typedef struct pos {
     int     c;
 } Pos;
 
+// Structure qui stocke une positon mais avec des floats pour plus de précision
 typedef struct posf {
     float l,c;
 } Posf;
@@ -55,7 +56,7 @@ typedef struct {
     Pos pos_cible; // position de la cible du fantome sur le plateau 
     TypeEntite type; // type de l'entite
     Etat etat; // etat de l'entite 
-    Noeud* chemin_noeud[500]; // chemin ver cible 
+    Noeud* prochain_noeud; // chemin ver cible 
     int nombre_noeud; //nombre noeud dans chemin
     int nombre_frames; // nombre frame 
     float vitesse; //vitesse de l'entite 

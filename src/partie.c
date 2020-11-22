@@ -134,21 +134,22 @@ int charger_plan(char *chemin, Partie *p) {
     return 0;
 }
 
+// Charge le fichier chemin par la partie
 int charger_niveau(Partie *p, char *chemin) {
     /* Chargement du plan à partir du fichier fourni en paramètre                 */
     printf("Chargement du plan...\n");
     char chemin_complet[100];
     sprintf(chemin_complet, "data/maps/%s", chemin);
-    vider_partie(p);
+    vider_partie(p); // Vide la partie pour éviter de garder des informations entre les parties
     int err = charger_plan(chemin_complet, p);
-    if (err == -1) {
-        charger_accueil();
+    if (err == -1) { // Si erreur lors du chargement
+        charger_accueil(); // Revenir à l'accueil
         return 1;
     }
     else {
         calculer_voisins(p);
         reset_timer_fantomes();
-        if (p->nom_fichier == NULL) {
+        if (p->nom_fichier == NULL) { // Si la partie vient d'être lancé pour la première fois
             p->nom_fichier = strdup(chemin);
         }
 
@@ -168,12 +169,14 @@ int charger_niveau(Partie *p, char *chemin) {
     return 0;
 }
 
+// Renvoie le type case à une position, renvoie 'x' si la position est en dehors du plateau
 char on_grid(Partie *p, int l, int c) {
     if (l >= 0 && c >= 0 && l < p->L && c < p->C)
         return p->plateau[l][c];
     return 'x';
 }
 
+// Pos est-il aligné à la grille ?
 int aligne_grille(Partie *p, Posf pos) {
     return (int)(fmod(pos.l, CASE)) <= 1 && (int)(fmod(pos.c, CASE)) <= 1;
 }
@@ -193,8 +196,9 @@ char case_direction(Partie *p, Entite *e, int direction) {
 }
 
 static int collision_pacman_fantome(Posf pacman, Posf fantome) {
-    // Collision entre 2 rectangles
+    // Taille plus petite pour éviter des collisions qui ne devraient pas avoir lieu
     const int taille_case = CASE * .75f;
+    // Collision entre 2 rectangles
     return (
         pacman.c < fantome.c + taille_case &&
         pacman.c + taille_case > fantome.c &&
@@ -203,6 +207,7 @@ static int collision_pacman_fantome(Posf pacman, Posf fantome) {
     );
 }
 
+// Regarde si des actions doivent avoir lieu après l'actualisation
 void maj_etat(Partie *p, Timer *t){
     for (int i = 0; i != p->nbf; i++) {
         // Détection de la collision entre fantome et pacman
@@ -230,7 +235,7 @@ void maj_etat(Partie *p, Timer *t){
             // Si le fantome se fait manger
             else if (p->fantomes[i].etat.mange == 0) {
                 a_ete_mange(&p->fantomes[i]);
-                tick_timer(t);
+                tick_timer(t); // Un petit car sans ça, le dt serait très grand dû au attente() dans pacman_mange_fantome
                 pacman_mange_fantome(p, &p->fantomes[i]);
                 tick_timer(t);
             }
@@ -267,6 +272,7 @@ void verifier_temps_bonbon_restant(Partie *p, float dt) {
     }
 }
 
+// Lorsque pacman a mangé un bonbon
 void activer_bonbon(Partie *p) {
     p->temps_bonbon = TEMPS_FUITE;
     charger_fichier_audio(3);
@@ -292,6 +298,7 @@ void dessiner_grille(Partie *p, int dans_editeur) {
             else if (type == 'B') {
                 afficher_surface(sprite_index(1), pos);
             }
+            // Dessine pacman et les fantômes de façon fixe lorsqu'on est dans l'éditeur
             if (dans_editeur) {
                 if (type == 'P') {
                     afficher_surface(sprite_pacman(0,0), pos);
@@ -305,6 +312,7 @@ void dessiner_grille(Partie *p, int dans_editeur) {
     }
 }
 
+// Dessine le texte sur la droite
 void dessiner_texte(Partie *p) {
     // efface le texte précédent
     // Remarque : on fait ça pour tricher un peu, lorsque pacman arrive sur la droite du plateau, il est dessiné
@@ -363,6 +371,7 @@ void terminer_partie(Partie *p) {
     p->nom_fichier = NULL;
 }
 
+// Lorsque pacman a mangé tout les bonus du plateau, relancer le niveau avec une diffcultée accrue
 void relancer_niveau(Partie *p) {
     int ancien_niveau = p->niveau;
     int ancien_score = p->pacman.etat.score;
@@ -377,6 +386,7 @@ void relancer_niveau(Partie *p) {
     calculer_vitesse_niveau(p);
 }
 
+// Joue la musique d'intro de niveau
 void jouer_intro(Partie *p, Timer *t) {
     dessiner_partie(p);
     actualiser();

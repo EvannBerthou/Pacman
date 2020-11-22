@@ -4,6 +4,7 @@
 #include "pacman.h"
 #include "entrer.h"
 
+// Sprites de tous les élements en jeu
 #define SPRITE_COUNT 18
 const char *sprites_paths[SPRITE_COUNT] = {
     "data/sprites/bille.bmp",
@@ -27,6 +28,7 @@ const char *sprites_paths[SPRITE_COUNT] = {
 };
 SDL_Surface* sprites[SPRITE_COUNT];
 
+// Charge les sprites au lancement du programme pour éviter de devoir les charger à chaque frame
 int charger_sprites() {
     for (int i = 0; i < SPRITE_COUNT; i++) {
         SDL_Surface *sprite = SDL_LoadBMP(sprites_paths[i]);
@@ -62,6 +64,7 @@ SDL_Surface *sprite_index(int index) {
     return sprites[index];
 }
 
+// Calcul le nombre de mur voisin pour chaque case
 void calculer_voisins(Partie *p) {
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
@@ -107,4 +110,8 @@ void afficher_bouton_retour() {
 Point centrer_texte(char *texte, Point centre, int taille) {
     Point t = taille_texte(texte, taille);
     return (Point) {centre.x - (t.x / 2), centre.y - (t.y / 2)};
+}
+
+void effacer_ecran() {
+    dessiner_rectangle((Point){0, 0}, ECRAN_W, ECRAN_H, noir);
 }

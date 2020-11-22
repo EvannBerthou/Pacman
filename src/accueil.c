@@ -1,3 +1,4 @@
+// Include différent en fonction de la platforme car les API sont pas les mêmes
 #ifndef __WIN32
 #include <dirent.h>
 #else
@@ -7,7 +8,7 @@
 #include "../lib/libgraphique.h"
 #include "main.h"
 #include "accueil.h"
-#include "Bouton.h"
+#include "bouton.h"
 #include "entrer.h"
 #include "affichage.h"
 #include "pacman.h"
@@ -29,9 +30,11 @@ void charger_boutons() {
     boutons[4] = nouveau_bouton((Point){ECRAN_W / 2, 350}, blanc, "Quitter", 26);
 }
 
+// Fonctions appelée à chaque frame
 void actualiser_accueil(Partie *p, Timer *t) {
     int touche = nouvelle_touche();
     toggle_volume(touche);
+    // Change le bouton selectionné lorsqu'une flèche est pressée
     if (touche == SDLK_DOWN) {
         bouton_selectionne = (bouton_selectionne + 1) % NOMBRE_BOUTONS;
     }
@@ -40,6 +43,7 @@ void actualiser_accueil(Partie *p, Timer *t) {
         if (bouton_selectionne < 0)
             bouton_selectionne = NOMBRE_BOUTONS - 1;
     }
+    // Si touche entrer, activer le bouton
     else if (touche == SDLK_RETURN) {
         activer_bouton(p, t);
     }
@@ -48,7 +52,7 @@ void actualiser_accueil(Partie *p, Timer *t) {
 void activer_bouton(Partie *p, Timer *t) {
     // Animation de pacman qui mange le bouton avant de changer de menu
     manger_bouton();
-    // Transition écran noir
+    // Détermine l'action a faire en fonction du bouton pressé
     switch(bouton_selectionne) {
     case 0: {
         char *chemin = selectionner_niveau();
@@ -64,13 +68,17 @@ void activer_bouton(Partie *p, Timer *t) {
         changer_scene(SCENE_NIVEAU);
         // Arrete la musique de l'accueil
         stop_son(0);
+        // Charge le son de pacman mais ne le joue pas directement
         p->son_pacman = charger_fichier_audio(1);
         pause_son(p->son_pacman, 1);
         free(chemin);
+        // Joue la musique d'intro
         jouer_intro(p, t);
         break;
     }
+    // Classement
     case 1: afficher_leaderboard(); break;
+    // Editeur
     case 2: {
         char *chemin = selectionner_niveau();
         if (chemin == NULL) {
@@ -81,17 +89,19 @@ void activer_bouton(Partie *p, Timer *t) {
         free(chemin);
         break;
     }
+    // Instructions
     case 3: afficher_instructions(); break;
+    // Quitter
     case 4: exit(0); break;
     }
 }
 
 void dessiner_accueil() {
-    dessiner_rectangle((Point){0, 0}, 800, ECRAN_W, noir);
-    // TODO: Dessiner un logo au lieu d'un texte
+    effacer_ecran();
     afficher_texte("Pacman", 46, (Point){800 / 2 - 26 * 7, 50}, jaune);
     for (int i = 0; i < NOMBRE_BOUTONS; i++) {
         BoutonAccueil b = boutons[i];
+        // Affiche le texte du bouton
         afficher_texte(b.texte, b.taille, (Point){b.rect.x, b.rect.y}, b.c);
         // Si le bouton en cours d'affichage est le bouton selectionné
         if (i == bouton_selectionne) {
@@ -102,15 +112,20 @@ void dessiner_accueil() {
 }
 
 void manger_bouton() {
+    // Animations de pacman bouge ouverte/fermer
     SDL_Surface *images[] = {
         sprite_pacman(3, 0),
         sprite_pacman(3, 1),
     };
     BoutonAccueil b = boutons[bouton_selectionne];
+    // Point de départ de pacman
     Point p = {b.rect.x - 30, b.rect.y + 7};
     Point debut = p;
+    // Position en x d'arrivé de pacman une fois le bouton mangé
     int cible = b.rect.x + b.rect.w;
+    // Déplacement de pacman entre debut et cible
     while (p.x < cible) {
+        // Efface le passage de pacman
         dessiner_rectangle(debut, (p.x - debut.x + 10), 25, noir);
         p.x += 1;
         // Change d'image toutes les 15 frames
@@ -120,7 +135,7 @@ void manger_bouton() {
     }
 }
 
-
+// Liste les fichiers dans un dossier
 #ifndef __WIN32
 // VERSION LINUX
 int liste_fichiers(char **resultat) {
@@ -153,28 +168,28 @@ int liste_fichiers(char **resultat) {
 
     hFind = FindFirstFile("data\\maps\\*.*", &ffd);
 
-    // List all the files in the directory with some info about them
     do {
-        if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            continue;
-        }
-        else {
+        if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
             resultat[nb++] = strdup(ffd.cFileName);
         }
     } while (FindNextFile(hFind, &ffd) != 0);
     FindClose(hFind);
 
-    if (nb == 0)
+    // Si aucu fichier trouver
+    if (nb == 0) {
         return -1;
+    }
     return nb;
 }
 #endif
 
+// Menu pour selectionner quel niveau charger
 char* selectionner_niveau() {
     // Chargement des fichiers
     char *niveaux[100]; // TODO: Probleme de taille fixe
     int nb;
     nb = liste_fichiers(niveaux);
+    // Si aucun fichier dans le dossier data/maps
     if (nb == -1) {
         return NULL;
     }
@@ -184,6 +199,7 @@ char* selectionner_niveau() {
         traiter_evenements();
         int touche = nouvelle_touche();
         toggle_volume(touche);
+        // Déplacement du curseur avec looping
         if (touche == SDLK_DOWN) {
             curseur = (curseur + 1) % nb;
         }
@@ -201,6 +217,7 @@ char* selectionner_niveau() {
             return selectionne;
         }
         else if (touche == SDLK_q) {
+            // Libère tous les noms 
             for (int i = 0; i < nb; i++) {
                 free(niveaux[i]);
             }
@@ -215,13 +232,17 @@ char* selectionner_niveau() {
     }
 }
 
+// Affiche le nom des fichiers sur un interval 
 void afficher_liste_niveaux(char **liste, int n, int curseur) {
     const int limit = 15;
     const int font = 26;
     dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
 
+    // Par défaut on affiche depuis le début
     int debut = 0;
+    // Si la curseur est plus loin que la limit affichable
     if (curseur >= limit) {
+        // Décalé le début pour afficher la suite
         debut = curseur - limit + 1;
     }
 
@@ -229,7 +250,7 @@ void afficher_liste_niveaux(char **liste, int n, int curseur) {
     for (int i = 0; i < limit; i++) {
         if (debut + i >= n) break;
         Point p = {0, font * i + 10};
-        Couleur c = (debut + i) == curseur ? rouge : blanc;
+        Couleur c = (debut + i) == curseur ? rouge : blanc; // Rouge si selectionnné, sinon blanc
         afficher_texte(liste[debut + i], font, p, c);
     }
 }
@@ -239,14 +260,17 @@ void charger_accueil() {
     pause_son(0, 1);
 }
 
+// Affiche le menu d'instructions
 void afficher_instructions() {
-    dessiner_rectangle((Point){0, 0}, ECRAN_W, ECRAN_H, noir);
+    effacer_ecran();
     const int taille_titre = 36;
     const int taille_texte = 18;
+    // Position du texte à afficher en y
     int avance_y = 0;
 
     char *texte_instructions = "Instructions";
     avance_y += 20;
+    // Affiche le titre centré
     afficher_texte(texte_instructions, taille_titre,
             centrer_texte(texte_instructions, (Point){ECRAN_W / 2, avance_y}, taille_titre),
             blanc);
@@ -264,6 +288,7 @@ void afficher_instructions() {
         afficher_texte(texte_regles[i], taille_texte, (Point){0, avance_y}, blanc);
     }
 
+    // Affiche les controles
     avance_y += 40;
     afficher_texte("Jeu", taille_titre, (Point){0, avance_y}, blanc);
     afficher_texte("Editeur", taille_titre, (Point){ECRAN_W / 2, avance_y}, blanc);
@@ -286,6 +311,8 @@ void afficher_instructions() {
         "Fantome : Y",
     };
 
+    // Garde en mémoire avance_y avant l'affichage des controles pour ensuite mettre les controles dans
+    // l'éditeur à côté
     int pre_touches = avance_y;
     for (int i = 0; i < 4; i++) {
         avance_y += taille_texte;
@@ -298,6 +325,7 @@ void afficher_instructions() {
         afficher_texte(texte_touches_editeur[i], taille_texte, (Point){ECRAN_W / 2, avance_y}, blanc);
     }
 
+    // Attendre que l'utilisateur est fini pour continuer
     afficher_bouton_retour();
     actualiser();
     attendre_sortie();

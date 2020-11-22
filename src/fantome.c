@@ -2,6 +2,7 @@
 #include "fantome.h"
 #include "main.h"
 
+// Sprites des fantômes
 #define SPRITE_FANTOME_COUNT 7
 const char *fantome_sprite_path[SPRITE_FANTOME_COUNT][4][2] = {
 
@@ -62,14 +63,17 @@ const char *fantome_sprite_path[SPRITE_FANTOME_COUNT][4][2] = {
 };
 SDL_Surface *sprites_fantomes[SPRITE_FANTOME_COUNT][4][2];
 
+// Vérifie que le fantôme n'a pas traversé de mur pendant son déplacement, (peut arriver lorsque les FPS sont bas)
 static Posf traverse_mur(Partie *p, Entite *fantome, Posf precf, Posf currf) {
     Pos prec = ecran_vers_grille(precf);
     Pos curr = ecran_vers_grille(currf);
 
+    // Si le fantome n'a pas changé de case, pas besoin de vérifier s'il a traversé un mur
     if (prec.l == curr.l && prec.c == curr.c) {
         return currf;
     }
 
+    // Refait le chemin entre la position précédente et la nouvelle position du fantome
     while (prec.l != curr.l || prec.c != curr.c) {
         Pos prochain = prec;
         switch (fantome->etat.direction) {
@@ -79,7 +83,7 @@ static Posf traverse_mur(Partie *p, Entite *fantome, Posf precf, Posf currf) {
             case DIR_DROITE: prochain.c++; break;
             default: break;
         }
-        // Si le fantome a traversé un mur alors le faire reculer avant le mur
+        // Si le fantome a traversé un mur ou est sorti du niveau alors le faire reculer avant le mur
         char type_case = on_grid(p, prochain.l, prochain.c);
         if (type_case == '*' || type_case == 'x') {
             return (Posf) {prec.l * CASE, prec.c * CASE};
@@ -89,6 +93,7 @@ static Posf traverse_mur(Partie *p, Entite *fantome, Posf precf, Posf currf) {
     return currf;
 }
 
+// Charge les sprites des fantômes au lancement du programme
 int charger_sprites_fantomes() {
     for (int i = 0; i < SPRITE_FANTOME_COUNT; i++) {
         for (int j = 0; j < 4; j++) {
@@ -112,7 +117,6 @@ SDL_Surface *sprite_fantome(TypeEntite t, int dir, int frame) {
 
 // Temps avant que chaque fantome quitte la base
 float timer_fantomes[4];
-
 void reset_timer_fantomes() {
     timer_fantomes[0] = 1.f;
     timer_fantomes[1] = 1.f;
@@ -123,6 +127,7 @@ void reset_timer_fantomes() {
 void bouger_fantomes(Partie *p, float dt) {
     for (int i = 0; i < p->nbf; i++) {
 
+        // Descend le timer avec que le fantôme sorte de la grotte
         if (timer_fantomes[i] > 0) {
             timer_fantomes[i] -= dt;
             continue;
@@ -233,20 +238,21 @@ void IA_CYAN(Entite *fantome) {
     }
 }
 
+// Détermine dans quelle direction est la prochaine case du déplacement du fantôme
 DirEntite determiner_direction(Entite *fantome) {
     Pos current_pos = ecran_vers_grille(fantome->pos);
     DirEntite direction = fantome->etat.direction;
-    if (fantome->chemin_noeud[0] != NULL) {
-        if (current_pos.l > fantome->chemin_noeud[0]->pos.l) {
+    if (fantome->prochain_noeud != NULL) {
+        if (current_pos.l > fantome->prochain_noeud->pos.l) {
             direction = DIR_HAUT;
         }
-        else if (current_pos.l < fantome->chemin_noeud[0]->pos.l) {
+        else if (current_pos.l < fantome->prochain_noeud->pos.l) {
             direction = DIR_BAS;
         }
-        else if (current_pos.c > fantome->chemin_noeud[0]->pos.c) {
+        else if (current_pos.c > fantome->prochain_noeud->pos.c) {
             direction = DIR_GAUCHE;
         }
-        else if (current_pos.c < fantome->chemin_noeud[0]->pos.c) {
+        else if (current_pos.c < fantome->prochain_noeud->pos.c) {
             direction = DIR_DROITE;
         }
     }
@@ -292,7 +298,7 @@ float distance_pac(Posf A,Posf B){
     return CARRE(A.c - B.c) + CARRE(A.l - B.l);
 }
 
-
+// Selectionne le coin le plus éloigné d'un fantôme
 void select_coin(Entite *fantome){
     Pos liste_coin[4] = {{1,1}, {1,20}, {26,1}, {26,21}};
     int pos_coin = 0;
@@ -307,26 +313,31 @@ void select_coin(Entite *fantome){
     fantome->pos_cible = liste_coin[pos_coin];
 }
 
+// Passe le fantôme en mode fuite
 void fuite_fantome(Entite *fantome) {
     fantome->etat.fuite = TEMPS_FUITE;
     fantome->vitesse=35;
 }
 
+// Passe le fantôme en mode mangé
 void a_ete_mange(Entite *fantome) {
     fantome->etat.mange = 1;
     fantome->vitesse = 70;
 }
 
+// Faire revivre le fantôme
 void revivre(Entite *fantome) {
     fantome->etat.fuite = 0;
     fantome->etat.mange = 0;
     fantome->vitesse = 50;
 }
 
-static int formule_vitesse(int x) {
-    return (x * x) + x + VITESSE_FANTOME;
+// Calcul la vitesse d'un fantôme à un niveau donné
+static int formule_vitesse(int niv) {
+    return CARRE(niv) + niv + VITESSE_FANTOME; // x^2 + x + vf
 }
 
+// Calcul la vitesse de chaque fantôme
 void calculer_vitesse_niveau(Partie *p) {
     for (int i = 0; i < p->nbf; i++) {
         Entite *fantome = &p->fantomes[i];
@@ -338,7 +349,8 @@ void calculer_vitesse_niveau(Partie *p) {
             break;
         }
         case ENTITE_FANTOME_R: {
-            fantome->vitesse = formule_vitesse(p->niveau + 1);
+            // Le fantôme rouge à un niveau d'avance sur sa vitesse
+            fantome->vitesse = formule_vitesse(p->niveau + 1); 
             break;
         }
         default: break;

@@ -2,7 +2,9 @@
 #include "entite.h"
 #include "main.h"
 #include "fantome.h"
+#include "pacman.h"
 
+// Création d'une nouvelle entitée
 Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
     Etat etat = {
         .direction = DIR_INCONNUE,
@@ -21,15 +23,11 @@ Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
         .etat = etat,
         .animation_time = 0,
         .nombre_noeud=0,
-        .chemin_noeud={0},
+        .prochain_noeud = NULL,
     };
 
-    if (type == ENTITE_PACMAN) {
-        result.vitesse = 85;
-    }// Pacman (pas ENTITE_FANTOME) possède 2 frames d'animation : bouche ouverte/fermée
-    else {
-        result.vitesse = VITESSE_FANTOME;
-    }
+    // Détermine la vitesse de l'entité en fonction de son type
+    result.vitesse = (type == ENTITE_PACMAN) ? VITESSE_PACMAN : VITESSE_FANTOME; 
 
     return result;
 }

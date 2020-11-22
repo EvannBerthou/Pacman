@@ -178,7 +178,7 @@ void afficher_leaderboard() {
     attendre_sortie();
     free(reponse);
 }
-
+// Affiche le nom et le score d'un joueur à la position y
 void afficher_ligne(char *joueur, char *score, int y) {
 #ifdef DEBUG
     printf("joueur : %s score : %s\n", joueur, score);
@@ -188,11 +188,13 @@ void afficher_ligne(char *joueur, char *score, int y) {
     afficher_texte(score, taille_font, centrer_texte(score, (Point){ECRAN_W / 2 + 300 / 2, y}, taille_font), blanc);
 }
 
+// Affiche un message au centre de l'écran
 void afficher_message_leaderboard(char *message, int font) {
     dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
     afficher_texte(message, font, centrer_texte(message, (Point){ECRAN_W / 2, ECRAN_H / 2}, font), blanc);
 }
 
+// Envoie le score au serveur
 void envoyer_score(Partie *p) {
     char *nom = entrer_nom();
 
@@ -216,15 +218,18 @@ void envoyer_score(Partie *p) {
     free(nom);
 }
 
-char * entrer_nom() {
+// Demande au joueur d'entrer son nomù
+char *entrer_nom() {
     // Nom a 5 lettres + \0
     char nom[6] = "AAAAA";
     int touche = 0, index = 0;
     afficher_nom(nom, index);
+    // Tant que le joueur n'a pas confirmé
     while (touche != SDLK_RETURN) {
         traiter_evenements();
         touche = nouvelle_touche();
         toggle_volume(touche);
+        // Déplacement du curseur droite/gauche
         if (touche == SDLK_RIGHT)
             index = (index + 1) % 5;
         else if (touche == SDLK_LEFT) {
@@ -247,6 +252,7 @@ char * entrer_nom() {
     return strdup(nom);
 }
 
+// Détermine la position de la boite par son centre
 Point centrer_boite(Point centre, Point taille) {
     return (Point) {
         centre.x - (taille.x / 2),
@@ -254,6 +260,7 @@ Point centrer_boite(Point centre, Point taille) {
     };
 }
 
+// Affiche le nom dans une boite
 void afficher_nom(char *nom, int index) {
     // Dessine la boite autour du texte au centre de l'écran
     Point coin = centrer_boite((Point){ECRAN_W / 2, ECRAN_H / 2}, (Point){5 * 46, 60});

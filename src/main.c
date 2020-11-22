@@ -17,13 +17,14 @@
 SCENE scene_active = SCENE_ACCUEIL;
 SDL_Joystick *manette = NULL;
 
+// Le point d'entré n'est pas le même entre un programme Windows et Linux
 #ifdef __WIN32
 int WinMain(int argc, char **argv) {
 #else
 int main(int argc, char **argv) {
 #endif
     ouvrir_fenetre(ECRAN_W, ECRAN_H);
-    SDL_EnableKeyRepeat(0,0);
+    SDL_EnableKeyRepeat(0,0); // Désactive la répétition de touche
 
     // Chargement de la manette si disponible
     int num_joy = SDL_NumJoysticks();
@@ -41,8 +42,8 @@ int main(int argc, char **argv) {
         SDL_JoystickEventState(SDL_ENABLE);
     }
 
-    init_sons();
-    charger_fichier_audio(0);
+    init_sons(); // Chargement des sons
+    charger_fichier_audio(0); // Joue la musique de l'écran d'accueil
 
     // Création des boutons
     if (charger_sprites() == -1)

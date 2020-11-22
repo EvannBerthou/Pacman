@@ -3,6 +3,8 @@
 
 #include "partie.h"
 
+#define VITESSE_PACMAN 85
+
 // Déplacement
 void bouger_pacman(Partie *p, float dt, int touche);
 void pacman_manger(Partie *p);

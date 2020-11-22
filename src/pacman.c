@@ -30,6 +30,7 @@ int charger_sprites_pacman() {
     return 0;
 }
 
+// Faire reculer pacman s'il est dans un mur
 static void reculer_pacman(Partie *p, Pos grille) {
     // temps que pacman est dans un mur faire demitour
     while (on_grid(p, grille.l, grille.c) == '*'){
@@ -73,6 +74,7 @@ static int deplacement(int touche, int direction){
     }
 }
 
+// La direction de pacman doit-elle changée ?
 static int nouvelle_direction(Partie *p) {
     // Si pacman ne se déplace pas
     if (p->pacman.etat.direction == DIR_INCONNUE) return 1;
@@ -113,6 +115,7 @@ void bouger_pacman(Partie *p, float dt, int touche) {
         case DIR_DROITE: p->pacman.pos.c += dt * p->pacman.vitesse; break;
     }
 
+    // Vérifie si pacman est rentré dans un tunnel et le replace à sa nouvelle position
     verifier_tunnel(p);
 
     // Animation_time étant un float, on vérifie manuellement si on doit boucler
@@ -124,7 +127,7 @@ void bouger_pacman(Partie *p, float dt, int touche) {
     // Vérifie si pacman est en collision avec un bonbon
     pacman_manger(p);
 
-    pause_son(p->son_pacman, 0);
+    pause_son(p->son_pacman, 0); // Joue le son de déplacement
 }
 
 void verifier_tunnel(Partie *p) {
@@ -143,6 +146,7 @@ void verifier_tunnel(Partie *p) {
     }
 }
 
+// Faire manger pacman
 void pacman_manger(Partie *p) {
     if (centre_case(p)) {
         Pos grille = ecran_vers_grille(p->pacman.pos);
@@ -189,8 +193,10 @@ void dessiner_pacman(Partie *p) {
     }
 }
 
+// Affiche le score gagné lorsque pacman a mangé un fantôme
 void pacman_mange_fantome(Partie *p, Entite *fantome) {
     p->fantomes_manges++;
+    // Le score augmente à chaque fois que pacman mange plusieurs fantômes avec le même bonbon
     int score = pow(2, p->fantomes_manges) * 100;
     p->pacman.etat.score += score;
 
@@ -200,12 +206,15 @@ void pacman_mange_fantome(Partie *p, Entite *fantome) {
     Point pos = {fantome->pos.c, fantome->pos.l};
     afficher_texte(texte_score, 18, pos, rouge);
     actualiser();
-    charger_fichier_audio(2);
+    charger_fichier_audio(2); // Joue le son de manger fantôme
     attente(500);
 }
 
+// Jouer le son de mort de pacman
 void jouer_mort_pacman(Partie *p, Timer *t) {
     pause_son(p->son_pacman, 1);
-    int id_audio = charger_fichier_audio(5);
-    while (is_playing(id_audio)) { tick_timer(t); }
+    if (audio_actif()) {
+        int id_audio = charger_fichier_audio(5);
+        while (is_playing(id_audio)) { tick_timer(t); }
+    }
 };
