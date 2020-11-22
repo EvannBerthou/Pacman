@@ -97,15 +97,16 @@ void activer_bouton(Partie *p, Timer *t) {
 }
 
 void dessiner_accueil() {
-    effacer_ecran();
-    afficher_texte("Pacman", 46, (Point){800 / 2 - 26 * 7, 50}, jaune);
+    dessiner_rectangle((Point){0, 0}, ECRAN_W, ECRAN_H, BG_COLOR);
+    // Affiche le logo
+    afficher_surface(sprite_index(0),(Point){ECRAN_W / 2 - 100, 50});
     for (int i = 0; i < NOMBRE_BOUTONS; i++) {
         BoutonAccueil b = boutons[i];
         // Affiche le texte du bouton
         afficher_texte(b.texte, b.taille, (Point){b.rect.x, b.rect.y}, b.c);
         // Si le bouton en cours d'affichage est le bouton selectionné
         if (i == bouton_selectionne) {
-            afficher_image("data/sprites/pacman30.bmp", (Point){b.rect.x - 30, b.rect.y + 7});
+            afficher_surface(sprite_pacman(3,0), (Point){b.rect.x - 30, b.rect.y + 7});
         }
     }
     afficher_bouton_selectionner();
@@ -126,7 +127,7 @@ void manger_bouton() {
     // Déplacement de pacman entre debut et cible
     while (p.x < cible) {
         // Efface le passage de pacman
-        dessiner_rectangle(debut, (p.x - debut.x + 10), 25, noir);
+        dessiner_rectangle(debut, (p.x - debut.x + 10), 25, BG_COLOR);
         p.x += 1;
         // Change d'image toutes les 15 frames
         afficher_surface(images[p.x % 30 / 15], p);
@@ -236,7 +237,7 @@ char* selectionner_niveau() {
 void afficher_liste_niveaux(char **liste, int n, int curseur) {
     const int limit = 15;
     const int font = 26;
-    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
+    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
 
     // Par défaut on affiche depuis le début
     int debut = 0;
@@ -262,7 +263,7 @@ void charger_accueil() {
 
 // Affiche le menu d'instructions
 void afficher_instructions() {
-    effacer_ecran();
+    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
     const int taille_titre = 36;
     const int taille_texte = 18;
     // Position du texte à afficher en y

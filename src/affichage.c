@@ -5,8 +5,9 @@
 #include "entrer.h"
 
 // Sprites de tous les élements en jeu
-#define SPRITE_COUNT 18
+#define SPRITE_COUNT 19
 const char *sprites_paths[SPRITE_COUNT] = {
+    "data/sprites/accueil_logo.bmp",
     "data/sprites/bille.bmp",
     "data/sprites/bonbon.bmp",
     "data/sprites/mur0.bmp",
@@ -36,6 +37,7 @@ int charger_sprites() {
             fprintf(stderr, "Erreur lors du chargement du sprite %s\n", sprites_paths[i]);
             return -1;
         }
+        SDL_SetColorKey(sprite, SDL_SRCCOLORKEY, noir);
         sprites[i] = sprite;
     }
     if (charger_sprites_fantomes() == -1) {
@@ -56,8 +58,8 @@ short voisins_murs[27 * 21] = {};
 SDL_Surface *sprite_at(Point pos) {
     // Convertis les coordonnés 2d en index pour un array 1d
     int index = 21 * pos.y + pos.x;
-    // Le 2 correspond à l'offset pour avoir les sprites des murs
-    return sprites[2 + voisins_murs[index]];
+    // Le 3 correspond à l'offset pour avoir les sprites des murs
+    return sprites[3 + voisins_murs[index]];
 }
 
 SDL_Surface *sprite_index(int index) {
@@ -110,8 +112,4 @@ void afficher_bouton_retour() {
 Point centrer_texte(char *texte, Point centre, int taille) {
     Point t = taille_texte(texte, taille);
     return (Point) {centre.x - (t.x / 2), centre.y - (t.y / 2)};
-}
-
-void effacer_ecran() {
-    dessiner_rectangle((Point){0, 0}, ECRAN_W, ECRAN_H, noir);
 }

@@ -292,11 +292,11 @@ void dessiner_grille(Partie *p, int dans_editeur) {
             }
             // Bonbon
             else if (type == '.') {
-                afficher_surface(sprite_index(0), pos);
+                afficher_surface(sprite_index(1), pos);
             }
             // Bonus
             else if (type == 'B') {
-                afficher_surface(sprite_index(1), pos);
+                afficher_surface(sprite_index(2), pos);
             }
             // Dessine pacman et les fantômes de façon fixe lorsqu'on est dans l'éditeur
             if (dans_editeur) {

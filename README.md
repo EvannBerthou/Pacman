@@ -101,7 +101,7 @@ Nous avons implémentés de nombreuses idées originales dans ce projet :
 ## Pas implémentés
 - [ ] Création d'un nouveau fichier depuis l'éditeur (on est obligé créer manuellement un fichier vide dans data/maps puis ensuite de le charger en jeu)
 - [ ] Le jeu à des soucis lorsque les FPS sont très bas ( > 10) : certains fantômes n'arrivent pas à sortir de la grotte
-- [ ] Taille de plateau dynamique ()
+- [ ] Taille de plateau dynamique
 
 
 # Credits

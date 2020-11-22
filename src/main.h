@@ -13,6 +13,7 @@
 #define ECRAN_H 540
 #define CASE 20 
 #define VITESSE_ANIMATION 7
+#define BG_COLOR 0x000595
 
 typedef enum {
     SCENE_ACCUEIL = 0,

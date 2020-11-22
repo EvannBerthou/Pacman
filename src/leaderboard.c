@@ -153,7 +153,7 @@ void afficher_leaderboard() {
     char *body = strstr(reponse, "\r\n\r\n");
 
     // Efface l'écran
-    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
+    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
 
     const int taille_titre = 46;
     afficher_texte("Joueur", taille_titre, centrer_texte("Joueur", (Point){ECRAN_W / 4, 20}, taille_titre), blanc);
@@ -190,7 +190,7 @@ void afficher_ligne(char *joueur, char *score, int y) {
 
 // Affiche un message au centre de l'écran
 void afficher_message_leaderboard(char *message, int font) {
-    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, noir);
+    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
     afficher_texte(message, font, centrer_texte(message, (Point){ECRAN_W / 2, ECRAN_H / 2}, font), blanc);
 }
 
