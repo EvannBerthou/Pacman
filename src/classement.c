@@ -18,7 +18,7 @@ https://gist.github.com/FedericoPonzi/2a37799b6c601cce6c1b
 #include <unistd.h>
 
 #include "main.h"
-#include "leaderboard.h"
+#include "classement.h"
 #include "entrer.h"
 #include "affichage.h"
 #include "audio.h"
@@ -130,19 +130,19 @@ char *envoyer_requete(const char *host, int port, const char *req) {
     return reponse;
 }
 
-void afficher_leaderboard() {
-    afficher_message_leaderboard("Chargement du classement", 26);
+void afficher_classement() {
+    afficher_message_classement("Chargement du classement", 26);
     const char *get_req =
             "GET / HTTP/1.0\r\n"
-            "Host: pacman-leaderboard.herokuapp.com\r\n"
+            "Host: pacman-classement.herokuapp.com\r\n"
             "Content-Type: application/x-www-form-urlencoded"
             "\r\n\r\n";
 
     //char *reponse = envoyer_requete("localhost", 3000, get_req);
-    char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, get_req);
+    char *reponse = envoyer_requete("pacman-classement.herokuapp.com", 80, get_req);
     // En cas d'erreur dans la requête
     if (reponse == NULL) {
-        afficher_message_leaderboard("Erreur lors du chargement du classement", 26);
+        afficher_message_classement("Erreur lors du chargement du classement", 26);
         afficher_bouton_retour();
         actualiser();
         attendre_sortie();
@@ -189,7 +189,7 @@ void afficher_ligne(char *joueur, char *score, int y) {
 }
 
 // Affiche un message au centre de l'écran
-void afficher_message_leaderboard(char *message, int font) {
+void afficher_message_classement(char *message, int font) {
     dessiner_rectangle((Point){0,0}, ecran_w(), ecran_h(), BG_COLOR);
     afficher_texte(message, font, centrer_texte(message, (Point){ecran_w() / 2, ecran_h() / 2}, font), blanc);
     actualiser();
@@ -201,7 +201,7 @@ void envoyer_score(Partie *p) {
 
     const char *post_req =
         "POST / HTTP/1.0\r\n"
-        "Host: pacman-leaderboard.herokuapp.com\r\n"
+        "Host: pacman-classement.herokuapp.com\r\n"
         "Content-Type: application/x-www-form-urlencoded\r\n"
         "Content-Length: %d\r\n\r\n"
         "%s\r\n";
@@ -212,7 +212,7 @@ void envoyer_score(Partie *p) {
     sprintf(req, post_req, strlen(params), params);
 
     //char *reponse = envoyer_requete("localhost", 3000, req);
-    char *reponse = envoyer_requete("pacman-leaderboard.herokuapp.com", 80, req);
+    char *reponse = envoyer_requete("pacman-classement.herokuapp.com", 80, req);
     if (reponse != NULL) {
         free(reponse);
     }

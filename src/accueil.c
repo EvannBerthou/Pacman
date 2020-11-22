@@ -13,7 +13,7 @@
 #include "affichage.h"
 #include "pacman.h"
 #include "fantome.h"
-#include "leaderboard.h"
+#include "classement.h"
 #include "editeur.h"
 #include "partie.h"
 #include "audio.h"
@@ -80,7 +80,7 @@ void activer_bouton(Partie *p, Timer *t) {
         break;
     }
     // Classement
-    case 1: afficher_leaderboard(); break;
+    case 1: afficher_classement(); break;
     // Editeur
     case 2: {
         char *chemin = selectionner_niveau();

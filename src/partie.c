@@ -7,7 +7,7 @@
 #include "entite.h"
 #include "pacman.h"
 #include "fantome.h"
-#include "leaderboard.h"
+#include "classement.h"
 #include "main.h"
 #include "entrer.h"
 #include "affichage.h"
