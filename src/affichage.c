@@ -103,3 +103,8 @@ void afficher_bouton_retour() {
     Point info_bouton = {0, ECRAN_H - 52};
     afficher_texte(texte_boutons[manette] , 18, info_bouton, blanc);
 }
+
+Point centrer_texte(char *texte, Point centre, int taille) {
+    Point t = taille_texte(texte, taille);
+    return (Point) {centre.x - (t.x / 2), centre.y - (t.y / 2)};
+}
