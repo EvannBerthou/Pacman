@@ -23,7 +23,7 @@ int WinMain(int argc, char **argv) {
 #else
 int main(int argc, char **argv) {
 #endif
-    ouvrir_fenetre(ECRAN_W, ECRAN_H);
+    ouvrir_fenetre(ecran_w(), ecran_h());
     SDL_EnableKeyRepeat(0,0); // Désactive la répétition de touche
 
     // Chargement de la manette si disponible

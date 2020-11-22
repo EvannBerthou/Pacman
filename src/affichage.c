@@ -1,8 +1,12 @@
+#include <stdlib.h>
 #include "main.h"
 #include "affichage.h"
 #include "fantome.h"
 #include "pacman.h"
 #include "entrer.h"
+
+int _ecran_w = 600;
+int _ecran_h = 540;
 
 // Sprites de tous les élements en jeu
 #define SPRITE_COUNT 19
@@ -52,12 +56,12 @@ int charger_sprites() {
 
 // Calculer un nombre pour déterminer le nombre de voisins puis le stocker dans le meme ordre
 // que le plateau
-short voisins_murs[27 * 21] = {};
+short *voisins_murs = NULL;
 
 // Renvoie le bon sprite
-SDL_Surface *sprite_at(Point pos) {
+SDL_Surface *sprite_at(Partie *p, Point pos) {
     // Convertis les coordonnés 2d en index pour un array 1d
-    int index = 21 * pos.y + pos.x;
+    int index = p->C * pos.y + pos.x;
     // Le 3 correspond à l'offset pour avoir les sprites des murs
     return sprites[3 + voisins_murs[index]];
 }
@@ -66,8 +70,17 @@ SDL_Surface *sprite_index(int index) {
     return sprites[index];
 }
 
+void free_voisins() {
+    free(voisins_murs);
+    voisins_murs = NULL;
+}
+
 // Calcul le nombre de mur voisin pour chaque case
 void calculer_voisins(Partie *p) {
+    if (voisins_murs != NULL) {
+        free_voisins();
+    } 
+    voisins_murs = malloc(sizeof(short) * p->L * p->C);
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
             short voisins = 0;
@@ -90,7 +103,7 @@ void calculer_voisins(Partie *p) {
                 voisins |= 0b0100;
             if (on_grid(p, i, j + 1) == '*')
                 voisins |= 0b1000;
-            voisins_murs[21 * i + j] = voisins;
+            voisins_murs[p->C * i + j] = voisins;
         }
     }
 }
@@ -98,14 +111,14 @@ void calculer_voisins(Partie *p) {
 void afficher_bouton_selectionner() {
     int manette = manette_active(); // 1 si manette branchée sinon 0
     char *texte_boutons[] = {"Entrer : Selectionner", "X : Selectionner"};
-    Point info_bouton = {0, ECRAN_H - 26};
+    Point info_bouton = {0, ecran_h() - 26};
     afficher_texte(texte_boutons[manette] , 18, info_bouton, blanc);
 }
 
 void afficher_bouton_retour() {
     int manette = manette_active(); // 1 si manette branchée sinon 0
     char *texte_boutons[] = {"Q : Retour", "O : Retour"};
-    Point info_bouton = {0, ECRAN_H - 52};
+    Point info_bouton = {0, ecran_h() - 52};
     afficher_texte(texte_boutons[manette] , 18, info_bouton, blanc);
 }
 
@@ -115,12 +128,12 @@ Point centrer_texte(char *texte, Point centre, int taille) {
 }
 
 void afficher_secret_konami_code() {
-    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
+    dessiner_rectangle((Point){0,0}, ecran_w(), ecran_h(), BG_COLOR);
     const int taille_titre = 36;
     char *titre = "Félicitations !";
 
     afficher_texte(titre, taille_titre,
-                    centrer_texte(titre, (Point){ECRAN_W / 2, 20}, taille_titre),
+                    centrer_texte(titre, (Point){ecran_w() / 2, 20}, taille_titre),
                     blanc);
 
     char *message[] = {
@@ -140,4 +153,18 @@ void afficher_secret_konami_code() {
     afficher_bouton_retour();
     actualiser();
     attendre_sortie();
+}
+
+void changer_taille_fenetre(int w, int h) {
+    changer_resolution(w, h);
+    _ecran_w = w;
+    _ecran_h = h;
+}
+
+int ecran_w() {
+    return _ecran_w;
+}
+
+int ecran_h() {
+    return _ecran_h;
 }

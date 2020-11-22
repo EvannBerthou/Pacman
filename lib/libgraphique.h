@@ -44,6 +44,9 @@ typedef struct {
 // ouvrir une fenêtre de taille largeur (x), hauteur (y)
 void ouvrir_fenetre(int largeur, int hauteur);
 
+// Change la taille de la fenêtre
+void changer_resolution(int w, int h);
+
 // terminer le programme
 void fermer_fenetre();
 

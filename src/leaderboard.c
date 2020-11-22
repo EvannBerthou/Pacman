@@ -153,11 +153,11 @@ void afficher_leaderboard() {
     char *body = strstr(reponse, "\r\n\r\n");
 
     // Efface l'écran
-    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
+    dessiner_rectangle((Point){0,0}, ecran_w(), ecran_h(), BG_COLOR);
 
     const int taille_titre = 46;
-    afficher_texte("Joueur", taille_titre, centrer_texte("Joueur", (Point){ECRAN_W / 4, 20}, taille_titre), blanc);
-    afficher_texte("Score", taille_titre, centrer_texte("Score", (Point){ECRAN_W / 2 + 300 / 2, 20}, taille_titre), blanc);
+    afficher_texte("Joueur", taille_titre, centrer_texte("Joueur", (Point){ecran_w() / 4, 20}, taille_titre), blanc);
+    afficher_texte("Score", taille_titre, centrer_texte("Score", (Point){ecran_w() / 2 + 300 / 2, 20}, taille_titre), blanc);
     // Point de départ du tableau du classement
     int y = 75;
     // Sépare chaque ligne du corps
@@ -184,14 +184,14 @@ void afficher_ligne(char *joueur, char *score, int y) {
     printf("joueur : %s score : %s\n", joueur, score);
 #endif
     const int taille_font = 26;
-    afficher_texte(joueur, taille_font, centrer_texte(joueur, (Point){ECRAN_W / 4, y}, taille_font), blanc);
-    afficher_texte(score, taille_font, centrer_texte(score, (Point){ECRAN_W / 2 + 300 / 2, y}, taille_font), blanc);
+    afficher_texte(joueur, taille_font, centrer_texte(joueur, (Point){ecran_w() / 4, y}, taille_font), blanc);
+    afficher_texte(score, taille_font, centrer_texte(score, (Point){ecran_w() / 2 + 300 / 2, y}, taille_font), blanc);
 }
 
 // Affiche un message au centre de l'écran
 void afficher_message_leaderboard(char *message, int font) {
-    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
-    afficher_texte(message, font, centrer_texte(message, (Point){ECRAN_W / 2, ECRAN_H / 2}, font), blanc);
+    dessiner_rectangle((Point){0,0}, ecran_w(), ecran_h(), BG_COLOR);
+    afficher_texte(message, font, centrer_texte(message, (Point){ecran_w() / 2, ecran_h() / 2}, font), blanc);
     actualiser();
 }
 
@@ -264,7 +264,7 @@ Point centrer_boite(Point centre, Point taille) {
 // Affiche le nom dans une boite
 void afficher_nom(char *nom, int index) {
     // Dessine la boite autour du texte au centre de l'écran
-    Point coin = centrer_boite((Point){ECRAN_W / 2, ECRAN_H / 2}, (Point){5 * 46, 60});
+    Point coin = centrer_boite((Point){ecran_w() / 2, ecran_h() / 2}, (Point){5 * 46, 60});
     dessiner_rectangle(coin, 5 * 46, 60, noir);
     // Ligne haut
     dessiner_ligne(coin, (Point){coin.x + 5 * 46, coin.y}, blanc);

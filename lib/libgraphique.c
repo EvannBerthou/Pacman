@@ -65,6 +65,12 @@ void ouvrir_fenetre(int largeur, int hauteur){
     srand(time(NULL));
 }
 
+void changer_resolution(int w, int h) {
+    ecran = SDL_SetVideoMode(w, h, 32, SDL_HWSURFACE|SDL_DOUBLEBUF);
+    LARGEUR = w;
+    HAUTEUR = h;
+}
+
 
 // terminer le programme
 void fermer_fenetre(){

@@ -23,11 +23,11 @@ static BoutonAccueil boutons[NOMBRE_BOUTONS];
 static int bouton_selectionne = 0;
 
 void charger_boutons() {
-    boutons[0] = nouveau_bouton((Point){ECRAN_W / 2, 150}, blanc, "Jouer", 26);
-    boutons[1] = nouveau_bouton((Point){ECRAN_W / 2, 200}, blanc, "Classement", 26);
-    boutons[2] = nouveau_bouton((Point){ECRAN_W / 2, 250}, blanc, "Editeur", 26);
-    boutons[3] = nouveau_bouton((Point){ECRAN_W / 2, 300}, blanc, "Instructions", 26);
-    boutons[4] = nouveau_bouton((Point){ECRAN_W / 2, 350}, blanc, "Quitter", 26);
+    boutons[0] = nouveau_bouton((Point){ecran_w() / 2, 150}, blanc, "Jouer", 26);
+    boutons[1] = nouveau_bouton((Point){ecran_w() / 2, 200}, blanc, "Classement", 26);
+    boutons[2] = nouveau_bouton((Point){ecran_w() / 2, 250}, blanc, "Editeur", 26);
+    boutons[3] = nouveau_bouton((Point){ecran_w() / 2, 300}, blanc, "Instructions", 26);
+    boutons[4] = nouveau_bouton((Point){ecran_w() / 2, 350}, blanc, "Quitter", 26);
 }
 
 // Fonctions appelée à chaque frame
@@ -65,6 +65,9 @@ void activer_bouton(Partie *p, Timer *t) {
             free(chemin);
             break;
         }
+        int w = p->C * CASE + 180;
+        int h = p->L * CASE;
+        changer_taille_fenetre(w, h);
         changer_scene(SCENE_NIVEAU);
         // Arrete la musique de l'accueil
         stop_son(0);
@@ -97,9 +100,9 @@ void activer_bouton(Partie *p, Timer *t) {
 }
 
 void dessiner_accueil() {
-    dessiner_rectangle((Point){0, 0}, ECRAN_W, ECRAN_H, BG_COLOR);
+    dessiner_rectangle((Point){0, 0}, ecran_w(), ecran_h(), BG_COLOR);
     // Affiche le logo
-    afficher_surface(sprite_index(0),(Point){ECRAN_W / 2 - 100, 50});
+    afficher_surface(sprite_index(0),(Point){ecran_w() / 2 - 100, 50});
     for (int i = 0; i < NOMBRE_BOUTONS; i++) {
         BoutonAccueil b = boutons[i];
         // Affiche le texte du bouton
@@ -237,7 +240,7 @@ char* selectionner_niveau() {
 void afficher_liste_niveaux(char **liste, int n, int curseur) {
     const int limit = 15;
     const int font = 26;
-    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
+    dessiner_rectangle((Point){0,0}, ecran_w(), ecran_h(), BG_COLOR);
 
     // Par défaut on affiche depuis le début
     int debut = 0;
@@ -259,11 +262,12 @@ void afficher_liste_niveaux(char **liste, int n, int curseur) {
 void charger_accueil() {
     bouton_selectionne = 0;
     pause_son(0, 1);
+    changer_taille_fenetre(600, 540);
 }
 
 // Affiche le menu d'instructions
 void afficher_instructions() {
-    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
+    dessiner_rectangle((Point){0,0}, ecran_w(), ecran_h(), BG_COLOR);
     const int taille_titre = 36;
     const int taille_texte = 18;
     // Position du texte à afficher en y
@@ -273,7 +277,7 @@ void afficher_instructions() {
     avance_y += 20;
     // Affiche le titre centré
     afficher_texte(texte_instructions, taille_titre,
-            centrer_texte(texte_instructions, (Point){ECRAN_W / 2, avance_y}, taille_titre),
+            centrer_texte(texte_instructions, (Point){ecran_w() / 2, avance_y}, taille_titre),
             blanc);
     
     char *texte_regles[] = {
@@ -292,7 +296,7 @@ void afficher_instructions() {
     // Affiche les controles
     avance_y += 40;
     afficher_texte("Jeu", taille_titre, (Point){0, avance_y}, blanc);
-    afficher_texte("Editeur", taille_titre, (Point){ECRAN_W / 2, avance_y}, blanc);
+    afficher_texte("Editeur", taille_titre, (Point){ecran_w() / 2, avance_y}, blanc);
 
     avance_y += 40;
 
@@ -323,7 +327,7 @@ void afficher_instructions() {
     avance_y = pre_touches;
     for (int i = 0; i < 6; i++) {
         avance_y += taille_texte;
-        afficher_texte(texte_touches_editeur[i], taille_texte, (Point){ECRAN_W / 2, avance_y}, blanc);
+        afficher_texte(texte_touches_editeur[i], taille_texte, (Point){ecran_w() / 2, avance_y}, blanc);
     }
 
     // Attendre que l'utilisateur est fini pour continuer

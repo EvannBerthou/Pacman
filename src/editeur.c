@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "main.h"
 #include "editeur.h"
+#include "affichage.h"
 
 // Type
 char selected_char = '*';
@@ -46,6 +47,7 @@ Partie charger_editeur(char *chemin) {
     if (err == -1) {
         return partie_vide(chemin);
     }
+    p.nom_fichier = chemin;
     return p;
 }
 
@@ -85,13 +87,16 @@ int sauvegarder_niveau(Partie *p) {
 
     // Ecris la taille de la carte
     fprintf(f, "%d %d\n", p->L, p->C);
+    printf("%d %d\n", p->L, p->C);
 
     // Ecris chaque ligne dans le fichier
     for (int h = 0; h < p->L; h++) {
-        char ligne[p->L + 1];
-        snprintf(ligne, p->L, "%s", p->plateau[h]);
+        char ligne[p->C + 2];
+        snprintf(ligne, p->C + 1, "%s", p->plateau[h]);
+        printf("%d : %s\n", h, ligne);
         fprintf(f, "%s\n", ligne);
     }
+    
 
     fclose(f);
     printf("Sauvegarde terminée\n");
@@ -103,13 +108,13 @@ int sauvegarder_niveau(Partie *p) {
 static void dessiner_boutons() {
     const int font_size = 26;
     // Efface l'écran
-    dessiner_rectangle((Point){420, 0}, ECRAN_W - 420, ECRAN_H, noir);
+    dessiner_rectangle((Point){ecran_w() - 180, 0}, 180, ecran_h(), noir);
     for (int i = 0; i < n; i++) {
         // Texte du bouton à afficher
         const char *texte = boutons_editeur_textes[i];
         // Rouge si selectioné sinon blanc
         Couleur couleur = bouton_editeurs[i] == selected_char ? rouge : blanc;
-        afficher_texte((char *)texte, font_size, (Point){430, i * font_size + 10}, couleur);
+        afficher_texte((char *)texte, font_size, (Point){ecran_w() - 170, i * font_size + 10}, couleur);
     }
 }
 
@@ -172,15 +177,17 @@ void lancer_editeur(char *chemin) {
     char chemin_fichier[100];
     sprintf(chemin_fichier, "data/maps/%s", chemin);
     Partie p = charger_editeur(strdup(chemin_fichier));
+    int w = p.C * CASE + 180;
+    int h = p.L * CASE;
+    changer_taille_fenetre(w, h);
     calculer_voisins(&p);
 
     while (1) {
         traiter_evenements();
 
-        //
         Point souris = deplacement_souris_a_eu_lieu();
         // Si souris dans la partie éditeur
-        if (souris.x <= 420) {
+        if (souris.x <= p.C * CASE) {
             Point clic = clic_a_eu_lieu();
             // Si clic a eu lieu
             if (clic.x != -1 && clic.y != -1) {

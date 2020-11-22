@@ -73,6 +73,7 @@ int charger_plan(char *chemin, Partie *p) {
                     break;
                 }
                 else { // Sinon trop de caractères
+                    printf("%d\n", c);
                     fprintf(stderr, "Ligne %d: trop de caractères\n", l);
                     fclose(f);
                     return -1;
@@ -281,7 +282,7 @@ void activer_bonbon(Partie *p) {
 
 void dessiner_grille(Partie *p, int dans_editeur) {
     // Efface la grille pour la redessiner de 0
-    dessiner_rectangle((Point){0,0}, PLATEAU_W, ECRAN_H, noir);
+    dessiner_rectangle((Point){0,0}, ecran_w(), ecran_h(), noir);
     int nbf = 0;
     for (int i = 0; i < p->L; i++) {
         for (int j = 0; j < p->C; j++) {
@@ -289,7 +290,7 @@ void dessiner_grille(Partie *p, int dans_editeur) {
             char type = p->plateau[i][j];
             // Mur
             if (type == '*') {
-                afficher_surface(sprite_at((Point){j,i}), pos);
+                afficher_surface(sprite_at(p, (Point){j,i}), pos);
             }
             // Bonbon
             else if (type == '.') {
@@ -319,7 +320,7 @@ void dessiner_texte(Partie *p) {
     // Remarque : on fait ça pour tricher un peu, lorsque pacman arrive sur la droite du plateau, il est dessiné
     // au dessus de la zone de texte. En faisant ça, on efface les pixels de pacman qui sont en dehors du plateau
     // ce qui donne une impression de transition
-    dessiner_rectangle((Point){p->C * CASE, 0}, 200, ECRAN_H, noir);
+    dessiner_rectangle((Point){p->C * CASE, 0}, 200, ecran_h(), noir);
 
     // Espace entre les éléments
     const int padding = 5;
