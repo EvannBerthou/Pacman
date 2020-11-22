@@ -12,5 +12,6 @@ SDL_Surface *sprite_index(int index);
 void afficher_bouton_selectionner();
 void afficher_bouton_retour();
 Point centrer_texte(char *texte, Point centre, int taille);
+void afficher_secret_konami_code();
 
 #endif

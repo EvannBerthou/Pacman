@@ -118,8 +118,8 @@ SDL_Surface *sprite_fantome(TypeEntite t, int dir, int frame) {
 // Temps avant que chaque fantome quitte la base
 float timer_fantomes[4];
 void reset_timer_fantomes() {
-    timer_fantomes[0] = 1.f;
-    timer_fantomes[1] = 1.f;
+    timer_fantomes[0] = 5.f;
+    timer_fantomes[1] = 10.f;
     timer_fantomes[2] = 15.f;
     timer_fantomes[3] = 20.f;
 }
@@ -232,9 +232,9 @@ void IA_PINK(Partie *p, Entite *fantome) {
 }
 
 void IA_CYAN(Entite *fantome) {
-    if (entier_aleatoire(10)>7){
+    if (entier_aleatoire(10) > 7){
         Pos liste_coin[4]={{1,1},{1,20},{26,1},{26,21}};
-        fantome->pos_cible=liste_coin[entier_aleatoire(4)];
+        fantome->pos_cible = liste_coin[entier_aleatoire(4)];
     }
 }
 

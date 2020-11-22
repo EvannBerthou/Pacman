@@ -113,3 +113,31 @@ Point centrer_texte(char *texte, Point centre, int taille) {
     Point t = taille_texte(texte, taille);
     return (Point) {centre.x - (t.x / 2), centre.y - (t.y / 2)};
 }
+
+void afficher_secret_konami_code() {
+    dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
+    const int taille_titre = 36;
+    char *titre = "Félicitations !";
+
+    afficher_texte(titre, taille_titre,
+                    centrer_texte(titre, (Point){ECRAN_W / 2, 20}, taille_titre),
+                    blanc);
+
+    char *message[] = {
+        "Félicitations, vous as pensés à faire le konami code",
+        "(ou alors juste regardé le code directement)",
+        "Comme récompenses, vous avez obtenu le droit de",
+        "nous mettre une bonne note !",
+    };
+
+    int avance_y = 40;
+
+    for (int i = 0; i < 4; i++) {
+        afficher_texte(message[i], 18, (Point){0, avance_y}, blanc);
+        avance_y += 20;
+    }
+
+    afficher_bouton_retour();
+    actualiser();
+    attendre_sortie();
+}

@@ -192,6 +192,7 @@ void afficher_ligne(char *joueur, char *score, int y) {
 void afficher_message_leaderboard(char *message, int font) {
     dessiner_rectangle((Point){0,0}, ECRAN_W, ECRAN_H, BG_COLOR);
     afficher_texte(message, font, centrer_texte(message, (Point){ECRAN_W / 2, ECRAN_H / 2}, font), blanc);
+    actualiser();
 }
 
 // Envoie le score au serveur

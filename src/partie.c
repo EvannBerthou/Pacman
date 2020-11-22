@@ -259,6 +259,7 @@ void actualiser_partie(Partie *p, Timer *timer) {
 
     if (p->nbbonus == 0) {
         relancer_niveau(p);
+        jouer_intro(p, timer);
     }
 }
 

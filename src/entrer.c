@@ -1,6 +1,7 @@
 #include "../lib/libgraphique.h"
 #include "entrer.h"
 #include "audio.h"
+#include "affichage.h"
 
 extern SDL_Joystick *manette;
 
@@ -97,6 +98,7 @@ void avancer_konami_code(int touche) {
         if (index == 9) {
             printf("Code complet !\n");
             index = 0;
+            afficher_secret_konami_code();
         }
     }
     else if (touche == konami_code[0]) {
