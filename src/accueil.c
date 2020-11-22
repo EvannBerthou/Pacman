@@ -17,15 +17,16 @@
 #include "partie.h"
 #include "audio.h"
 
-#define NOMBRE_BOUTONS 4
+#define NOMBRE_BOUTONS 5
 static BoutonAccueil boutons[NOMBRE_BOUTONS];
 static int bouton_selectionne = 0;
 
 void charger_boutons() {
-    boutons[0] = nouveau_bouton((Point){ECRAN_W / 2, 200}, blanc, "Jouer", 26);
-    boutons[1] = nouveau_bouton((Point){ECRAN_W / 2, 250}, blanc, "Classement", 26);
-    boutons[2] = nouveau_bouton((Point){ECRAN_W / 2, 300}, blanc, "Editeur", 26);
-    boutons[3] = nouveau_bouton((Point){ECRAN_W / 2, 350}, blanc, "Quitter", 26);
+    boutons[0] = nouveau_bouton((Point){ECRAN_W / 2, 150}, blanc, "Jouer", 26);
+    boutons[1] = nouveau_bouton((Point){ECRAN_W / 2, 200}, blanc, "Classement", 26);
+    boutons[2] = nouveau_bouton((Point){ECRAN_W / 2, 250}, blanc, "Editeur", 26);
+    boutons[3] = nouveau_bouton((Point){ECRAN_W / 2, 300}, blanc, "Instruction", 26);
+    boutons[4] = nouveau_bouton((Point){ECRAN_W / 2, 350}, blanc, "Quitter", 26);
 }
 
 void actualiser_accueil(Partie *p, Timer *t) {
@@ -80,7 +81,8 @@ void activer_bouton(Partie *p, Timer *t) {
         free(chemin);
         break;
     }
-    case 3: exit(0); break;
+    case 3: afficher_instructions(); break;
+    case 4: exit(0); break;
     }
 }
 
@@ -235,4 +237,68 @@ void afficher_liste_niveaux(char **liste, int n, int curseur) {
 void charger_accueil() {
     bouton_selectionne = 0;
     pause_son(0, 1);
+}
+
+void afficher_instructions() {
+    dessiner_rectangle((Point){0, 0}, ECRAN_W, ECRAN_H, noir);
+    const int taille_titre = 36;
+    const int taille_texte = 18;
+    int avance_y = 0;
+
+    char *texte_instructions = "Instructions";
+    avance_y += 20;
+    afficher_texte(texte_instructions, taille_titre,
+            centrer_texte(texte_instructions, (Point){ECRAN_W / 2, avance_y}, taille_titre),
+            blanc);
+    
+    char *texte_regles[] = {
+        "Pac-man se retrouve dans un labyrinthe, avec des fantômes.",
+        "Manger tous les bonus du niveau avant de se faire attraper.",
+        "Vous disposez de 3 vies pour remplir cette mission",
+    };
+
+    avance_y += 20;
+
+    for (int i = 0; i < 3; i++) {
+        avance_y += taille_texte;
+        afficher_texte(texte_regles[i], taille_texte, (Point){0, avance_y}, blanc);
+    }
+
+    avance_y += 40;
+    afficher_texte("Jeu", taille_titre, (Point){0, avance_y}, blanc);
+    afficher_texte("Editeur", taille_titre, (Point){ECRAN_W / 2, avance_y}, blanc);
+
+    avance_y += 40;
+
+    char *texte_touches[] = {
+        "Deplacement : Flèches",
+        "Retour : Q",
+        "Confirmer : Entrer",
+        "(Dés)activer le son : M",
+    };
+
+    char *texte_touches_editeur[] = {
+        "Mur : A",
+        "Bille : Z",
+        "Bonbon : E",
+        "Vide : R",
+        "Pacman : T",
+        "Fantome : Y",
+    };
+
+    int pre_touches = avance_y;
+    for (int i = 0; i < 4; i++) {
+        avance_y += taille_texte;
+        afficher_texte(texte_touches[i], taille_texte, (Point){0, avance_y}, blanc);
+    }
+
+    avance_y = pre_touches;
+    for (int i = 0; i < 6; i++) {
+        avance_y += taille_texte;
+        afficher_texte(texte_touches_editeur[i], taille_texte, (Point){ECRAN_W / 2, avance_y}, blanc);
+    }
+
+    afficher_bouton_retour();
+    actualiser();
+    attendre_sortie();
 }

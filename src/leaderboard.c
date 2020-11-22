@@ -130,11 +130,6 @@ char *envoyer_requete(const char *host, int port, const char *req) {
     return reponse;
 }
 
-Point centrer_texte(char *texte, Point centre, int taille) {
-    Point t = taille_texte(texte, taille);
-    return (Point) {centre.x - (t.x / 2), centre.y - (t.y / 2)};
-}
-
 void afficher_leaderboard() {
     afficher_message_leaderboard("Chargement du classement", 26);
     const char *get_req =

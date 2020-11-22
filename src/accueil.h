@@ -12,5 +12,6 @@ void manger_bouton();
 char* selectionner_niveau();
 void afficher_liste_niveaux(char **liste, int n, int curseur);
 void charger_accueil();
+void afficher_instructions();
 
 #endif
