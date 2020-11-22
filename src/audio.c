@@ -14,6 +14,7 @@ static SDL_AudioSpec wav_spec; // Caractéristique du fichier audio
 static Sons playing = {.data = NULL, .len = 0, .max_size = 10};
 static Sons samples;
 static int _volume = SDL_MIX_MAXVOLUME;
+static int _audio_actif = 1;
 
 #define SAMPLES_COUNT 6
 const char *sons_chemin[SAMPLES_COUNT] = {
@@ -78,9 +79,10 @@ void init_sons() {
 
     if (SDL_OpenAudio(&wav_spec, NULL) < 0 ) {
     #ifdef DEBUG
-      fprintf(stderr, "Erreur lors de l'ouverture de l'audio: %s\n", SDL_GetError());
+        fprintf(stderr, "Erreur lors de l'ouverture de l'audio: %s\n", SDL_GetError());
     #endif
-      return;
+        _audio_actif = 0;
+        return;
     }
     SDL_PauseAudio(0);
 }
@@ -121,4 +123,8 @@ void toggle_volume(int touche) {
 
 int volume() {
     return _volume;
+}
+
+int audio_actif() {
+    return _audio_actif;
 }

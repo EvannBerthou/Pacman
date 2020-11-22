@@ -24,5 +24,7 @@ int is_playing(int index);
 void stop_son(int index);
 void toggle_volume(int touche);
 int volume();
+int duree_son(int index);
+int audio_actif();
 
 #endif
