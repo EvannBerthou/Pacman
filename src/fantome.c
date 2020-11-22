@@ -118,7 +118,7 @@ SDL_Surface *sprite_fantome(TypeEntite t, int dir, int frame) {
 // Temps avant que chaque fantome quitte la base
 float timer_fantomes[4];
 void reset_timer_fantomes() {
-    timer_fantomes[0] = 5.f;
+    timer_fantomes[0] = 1.f;
     timer_fantomes[1] = 10.f;
     timer_fantomes[2] = 15.f;
     timer_fantomes[3] = 20.f;
@@ -132,6 +132,7 @@ void bouger_fantomes(Partie *p, float dt) {
             timer_fantomes[i] -= dt;
             continue;
         }
+
 
         // Lors du premier niveau, seulement 2 fantomes (Orange et rose) se déplacent
         // Tous les fantômes sont ensuite présent à partir du premier redémarrage

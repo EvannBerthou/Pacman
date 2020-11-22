@@ -20,15 +20,21 @@ void find_path(Partie* p,Pos depart, Pos arriver,Entite* F){
     nb_openlist++;
     nb_closelist++;
     // si pacman en dehors de la  grille ne pas faire de path_finding 
-    if ((arriver.c>(p->C-1)) ||   (arriver.c<0) || (arriver.l>(p->L-1)) || (arriver.l<0)){
+    if ((arriver.c>(p->C-1)) || (arriver.c<0) || (arriver.l>(p->L-1)) || (arriver.l<0)){
         way_find=1;   
     }
     while(!way_find){
         nb_voisin=nb_openlist;	
         // chaque noeud ajouter rechercher les voisin 	
         for(int v = liste_nb_choix[nb_tour]; v >= 0; v--){
+            // Si trop de test, alors dire qu'aucun chemin n'a été trouvé
+            if (v > 1000) {
+                F->prochain_noeud = NULL;
+                return;
+            }
+
             if  ((liste_fermer[nb_closelist-v].pos.l==Noeud_arriver.pos.l) && (liste_fermer[nb_closelist-v].pos.c == Noeud_arriver.pos.c)){
-                way_find=1;
+                way_find = 1;
                 get_path(&(liste_fermer[nb_closelist-v]),nb_tour,F);
                 break;
             }
@@ -52,11 +58,13 @@ void find_path(Partie* p,Pos depart, Pos arriver,Entite* F){
 void get_path(Noeud* last_noeud,int nb_tour,Entite* F){
     Noeud* local=last_noeud;
     int index = nb_tour;
-    F->nombre_noeud = nb_tour;
+
     while (local != NULL) {
         index--;
-        if (index <= 0) break;
-        local=local->parent;
+        if (index <= 0) {
+            break;
+        }
+        local = local->parent;
     }
     F->prochain_noeud = local;
 }

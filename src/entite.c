@@ -22,7 +22,6 @@ Entite nouvelle_entite(Posf pos, Posf pos_init, TypeEntite type) {
         .type = type,
         .etat = etat,
         .animation_time = 0,
-        .nombre_noeud=0,
         .prochain_noeud = NULL,
     };
 

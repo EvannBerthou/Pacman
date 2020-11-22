@@ -57,7 +57,6 @@ typedef struct {
     TypeEntite type; // type de l'entite
     Etat etat; // etat de l'entite 
     Noeud* prochain_noeud; // chemin ver cible 
-    int nombre_noeud; //nombre noeud dans chemin
     int nombre_frames; // nombre frame 
     float vitesse; //vitesse de l'entite 
     float animation_time; //temps d'animatin
