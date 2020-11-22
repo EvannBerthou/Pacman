@@ -194,11 +194,12 @@ char case_direction(Partie *p, Entite *e, int direction) {
 
 static int collision_pacman_fantome(Posf pacman, Posf fantome) {
     // Collision entre 2 rectangles
+    const int taille_case = CASE * .75f;
     return (
-        pacman.c < fantome.c + CASE &&
-        pacman.c + CASE > fantome.c &&
-        pacman.l < fantome.l + CASE &&
-        pacman.l + CASE > fantome.l
+        pacman.c < fantome.c + taille_case &&
+        pacman.c + taille_case > fantome.c &&
+        pacman.l < fantome.l + taille_case &&
+        pacman.l + taille_case > fantome.l
     );
 }
 
@@ -379,6 +380,10 @@ void relancer_niveau(Partie *p) {
 void jouer_intro(Partie *p, Timer *t) {
     dessiner_partie(p);
     actualiser();
-    int id_audio = charger_fichier_audio(4);
-    while(is_playing(id_audio)) { tick_timer(t);} // attent la fin de la musique d'intro
+
+    // Si aucun périphérique audio n'a pu être ouvert alors ne pas jouer de son
+    if (audio_actif()) {
+        int id_audio = charger_fichier_audio(4);
+        while(is_playing(id_audio)) { tick_timer(t);} // attent la fin de la musique d'intro
+    }
 }

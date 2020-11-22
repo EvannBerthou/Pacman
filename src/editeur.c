@@ -13,6 +13,7 @@ const int n = sizeof(bouton_editeurs) / sizeof(bouton_editeurs[0]);
 
 static Partie partie_vide() {
     Partie p;
+    memset(&p, 0, sizeof(Partie));
     p.L = 27;
     p.C = 21;
 
@@ -22,14 +23,14 @@ static Partie partie_vide() {
         exit(1);
     }
 
-    for (int l = 0; l != p.L; l++) {
+    for (int l = 0; l < p.L; l++) {
         p.plateau[l] = malloc(p.C * sizeof(char));
         if(p.plateau[l] == NULL) {
             fprintf(stderr, "Allocation dynamique impossible\n");
             exit(1);
         }
-    // Met toute la colonne à 0 pour éviter d'avoir des valeurs inattendus
-        memset(p.plateau[l], 0, p.C * sizeof(char));
+        // Met toute la colonne à 0 pour éviter d'avoir des valeurs inattendus
+        memset(p.plateau[l], ' ', p.C * sizeof(char));
     }
     return p;
 }
@@ -37,6 +38,7 @@ static Partie partie_vide() {
 
 Partie charger_editeur() {
     Partie p;
+    memset(&p, 0, sizeof(Partie));
     int err = charger_plan(chemin_fichier, &p);
     if (err == -1) {
         return partie_vide();
@@ -80,7 +82,7 @@ int sauvegarder_niveau(Partie *p) {
 
     // Ecris chaque ligne dans le fichier
     for (int h = 0; h < p->L; h++) {
-        char ligne[p->L];
+        char ligne[p->L + 1];
         snprintf(ligne, p->L, "%s", p->plateau[h]);
         fprintf(f, "%s\n", ligne);
     }
